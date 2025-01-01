@@ -44,7 +44,7 @@ export default defineNuxtConfig({
     '@/assets/main.css'
   ],
   mongoose: {
-      uri: process.env.MONGODB_URI,
+      uri: process.env.MONGODB_URI +  `/production?authSource=admin`,
       options: {},
       modelsDir: "models",
       devtools: true,
