@@ -18,7 +18,6 @@ export default defineNuxtConfig({
     '/sign-in': { ssr: true, prerender: true },
     '/tos': { ssr: true, prerender: true },
     '/privacy-policy': { ssr: true, prerender: true },
-    '/consent-preferences': { ssr: true, prerender: true },
     '/app': { ssr: false }
   },
   app: {
