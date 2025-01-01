@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     '/sign-in': { ssr: true, prerender: true },
     '/tos': { ssr: true, prerender: true },
     '/privacy-policy': { ssr: true, prerender: true },
-    '/app': { ssr: false }
+    '/app/**': { ssr: false }
   },
   app: {
     head: {
@@ -48,5 +48,11 @@ export default defineNuxtConfig({
       options: {},
       modelsDir: "models",
       devtools: true,
-  }
+  },
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
 })
