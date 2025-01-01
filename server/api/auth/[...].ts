@@ -4,7 +4,7 @@ import { NuxtAuthHandler } from '#auth'
 import { User } from "~~/server/models/user.model";
 
 export default NuxtAuthHandler({
-    secret: process.env.AUTH_SECRET,
+    secret: process.env.AUTH_SECRET || 'my-auth-secret',
     providers: [
         GoogleProvider.default({
             clientId: process.env.GOOGLE_CLIENT_ID,
@@ -17,24 +17,12 @@ export default NuxtAuthHandler({
         //   }),
     ],
     callbacks: {
-        jwt: async ({ token, user }) => {
-          const isSignIn = Boolean(user);
-    
-          if (isSignIn) {
-            token.jwt = user ? user.access_token || '' : '';
-            token.id = user ? user.id || '' : '';
-            token.role = user ? user.role || '' : '';
-          }
-          return token
-        },
         async session({ session, token }) {
             try {
                 const googleId = token.id
                 const res = await User.findOne({ googleId })
 
                 if (!res) return session
-
-                console.log('Session callback: ', res)
         
                 return {
                     ...session,

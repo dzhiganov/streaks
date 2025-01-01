@@ -32,6 +32,8 @@ export default defineNuxtConfig({
   },
   auth: {
     isEnabled: true,
+    originEnvKey: process.env.AUTH_ORIGIN,
+    baseURL: process.env.AUTH_ORIGIN + '/api/auth',
     globalAppMiddleware: true,
     sessionRefresh: {
       enablePeriodically: 1000 * 60,
