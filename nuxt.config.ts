@@ -31,7 +31,12 @@ export default defineNuxtConfig({
     }
   },
   auth: {
-    baseURL: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}/api/auth` : undefined
+    isEnabled: true,
+    globalAppMiddleware: true,
+    sessionRefresh: {
+      enablePeriodically: 1000 * 60,
+      enableOnWindowFocus: true,
+    }
   },
   css: [
     '@/assets/main.css'

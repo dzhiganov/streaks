@@ -1,11 +1,11 @@
 <script setup>
 
-// definePageMeta({
-//   auth: {
-//     unauthenticatedOnly: false,
-//     navigateUnauthenticatedTo: '/'
-//   }
-// })
+definePageMeta({
+  auth: {
+    unauthenticatedOnly: false,
+    navigateUnauthenticatedTo: '/'
+  }
+})
 
 </script>
 

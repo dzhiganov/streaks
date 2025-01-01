@@ -33,6 +33,8 @@ export default NuxtAuthHandler({
                 const res = await User.findOne({ googleId })
 
                 if (!res) return session
+
+                console.log('Session callback: ', res)
         
                 return {
                     ...session,

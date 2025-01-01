@@ -9,6 +9,8 @@ definePageMeta({
     navigateAuthenticatedTo: "/app",
   },
 });
+
+
 </script>
 <template>
   <div>
