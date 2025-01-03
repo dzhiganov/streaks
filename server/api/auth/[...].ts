@@ -1,7 +1,7 @@
 import GoogleProvider  from 'next-auth/providers/google'
 // import EmailProvider from "next-auth/providers/email"
 import { NuxtAuthHandler } from '#auth'
-import { User } from "~~/server/models/user.model";
+import { User, ActivityType } from "~~/server/models/user.model";
 
 export default NuxtAuthHandler({
     secret: process.env.AUTH_SECRET || 'my-auth-secret',
@@ -19,8 +19,8 @@ export default NuxtAuthHandler({
     callbacks: {
         async session({ session, token }) {
             try {
-                const googleId = token.id
-                const res = await User.findOne({ googleId })
+                const google_id = token.sub
+                const res = await User.findOne({ google_id })
 
                 if (!res) return session
         
@@ -30,8 +30,8 @@ export default NuxtAuthHandler({
                         name: session.user?.name,
                         email: session.user?.email,
                         image: session.user?.image,
-                        googleId: googleId,
-                        userId: res._id,
+                        google_id: google_id,
+                        userId: res._id.toString(),
                     }
                 }
             } catch(err) {
@@ -44,19 +44,19 @@ export default NuxtAuthHandler({
         async signIn({ user, profile }) {
             // Add user to the DB if not existed
             try {
-                const currentUser = await User.findOne({ googleId: user.id })
+                const currentUser = await User.findOne({ google_id: user.id })
 
                 if (!currentUser && profile) {
                     const newUser = {
-                        googleId: user.id,
+                        google_id: user.id,
                         email: profile.email,
                         name: profile.name,
                         photo: profile.image,
                         balance: 3,
-                        createdAt: new Date(),
+                        created_at: new Date(),
                       };
             
-                      await User.create(newUser);
+                    await User.create(newUser);
                 }
             } catch(err) {
                 console.error('Error in signIn callback:', err);

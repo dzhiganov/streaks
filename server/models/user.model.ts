@@ -1,42 +1,63 @@
 import { Schema, model } from "mongoose";
 
 
-const ActivityType = new Schema({
+export const ActivityTypeSchema = new Schema({
     title: String,
-    description: String,
+    description: { type: String, required: false, default: '' },
+    is_default: { type: Boolean, required: false, default: false },
+    created_by: { type: 'ObjectId', ref: 'User', required: false, default: null },
 })
 
-const Activity = new Schema({
+export const ActivityType = model("activity_type", ActivityTypeSchema);
+
+export const ActivitySchema = new Schema({
     title: String,
-    description: String,
+    description: { type: String, required: false, default: '' },
     type: { type: 'ObjectId', ref: 'ActivityType' },
-    icon: String,
+    icon: { type: String, required: false, default: '' },
     color: String,
     active: Boolean,
-    week_time_goal_min: Number,
-    day_time_goal_min: Number,
-    month_time_goal_min: Number,
-    createdAt: Date
+    week_time_goal_min: { type: Number, required: false, default: 0 },
+    day_time_goal_min: { type: Number, required: false, default: 0 },
+    month_time_goal_min: { type: Number, required: false, default: 0 },
+    created_at: Date,
+    created_by: { type: 'ObjectId', ref: 'User' },
 })
 
-const HistoryEntry = new Schema({
+export const Activity = model("activity", ActivitySchema);
+
+const LogSchema = new Schema({
     activity: { type: 'ObjectId', ref: 'Activity' },
-    createdAt: Date,
-    from: Date,
-    to: Date,
+    created_at: Date,
+    date: Date,
+    from: { type: Date, required: false, default: null },
+    to: { type: Date, required: false, default: null },
     time_min: Number,
+    created_by: { type: 'ObjectId', ref: 'User' },
 })
 
-const UserSchema = new Schema({
+export const Log = model("log", LogSchema);
+
+export const UserSchema = new Schema({
     email: String,
-    googleId: String,
+    google_id: String,
     name: String,
-    createdAt: Date,
+    created_at: Date,
     photo_url: String,
-    activities: [Activity],
-    history:  [HistoryEntry],
-    activityTypes: [ActivityType]
+    activities: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
+        default: []
+    },
+    history: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'Log' }],
+        default: []
+    },
+    activity_types: {
+        type: [{ type: Schema.Types.ObjectId, ref: 'ActivityType' }],
+        default: []
+    },
 })
 
 
-export const User = model("User", UserSchema);
+export const User = model("user", UserSchema);
+

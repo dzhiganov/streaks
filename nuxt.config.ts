@@ -7,6 +7,11 @@ export default defineNuxtConfig({
     stripeSecretKey: '',
     stripeWebhookKey: '',
   },
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag === 'calendar-date' || tag === 'calendar-month'
+    }
+  },
   modules: [
     "@nuxtjs/tailwindcss",
     "@nuxt/image",
