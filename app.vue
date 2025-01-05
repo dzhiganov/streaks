@@ -1,20 +1,17 @@
 <script setup>
 useHead({
   title: 'App name',
-  meta: [
-    { name: 'description', content: 'App description' },
-  ],
+  meta: [{ name: 'description', content: 'App description' }],
   htmlAttrs: {
     lang: 'en',
-    ['data-theme']: 'light'
-  }
-})
-
+    ['data-theme']: 'light',
+  },
+});
 </script>
 <template>
-    <div>
-      <NuxtLayout>
-        <NuxtPage/>
-      </NuxtLayout>
-    </div>
+  <div>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </div>
 </template>
