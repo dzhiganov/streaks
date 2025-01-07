@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     endOfDay.setHours(23, 59, 59, 999);
 
     const logs = await Models.Log.find({
-      created_by: session?.user?.id,
+      created_by: session?.user?.userId,
       date: {
         $gte: startOfDay,
         $lt: endOfDay,

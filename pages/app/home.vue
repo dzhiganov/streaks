@@ -3,7 +3,14 @@ import 'cally';
 import { ref, watch } from 'vue';
 import ActivityGraph from '~/components/ActivityGraph.vue';
 import IconPicker from '~/components/IconPicker.vue';
-import { useActivityService } from '~/services/activity.service';
+import {
+  useAddActivity,
+  useAddActivityType,
+  useGetActivities,
+  useGetActivityTypes,
+  useGetHistoryByDate,
+  useLogActivity,
+} from '~/services/activity.service';
 
 const OWL_EMOJI_CODE_POINT = `1f989`;
 const DEFAULT_ACTIVITY_COLOR = `Forest Green`;
@@ -31,18 +38,16 @@ const newActivityType = ref({
   description: '',
 });
 
-const currentDayHistory = ref([]);
 const showAddActivityTypeSection = ref(false);
 
-const {
-  logActivity,
-  addNewType,
-  addNewActivity,
-  activities,
-  activity_types,
-  history,
-  getHistoryByDate,
-} = useActivityService();
+const { data: activitiesData } = useGetActivities();
+const { data: activityTypesData } = useGetActivityTypes();
+const { mutate: addNewActivity } = useAddActivity();
+const { mutate: addNewType } = useAddActivityType();
+const { mutate: logActivity } = useLogActivity();
+
+const activityTypes = computed(() => activityTypesData?.value?.activity_types || []);
+const activities = computed(() => activitiesData?.value?.activities || []);
 
 const onSaveActivity = async () => {
   addNewActivity(newActivity.value);
@@ -76,17 +81,10 @@ const onLogActivity = async () => {
   });
 };
 
-watch(
-  selectedDate,
-  async (newDate) => {
-    const { history = [] } = (await getHistoryByDate(newDate)) || {};
-    currentDayHistory.value = history;
-  },
-  { immediate: true },
-);
+const { data: historyData = {} } = useGetHistoryByDate(selectedDate);
 
-watch(currentDayHistory, (newHistory) => {
-  console.log(newHistory);
+const currentDayHistory = computed(() => {
+  return historyData?.value?.history || {};
 });
 </script>
 
@@ -94,7 +92,7 @@ watch(currentDayHistory, (newHistory) => {
   <div class="max-w-md mx-auto mt-8">
     <h1 class="text-2xl font-bold mb-4">Activities</h1>
 
-    <div class="collapse bg-base-200 collapse-arrow">
+    <div class="collapse collapse-arrow">
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium">Weekly Statistic</div>
       <div class="collapse-content">
@@ -104,7 +102,7 @@ watch(currentDayHistory, (newHistory) => {
 
     <div class="mt-8 px-4 flex flex-col gap-4">
       <div class="space-y-2">
-        <label for="date" class="block text-gray-600 font-medium">Date</label>
+        <label for="date" class="block font-medium">Date</label>
         <input
           v-model="selectedDate"
           type="date"
@@ -118,7 +116,7 @@ watch(currentDayHistory, (newHistory) => {
         <select class="select select-bordered w-full max-w-xs" v-model="selectedActivity">
           <option disabled selected>Select Activity</option>
           <option v-for="{ _id, title, icon } in activities" :key="_id" :value="_id">
-            <p v-if="icon" class="text-sm text-gray-500">
+            <p v-if="icon" class="text-sm">
               {{ String.fromCodePoint(parseInt(icon, 16)) }}
             </p>
             {{ title }}
@@ -136,7 +134,7 @@ watch(currentDayHistory, (newHistory) => {
         </div>
       </div>
       <div>
-        <h2 class="text-lg font-bold mt-8 mb-2">History</h2>
+        <h2 class="text-xl font-bold mt-8 mb-2">History</h2>
         <div v-if="Object.keys(currentDayHistory).length === 0">
           <p class="text-gray-500">No activities logged for this day.</p>
         </div>
@@ -146,7 +144,7 @@ watch(currentDayHistory, (newHistory) => {
             :key="groupTitle"
             class="group mb-6"
           >
-            <h3 class="text-xl font-semibold mb-2">{{ groupTitle }}</h3>
+            <h3 class="text-lg font-semibold mb-2">{{ groupTitle }}</h3>
 
             <ul class="space-y-2 border-l-4 border-gray-300 pl-4">
               <li
@@ -161,7 +159,7 @@ watch(currentDayHistory, (newHistory) => {
                   {{ String.fromCodePoint(parseInt(activity.icon, 16)) }}
                 </div>
                 <div>
-                  <p class="font-medium">{{ activity.title }}</p>
+                  <p class="text-md font-medium">{{ activity.title }}</p>
                   <p class="text-sm text-gray-500">
                     Duration: {{ (activity.sum_min / 60).toFixed(2) * 1 }} hours
                   </p>
@@ -177,7 +175,11 @@ watch(currentDayHistory, (newHistory) => {
     <div class="mt-8 px-4">
       <h2 class="mt-8 mb-2 text-lg font-bold">Add new</h2>
 
-      <button class="btn" onclick="my_modal_1.showModal()">➕ Activity</button>
+      <div class="flex gap-4 items-center">
+        <button class="btn" onclick="my_modal_1.showModal()">➕ Activity</button>
+        <button class="btn" onclick="my_modal_2.showModal()">➕ Activity Type</button>
+      </div>
+
       <dialog id="my_modal_1" class="modal">
         <div class="modal-box p-0">
           <header
@@ -190,17 +192,16 @@ watch(currentDayHistory, (newHistory) => {
             </form>
           </header>
           <div class="p-8 pt-2">
-            <div class="mt-4 space-y-2 border border-gray-200 flex flex-col gap-4">
+            <div class="mt-4 space-y-2 flex flex-col gap-4">
               <div class="space-y-2">
-                <label for="activityType" class="block text-gray-600 font-medium"
-                  >Activity Type</label
-                >
+                <label for="activityType" class="block font-medium">Activity Type</label>
                 <select
-                  class="select select-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  class="select select-bordered w-full"
                   v-model="newActivity.type"
+                  placeholder="Select Activity Type"
                 >
                   <option disabled selected>Select Activity Type</option>
-                  <option v-for="{ _id, title } in activity_types" :key="_id" :value="_id">
+                  <option v-for="{ _id, title } in activityTypes" :key="_id" :value="_id">
                     {{ title }}
                   </option>
                 </select>
@@ -227,7 +228,7 @@ watch(currentDayHistory, (newHistory) => {
 
               <div class="space-y-2">
                 <label class="block text-gray-600 font-medium">Icon</label>
-                <div class="border border-gray-200 rounded-md bg-white shadow-inner">
+                <div class="rounded-md">
                   <IconPicker
                     :modelValue="newActivity.icon"
                     @update:modelValue="newActivity.icon = $event"
@@ -237,9 +238,7 @@ watch(currentDayHistory, (newHistory) => {
 
               <div class="space-y-2">
                 <label class="block text-gray-600 font-medium">Color</label>
-                <div
-                  class="p-3 border border-gray-200 rounded-md bg-white flex gap-2 items-center shadow-inner"
-                >
+                <div class="p-3 rounded-md flex gap-2 items-center">
                   <button
                     v-for="color in colors"
                     :key="color.value"
@@ -297,7 +296,6 @@ watch(currentDayHistory, (newHistory) => {
         </div>
       </dialog>
 
-      <button class="btn" onclick="my_modal_2.showModal()">➕ Activity Type</button>
       <dialog id="my_modal_2" class="modal">
         <div class="modal-box p-0">
           <header

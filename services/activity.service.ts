@@ -1,17 +1,17 @@
-import { onMounted, ref } from 'vue';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 
-type Payload = {
+export type Payload = {
   activity: number;
   time_hours: number;
   date: string;
 };
 
-type ActivityType = {
+export type ActivityType = {
   title: string;
   description: string;
 };
 
-type Activity = {
+export type Activity = {
   title: string;
   description: string;
   type: string;
@@ -23,133 +23,119 @@ type Activity = {
   month_time_goal_hours: number;
 };
 
-export const useActivityService = () => {
-  const activities = ref([]);
-  const activity_types = ref([]);
-  const history = ref([]);
-
-  const logActivity = async (payload: Payload) => {
-    try {
-      console.log('payload', payload);
-      const res = await $fetch(`/api/activity/log`, {
-        method: 'POST',
-        body: JSON.stringify({
-          activity: payload.activity,
-          time_min: payload.time_hours * 60,
-          date: new Date(),
-        }),
-      });
-
-      return res;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const addNewActivity = async (payload: Activity) => {
-    try {
-      const res = await $fetch(`/api/activity/addNewActivity`, {
-        method: 'POST',
-        body: JSON.stringify({
-          ...payload,
-          week_time_goal_min: payload.week_time_goal_hours * 60,
-          day_time_goal_min: payload.day_time_goal_hours * 60,
-          month_time_goal_min: payload.month_time_goal_hours * 60,
-        }),
-      });
-
-      return res;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const addNewType = async (payload: ActivityType) => {
-    try {
-      const res = await $fetch(`/api/activity/addNewType`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      return res;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getActivities = async () => {
-    try {
-      const res = await $fetch(`/api/activity/getActivities`);
-
-      activities.value = res.activities;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getActivityTypes = async () => {
-    try {
-      const res = await $fetch(`/api/activity/getActivityTypes`);
-
-      activity_types.value = res.activity_types;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getHistory = async () => {
-    try {
-      const res = await $fetch(`/api/activity/getHistory`);
-
-      history.value = res.history;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getHistoryByDate = async (date: string) => {
-    try {
-      const res = await $fetch(`/api/activity/getHistoryByDate`, {
-        params: {
-          date,
-        },
-      });
-
-      return res;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getHistoryByRange = async (from: string, to: string) => {
-    try {
-      const res = await $fetch(`/api/activity/getHistoryByRange`, {
-        params: {
-          from,
-          to,
-        },
-      });
-
-      return res;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  onMounted(() => {
-    getActivities();
-    getActivityTypes();
-    getHistory();
+// 🛠️ Base API Fetch Wrapper
+const apiFetch = async <T>(url: string, options?: RequestInit): Promise<T> => {
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    ...options,
   });
 
-  return {
-    logActivity,
-    addNewType,
-    activities,
-    activity_types,
-    history,
-    addNewActivity,
-    getHistoryByDate,
-    getHistoryByRange,
-  };
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
+  }
+
+  return await response.json();
+};
+
+// ✅ 1. Fetch History by Date Range
+const useGetHistoryByRange = (from: string, to: string) =>
+  useQuery({
+    queryKey: ['history', { from, to }],
+    queryFn: () => apiFetch(`/api/activity/getHistoryByRange?from=${from}&to=${to}`),
+    staleTime: 1000 * 60 * 5, // Cache valid for 5 minutes
+  });
+
+const useGetHistoryByDate = (date: Ref<string>) =>
+  useQuery({
+    queryKey: ['history', { date }],
+    queryFn: () => apiFetch(`/api/activity/getHistoryByDate?date=${date.value}`),
+    staleTime: 1000 * 60 * 5, // Cache valid for 5 minutes
+  });
+
+// ✅ 2. Log an Activity
+const useLogActivity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (activity: { activity: string; time_hours: number; date: string }) =>
+      apiFetch('/api/activity/log', {
+        method: 'POST',
+        body: JSON.stringify({
+          activity: activity.activity,
+          time_min: activity.time_hours * 60,
+        }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['history'] }); // Refetch history after a log
+    },
+  });
+};
+
+const useAddActivity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (activityType: { title: string; description: string }) =>
+      apiFetch('/api/activity/addActivity', {
+        method: 'POST',
+        body: JSON.stringify(activityType),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
+    },
+  });
+};
+
+// ✅ 3. Add a New Activity Type
+const useAddActivityType = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (activityType: { title: string; description: string }) =>
+      apiFetch('/api/activity/addNewType', {
+        method: 'POST',
+        body: JSON.stringify(activityType),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activityTypes'] });
+    },
+  });
+};
+
+// ✅ 4. Get All Activity Types
+const useGetActivityTypes = () =>
+  useQuery({
+    queryKey: ['activityTypes'],
+    queryFn: () => apiFetch('/api/activity/getActivityTypes'),
+    staleTime: 1000 * 60 * 5,
+  });
+
+// ✅ 5. Fetch All Activities
+const useGetActivities = () =>
+  useQuery({
+    queryKey: ['activities'],
+    queryFn: () => apiFetch('/api/activity/getActivities'),
+    staleTime: 1000 * 60 * 5,
+  });
+
+// ✅ 6. Fetch Single Activity by ID
+const useGetActivity = (activityId: string) =>
+  useQuery({
+    queryKey: ['activity', activityId],
+    queryFn: () => apiFetch(`/api/activity/get/${activityId}`),
+    staleTime: 1000 * 60 * 5,
+  });
+
+// ✅ Export all methods at the end
+export {
+  useAddActivity,
+  useAddActivityType,
+  useGetActivities,
+  useGetActivity,
+  useGetActivityTypes,
+  useGetHistoryByDate,
+  useGetHistoryByRange,
+  useLogActivity,
 };

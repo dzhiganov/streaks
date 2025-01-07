@@ -13,6 +13,7 @@
     "@nuxt/image": "^1.8.1",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@sidebase/nuxt-auth": "^0.10.0",
+    "@tanstack/vue-query": "^5.62.12",
     "cally": "^0.7.2",
     "chart.js": "^4.4.7",
     "daisyui": "^4.12.23",

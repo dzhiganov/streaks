@@ -17,7 +17,7 @@ function onSelectIcon(emoji: { r: string }) {
 <template>
   <div class="flex items-center gap-2">
     <div class="dropdown dropdown-right">
-      <div tabindex="0" role="button" class="btn btn-ghost">
+      <div tabindex="0" role="button" class="btn">
         <p v-if="modelValue" class="text-sm text-gray-500 text-xl">
           {{ String.fromCodePoint(parseInt(modelValue, 16)) }}
         </p>
