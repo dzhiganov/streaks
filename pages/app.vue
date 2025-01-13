@@ -31,7 +31,9 @@ const navLinks = [
 ];
 
 onMounted(() => {
-  router.push('/app/home');
+  if (route.path === '/app') {
+    router.push('/app/home');
+  }
 });
 </script>
 

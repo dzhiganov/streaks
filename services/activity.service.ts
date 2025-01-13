@@ -40,11 +40,10 @@ const apiFetch = async <T>(url: string, options?: RequestInit): Promise<T> => {
 };
 
 // ✅ 1. Fetch History by Date Range
-const useGetHistoryByRange = (from: string, to: string) =>
+const useGetHistoryByRange = (from: Ref<string>, to: Ref<string>) =>
   useQuery({
-    queryKey: ['history', { from, to }],
-    queryFn: () => apiFetch(`/api/activity/getHistoryByRange?from=${from}&to=${to}`),
-    staleTime: 1000 * 60 * 5, // Cache valid for 5 minutes
+    queryKey: ['history', { from: from.value, to: to.value }],
+    queryFn: () => apiFetch(`/api/activity/getHistoryByRange?from=${from.value}&to=${to.value}`),
   });
 
 const useGetHistoryByDate = (date: Ref<string>) =>

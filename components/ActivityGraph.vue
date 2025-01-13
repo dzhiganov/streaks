@@ -1,25 +1,29 @@
 <script setup>
 import {
+  ArcElement,
   BarController,
   BarElement,
   CategoryScale,
   Chart as ChartJS,
   Legend,
   LinearScale,
-  LineElement,
-  PointElement,
-  RadarController,
-  RadialLinearScale,
+  PieController,
   Title,
   Tooltip,
 } from 'chart.js';
 import { computed, ref } from 'vue';
-import { Bar, Radar } from 'vue-chartjs';
+import { Bar, Pie } from 'vue-chartjs';
 import { useGetHistoryByRange } from '~/services/activity.service';
+
+const props = defineProps({
+  range: {
+    type: String,
+    default: 'week',
+  },
+});
 
 const getCurrentWeekRange = () => {
   const today = new Date();
-
   const dayOfWeek = today.getDay();
 
   const monday = new Date(today);
@@ -36,29 +40,62 @@ const getCurrentWeekRange = () => {
   };
 };
 
+const getCurrentMonthRange = () => {
+  const today = new Date();
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  return {
+    from: firstDayOfMonth.toISOString().split('T')[0],
+    to: lastDayOfMonth.toISOString().split('T')[0],
+  };
+};
+
+const getCurrentYearRange = () => {
+  const today = new Date();
+  const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+  const lastDayOfYear = new Date(today.getFullYear(), 11, 31);
+  return {
+    from: firstDayOfYear.toISOString().split('T')[0],
+    to: lastDayOfYear.toISOString().split('T')[0],
+  };
+};
+
 ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  RadarController,
+  PieController,
   BarController,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
   BarElement,
-  RadialLinearScale,
+  ArcElement,
 );
 
-const { from, to } = getCurrentWeekRange();
+const range = computed(() => {
+  if (props.range === 'week') {
+    return getCurrentWeekRange();
+  }
+  if (props.range === 'month') {
+    return getCurrentMonthRange();
+  }
+  return getCurrentYearRange();
+});
 
-const { data } = useGetHistoryByRange(from, to);
+const from = computed(() => range.value.from);
+const to = computed(() => range.value.to);
+
+const { data, refetch } = useGetHistoryByRange(from, to);
+
+watch([from, to], () => {
+  refetch();
+});
 
 const history = computed(() => data?.value?.history || {});
 
 const modes = [
   { key: 'list', label: 'List View' },
-  { key: 'radar', label: 'Radar Chart' },
+  { key: 'pie', label: 'Pie Chart' },
   { key: 'bar', label: 'Bar Chart' },
 ];
 const currentMode = ref('list');
@@ -93,6 +130,21 @@ const chartData = computed(() => {
     ],
   };
 });
+
+const chartOptions = computed(() => ({
+  responsive: true,
+  maintainAspectRatio: false, // Allows the chart to fill the container's height
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    tooltip: {
+      callbacks: {
+        label: (context) => `${context.label}: ${context.raw.toFixed(1)} hours`,
+      },
+    },
+  },
+}));
 </script>
 
 <template>
@@ -132,12 +184,12 @@ const chartData = computed(() => {
       </div>
     </div>
 
-    <div v-if="currentMode === 'radar'" class="h-96">
-      <Radar :data="chartData" />
+    <div v-if="currentMode === 'pie'" class="h-96">
+      <Pie :data="chartData" class="h-full" :options="chartOptions" />
     </div>
 
     <div v-if="currentMode === 'bar'" class="h-96">
-      <Bar :data="chartData" />
+      <Bar :data="chartData" class="h-full" />
     </div>
   </div>
 </template>

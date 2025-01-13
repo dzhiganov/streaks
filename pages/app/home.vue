@@ -1,6 +1,6 @@
 <script setup>
 import 'cally';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import ActivityGraph from '~/components/ActivityGraph.vue';
 import IconPicker from '~/components/IconPicker.vue';
 import {
@@ -96,7 +96,7 @@ const currentDayHistory = computed(() => {
       <input type="checkbox" />
       <div class="collapse-title text-xl font-medium">Weekly Statistic</div>
       <div class="collapse-content">
-        <ActivityGraph />
+        <ActivityGraph range="week" />
       </div>
     </div>
 
@@ -128,6 +128,7 @@ const currentDayHistory = computed(() => {
           placeholder="Duration (hours)"
           class="input input-bordered w-full mt-4 max-w-xs"
           :max="60 * 24"
+          step="0.5"
         />
         <div class="flex justify-start">
           <button class="btn btn-primary mt-2 w-full max-w-xs" @click="onLogActivity">Save</button>
@@ -146,14 +147,14 @@ const currentDayHistory = computed(() => {
           >
             <h3 class="text-lg font-semibold mb-2">{{ groupTitle }}</h3>
 
-            <ul class="space-y-2 border-l-4 border-gray-300 pl-4">
+            <ul class="space-y-2 border-l-4 border-primary">
               <li
                 v-for="(activity, activityTitle) in activities"
                 :key="activityTitle"
-                class="history-entry flex items-center space-x-4"
+                class="flex items-center space-x-4 p-2 pl-4 rounded-md bg-base-200"
               >
                 <div
-                  class="icon w-8 h-8 flex items-center justify-center rounded-full text-white"
+                  class="icon w-8 h-8 flex items-center justify-center rounded-full text-white shadow-lg"
                   :style="{ backgroundColor: activity.color }"
                 >
                   {{ String.fromCodePoint(parseInt(activity.icon, 16)) }}
@@ -161,7 +162,10 @@ const currentDayHistory = computed(() => {
                 <div>
                   <p class="text-md font-medium">{{ activity.title }}</p>
                   <p class="text-sm text-gray-500">
-                    Duration: {{ (activity.sum_min / 60).toFixed(2) * 1 }} hours
+                    <span>Duration: </span
+                    ><span class="font-bold"
+                      >{{ (activity.sum_min / 60).toFixed(2) * 1 }} hours</span
+                    >
                   </p>
                   <p class="text-sm text-gray-500">{{ activity.description }}</p>
                 </div>
@@ -256,6 +260,7 @@ const currentDayHistory = computed(() => {
                   <input
                     v-model="newActivity.week_time_goal_hours"
                     type="number"
+                    step="0.5"
                     placeholder="e.g., 10"
                     class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
@@ -266,6 +271,7 @@ const currentDayHistory = computed(() => {
                   <input
                     v-model="newActivity.day_time_goal_hours"
                     type="number"
+                    step="0.5"
                     placeholder="e.g., 2"
                     class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
@@ -278,6 +284,7 @@ const currentDayHistory = computed(() => {
                     type="number"
                     placeholder="e.g., 40"
                     class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    step="0.5"
                   />
                 </div>
               </div>
