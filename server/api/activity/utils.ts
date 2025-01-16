@@ -14,6 +14,9 @@ export function groupHistoryByActivityType(history) {
         color: entry.activity.color,
         description: entry.activity.description,
         sum_min: 0,
+        week_time_goal_min: entry.activity.week_time_goal_min,
+        day_time_goal_min: entry.activity.day_time_goal_min,
+        month_time_goal_min: entry.activity.month_time_goal_min,
       };
     }
 

@@ -23,7 +23,6 @@ export type Activity = {
   month_time_goal_hours: number;
 };
 
-// 🛠️ Base API Fetch Wrapper
 const apiFetch = async <T>(url: string, options?: RequestInit): Promise<T> => {
   const response = await fetch(url, {
     headers: {
@@ -39,7 +38,6 @@ const apiFetch = async <T>(url: string, options?: RequestInit): Promise<T> => {
   return await response.json();
 };
 
-// ✅ 1. Fetch History by Date Range
 const useGetHistoryByRange = (from: Ref<string>, to: Ref<string>) =>
   useQuery({
     queryKey: ['history', { from: from.value, to: to.value }],
@@ -50,10 +48,9 @@ const useGetHistoryByDate = (date: Ref<string>) =>
   useQuery({
     queryKey: ['history', { date }],
     queryFn: () => apiFetch(`/api/activity/getHistoryByDate?date=${date.value}`),
-    staleTime: 1000 * 60 * 5, // Cache valid for 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
-// ✅ 2. Log an Activity
 const useLogActivity = () => {
   const queryClient = useQueryClient();
 
@@ -67,7 +64,7 @@ const useLogActivity = () => {
         }),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['history'] }); // Refetch history after a log
+      queryClient.invalidateQueries({ queryKey: ['history'] });
     },
   });
 };
@@ -87,7 +84,6 @@ const useAddActivity = () => {
   });
 };
 
-// ✅ 3. Add a New Activity Type
 const useAddActivityType = () => {
   const queryClient = useQueryClient();
 
@@ -103,7 +99,6 @@ const useAddActivityType = () => {
   });
 };
 
-// ✅ 4. Get All Activity Types
 const useGetActivityTypes = () =>
   useQuery({
     queryKey: ['activityTypes'],
@@ -111,7 +106,6 @@ const useGetActivityTypes = () =>
     staleTime: 1000 * 60 * 5,
   });
 
-// ✅ 5. Fetch All Activities
 const useGetActivities = () =>
   useQuery({
     queryKey: ['activities'],
@@ -119,7 +113,6 @@ const useGetActivities = () =>
     staleTime: 1000 * 60 * 5,
   });
 
-// ✅ 6. Fetch Single Activity by ID
 const useGetActivity = (activityId: string) =>
   useQuery({
     queryKey: ['activity', activityId],
@@ -127,7 +120,21 @@ const useGetActivity = (activityId: string) =>
     staleTime: 1000 * 60 * 5,
   });
 
-// ✅ Export all methods at the end
+const useUpdateActivity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (activity: { id: string; data: any }) =>
+      apiFetch(`/api/activity/updateActivity`, {
+        method: 'POST',
+        body: JSON.stringify(activity),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
+    },
+  });
+};
+
 export {
   useAddActivity,
   useAddActivityType,
@@ -137,4 +144,5 @@ export {
   useGetHistoryByDate,
   useGetHistoryByRange,
   useLogActivity,
+  useUpdateActivity,
 };

@@ -1,15 +1,15 @@
 <script setup>
 import 'cally';
 import { ref } from 'vue';
-import ActivityGraph from '~/components/ActivityGraph.vue';
+import { CrossIcon, EditIcon } from '~/assets/icons';
 import IconPicker from '~/components/IconPicker.vue';
 import {
   useAddActivity,
   useAddActivityType,
   useGetActivities,
   useGetActivityTypes,
-  useGetHistoryByDate,
   useLogActivity,
+  useUpdateActivity,
 } from '~/services/activity.service';
 
 const OWL_EMOJI_CODE_POINT = `1f989`;
@@ -17,40 +17,78 @@ const DEFAULT_ACTIVITY_COLOR = `Forest Green`;
 
 const today = new Date().toISOString().split('T')[0];
 const selectedDate = ref(today);
-const showAddActivitySection = ref(false);
 const duration = ref();
 const selectedActivity = ref(1);
-const newActivity = ref({
-  title: '',
-  description: '',
-  type: '',
-  icon: OWL_EMOJI_CODE_POINT,
-  color: DEFAULT_ACTIVITY_COLOR,
-  active: true,
-  week_time_goal_hours: 0,
-  day_time_goal_hours: 0,
-  month_time_goal_hours: 0,
-  created_at: new Date(),
-});
+const activityId = ref('');
+const activityTitle = ref('');
+const activityDescription = ref('');
+const activityType = ref('');
+const activityIcon = ref(OWL_EMOJI_CODE_POINT);
+const activityColor = ref(DEFAULT_ACTIVITY_COLOR);
+const activityWeekTimeGoal = ref(0);
+const activityDayTimeGoal = ref(0);
+const activityMonthTimeGoal = ref(0);
 
 const newActivityType = ref({
   title: '',
   description: '',
 });
 
-const showAddActivityTypeSection = ref(false);
-
 const { data: activitiesData } = useGetActivities();
 const { data: activityTypesData } = useGetActivityTypes();
 const { mutate: addNewActivity } = useAddActivity();
 const { mutate: addNewType } = useAddActivityType();
 const { mutate: logActivity } = useLogActivity();
+const { mutate: updateActivity } = useUpdateActivity();
 
 const activityTypes = computed(() => activityTypesData?.value?.activity_types || []);
 const activities = computed(() => activitiesData?.value?.activities || []);
 
+const getActivityDiff = (oldActivity, newActivity) => {
+  const diff = {};
+
+  Object.keys(newActivity).forEach((key) => {
+    if (oldActivity[key] !== newActivity[key] && key !== '_id') {
+      diff[key] = newActivity[key];
+    }
+  });
+
+  return diff;
+};
+
 const onSaveActivity = async () => {
-  addNewActivity(newActivity.value);
+  if (!activityId.value) {
+    addNewActivity({
+      title: activityTitle.value,
+      description: activityDescription.value,
+      type: activityType.value,
+      icon: activityIcon.value,
+      color: activityColor.value,
+      week_time_goal_hours: activityWeekTimeGoal.value,
+      day_time_goal_hours: activityDayTimeGoal.value,
+      month_time_goal_hours: activityMonthTimeGoal.value,
+      active: true,
+      created_at: new Date(),
+    });
+  } else {
+    updateActivity({
+      ...getActivityDiff(
+        activities.value.find((activity) => activity._id === activityId.value),
+        {
+          _id: activityId.value,
+          title: activityTitle.value,
+          description: activityDescription.value,
+          type: activityType.value,
+          icon: activityIcon.value,
+          color: activityColor.value,
+          week_time_goal_hours: activityWeekTimeGoal.value,
+          day_time_goal_hours: activityDayTimeGoal.value,
+          month_time_goal_hours: activityMonthTimeGoal.value,
+        },
+      ),
+      id: activityId.value,
+    });
+  }
 };
 
 const onSaveActivityType = async () => {
@@ -58,20 +96,20 @@ const onSaveActivityType = async () => {
 };
 
 const colors = [
-  { name: 'Bright Blue', value: '#007AFF' }, // Vivid and fresh blue
-  { name: 'Teal Green', value: '#00C689' }, // Brighter teal
-  { name: 'Sunset Orange', value: '#FF7043' }, // Warmer, punchier orange
-  { name: 'Cool Gray', value: '#5F738E' }, // Slightly brighter gray
-  { name: 'Blush Pink', value: '#FF6F91' }, // Brightened pink
-  { name: 'Lush Green', value: '#4CAF50' }, // Brighter green
-  { name: 'Vivid Purple', value: '#9C27B0' }, // Enhanced purple
-  { name: 'Golden Yellow', value: '#FFC107' }, // Brighter golden yellow
-  { name: 'Sky Blue', value: '#42A5F5' }, // Sky-like bright blue
-  { name: 'Electric Cyan', value: '#00E5FF' }, // Eye-catching cyan
+  { name: 'Bright Blue', value: '#007AFF' },
+  { name: 'Teal Green', value: '#00C689' },
+  { name: 'Sunset Orange', value: '#FF7043' },
+  { name: 'Cool Gray', value: '#5F738E' },
+  { name: 'Blush Pink', value: '#FF6F91' },
+  { name: 'Lush Green', value: '#4CAF50' },
+  { name: 'Vivid Purple', value: '#9C27B0' },
+  { name: 'Golden Yellow', value: '#FFC107' },
+  { name: 'Sky Blue', value: '#42A5F5' },
+  { name: 'Electric Cyan', value: '#00E5FF' },
 ];
 
 const onSelectColor = (color) => {
-  newActivity.value.color = color;
+  activityColor.value = color;
 };
 
 const onLogActivity = async () => {
@@ -81,118 +119,158 @@ const onLogActivity = async () => {
   });
 };
 
-const { data: historyData = {} } = useGetHistoryByDate(selectedDate);
+const onEditActivity = (activity) => {
+  console.log(activity);
+  document.getElementById('add_new_activity_modal').showModal();
+  activityId.value = activity._id;
+  activityTitle.value = activity.title;
+  activityDescription.value = activity.description;
+  activityType.value = activity.type;
+  activityIcon.value = activity.icon;
+  activityColor.value = activity.color;
+  activityWeekTimeGoal.value = activity.week_time_goal_min ? activity.week_time_goal_min / 60 : 0;
+  activityDayTimeGoal.value = activity.day_time_goal_min ? activity.day_time_goal_min / 60 : 0;
+  activityMonthTimeGoal.value = activity.month_time_goal_min
+    ? activity.month_time_goal_min / 60
+    : 0;
+};
 
-const currentDayHistory = computed(() => {
-  return historyData?.value?.history || {};
-});
+const onDeleteActivity = () => {
+  document.getElementById('confirm-delete-modal').showModal();
+};
 </script>
 
 <template>
-  <div class="max-w-md mx-auto mt-8">
+  <div class="max-w-3xl w-full mt-8">
     <h1 class="text-2xl font-bold mb-4">Activities</h1>
 
-    <div class="collapse collapse-arrow">
-      <input type="checkbox" />
-      <div class="collapse-title text-xl font-medium">Weekly Statistic</div>
-      <div class="collapse-content">
-        <ActivityGraph range="week" />
-      </div>
-    </div>
+    <div class="max-w-4xl mx-auto mt-8 grid grid-cols-2 gap-6">
+      <div class="main-card p-4 rounded-lg shadow">
+        <h2 class="text-lg font-bold mb-4">Log Activity</h2>
+        <div>
+          <div>
+            <label for="date" class="block font-medium">Date</label>
+            <input
+              v-model="selectedDate"
+              type="date"
+              placeholder="MM/DD/YYYY"
+              max="today"
+              class="input input-bordered w-full"
+            />
+          </div>
 
-    <div class="mt-8 px-4 flex flex-col gap-4">
-      <div class="space-y-2">
-        <label for="date" class="block font-medium">Date</label>
-        <input
-          v-model="selectedDate"
-          type="date"
-          placeholder="MM/DD/YYYY"
-          max="today"
-          class="input input-bordered w-full"
-        />
-      </div>
-      <h2 class="text-lg font-bold">Log Activity</h2>
-      <div>
-        <select class="select select-bordered w-full max-w-xs" v-model="selectedActivity">
-          <option disabled selected>Select Activity</option>
-          <option v-for="{ _id, title, icon } in activities" :key="_id" :value="_id">
-            <p v-if="icon" class="text-sm">
-              {{ String.fromCodePoint(parseInt(icon, 16)) }}
-            </p>
-            {{ title }}
-          </option>
-        </select>
-        <input
-          v-model="duration"
-          type="number"
-          placeholder="Duration (hours)"
-          class="input input-bordered w-full mt-4 max-w-xs"
-          :max="60 * 24"
-          step="0.5"
-        />
-        <div class="flex justify-start">
-          <button class="btn btn-primary mt-2 w-full max-w-xs" @click="onLogActivity">Save</button>
+          <div class="mt-2">
+            <select class="select select-bordered w-full" v-model="selectedActivity">
+              <option disabled selected>Select Activity</option>
+              <option v-for="{ _id, title } in activities" :key="_id" :value="_id">
+                {{ title }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mt-2">
+            <input
+              v-model="duration"
+              type="number"
+              placeholder="Duration (hours)"
+              class="input input-bordered w-full"
+              :max="60 * 24"
+              step="0.5"
+            />
+          </div>
+
+          <div class="mt-6">
+            <button class="btn btn-primary mt-2 w-full" @click="onLogActivity">Save</button>
+          </div>
         </div>
       </div>
-      <div>
-        <h2 class="text-xl font-bold mt-8 mb-2">History</h2>
-        <div v-if="Object.keys(currentDayHistory).length === 0">
-          <p class="text-gray-500">No activities logged for this day.</p>
+
+      <div class="main-card p-4 rounded-lg shadow">
+        <Timer />
+      </div>
+
+      <div class="main-card p-4 rounded-lg shadow">
+        <h2 class="text-lg font-bold mb-4">Goals</h2>
+        <div v-if="activities.length === 0">
+          <p class="text-gray-500">No activities</p>
         </div>
         <div v-else>
-          <div
-            v-for="(activities, groupTitle) in currentDayHistory"
-            :key="groupTitle"
-            class="group mb-6"
-          >
-            <h3 class="text-lg font-semibold mb-2">{{ groupTitle }}</h3>
-
-            <ul class="space-y-2 border-l-4 border-primary">
-              <li
-                v-for="(activity, activityTitle) in activities"
-                :key="activityTitle"
-                class="flex items-center space-x-4 p-2 pl-4 rounded-md bg-base-200"
-              >
+          <ul class="space-y-2">
+            <li
+              v-for="(activity, activityTitle) in activities"
+              :key="activityTitle"
+              class="group flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <div class="flex gap-4 items-center w-full">
                 <div
-                  class="icon w-8 h-8 flex items-center justify-center rounded-full text-white shadow-lg"
+                  class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg"
                   :style="{ backgroundColor: activity.color }"
                 >
                   {{ String.fromCodePoint(parseInt(activity.icon, 16)) }}
                 </div>
                 <div>
-                  <p class="text-md font-medium">{{ activity.title }}</p>
-                  <p class="text-sm text-gray-500">
-                    <span>Duration: </span
-                    ><span class="font-bold"
-                      >{{ (activity.sum_min / 60).toFixed(2) * 1 }} hours</span
+                  <p class="font-medium">{{ activity.title }}</p>
+                  <p v-if="activity.day_time_goal_min" class="text-sm text-gray-500">
+                    <span>Left this day: </span
+                    ><span class="font-bold text-primary"
+                      >{{ (activity.day_rest_time_min / 60).toFixed(2) * 1 }} hours</span
                     >
                   </p>
-                  <p class="text-sm text-gray-500">{{ activity.description }}</p>
+                  <p v-else-if="activity.week_time_goal_min" class="text-sm text-gray-500">
+                    <span>Left this week: </span
+                    ><span class="font-bold text-primary"
+                      >{{ (activity.week_rest_time_min / 60).toFixed(2) * 1 }} hours</span
+                    >
+                  </p>
+                  <p v-else-if="activity.month_time_goal_min" class="text-sm text-gray-500">
+                    <span>Left this month: </span
+                    ><span class="font-bold text-primary"
+                      >{{ (activity.month_rest_time_min / 60).toFixed(2) * 1 }} hours</span
+                    >
+                  </p>
+                  <p v-else class="text-sm text-gray-500">
+                    <span>No goal</span>
+                  </p>
                 </div>
-              </li>
-            </ul>
-          </div>
+              </div>
+              <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="icon-btn" @click="onEditActivity(activity)">
+                  <EditIcon />
+                </button>
+                <button class="icon-btn" @click="onDeleteActivity(activity)">
+                  <CrossIcon />
+                </button>
+              </div>
+            </li>
+          </ul>
         </div>
+      </div>
+
+      <div class="main-card p-4 rounded-lg shadow">
+        <h2 class="text-lg font-bold mb-4">Add New</h2>
+        <button class="btn mb-2 w-full" onclick="add_new_activity_modal.showModal();">
+          ➕ Activity
+        </button>
+        <button class="btn w-full" onclick="add_new_activity_type_modal.showModal();">
+          ➕ Activity Type
+        </button>
       </div>
     </div>
 
     <div class="mt-8 px-4">
-      <h2 class="mt-8 mb-2 text-lg font-bold">Add new</h2>
-
-      <div class="flex gap-4 items-center">
-        <button class="btn" onclick="my_modal_1.showModal()">➕ Activity</button>
-        <button class="btn" onclick="my_modal_2.showModal()">➕ Activity Type</button>
-      </div>
-
-      <dialog id="my_modal_1" class="modal">
+      <dialog id="add_new_activity_modal" class="modal">
         <div class="modal-box p-0">
           <header
             class="w-full px-8 py-4 flex justify-between items-center"
-            :style="{ backgroundColor: `${newActivity.color ?? 'transparent'}` }"
+            :style="{ backgroundColor: `${activityColor ?? 'transparent'}` }"
           >
-            <h3 class="text-lg font-bold">Add New Activity</h3>
+            <h3 class="text-lg font-bold text-primary-content">Add New Activity</h3>
             <form method="dialog">
-              <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
+              <button
+                class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-primary-content"
+              >
+                ✕
+              </button>
             </form>
           </header>
           <div class="p-8 pt-2">
@@ -201,8 +279,9 @@ const currentDayHistory = computed(() => {
                 <label for="activityType" class="block font-medium">Activity Type</label>
                 <select
                   class="select select-bordered w-full"
-                  v-model="newActivity.type"
+                  v-model="activityType"
                   placeholder="Select Activity Type"
+                  :disabled="activityId"
                 >
                   <option disabled selected>Select Activity Type</option>
                   <option v-for="{ _id, title } in activityTypes" :key="_id" :value="_id">
@@ -214,17 +293,18 @@ const currentDayHistory = computed(() => {
               <div class="space-y-2">
                 <label class="block text-gray-600 font-medium">Title</label>
                 <input
-                  v-model="newActivity.title"
+                  v-model="activityTitle"
                   type="text"
                   placeholder="Enter Title"
                   class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                  :disabled="activityId"
                 />
               </div>
 
               <div class="space-y-2">
                 <label class="block text-gray-600 font-medium">Description</label>
                 <textarea
-                  v-model="newActivity.description"
+                  v-model="activityDescription"
                   class="textarea textarea-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   placeholder="Description"
                 ></textarea>
@@ -234,8 +314,8 @@ const currentDayHistory = computed(() => {
                 <label class="block text-gray-600 font-medium">Icon</label>
                 <div class="rounded-md">
                   <IconPicker
-                    :modelValue="newActivity.icon"
-                    @update:modelValue="newActivity.icon = $event"
+                    :modelValue="activityIcon"
+                    @update:modelValue="activityIcon = $event"
                   />
                 </div>
               </div>
@@ -249,7 +329,7 @@ const currentDayHistory = computed(() => {
                     @click="onSelectColor(color.value)"
                     :style="{ backgroundColor: color.value }"
                     class="w-8 h-8 rounded-full border-2 hover:border-gray-500"
-                    :class="{ 'border-2 border-gray-500': newActivity.color === color.value }"
+                    :class="{ 'border-2 border-gray-500': activityColor === color.value }"
                   ></button>
                 </div>
               </div>
@@ -258,10 +338,9 @@ const currentDayHistory = computed(() => {
                 <div class="space-y-2">
                   <label class="block text-gray-600 font-medium">Week Time Goal (hours)</label>
                   <input
-                    v-model="newActivity.week_time_goal_hours"
+                    v-model="activityWeekTimeGoal"
                     type="number"
                     step="0.5"
-                    placeholder="e.g., 10"
                     class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
@@ -269,10 +348,9 @@ const currentDayHistory = computed(() => {
                 <div class="space-y-2">
                   <label class="block text-gray-600 font-medium">Day Time Goal (hours)</label>
                   <input
-                    v-model="newActivity.day_time_goal_hours"
+                    v-model="activityDayTimeGoal"
                     type="number"
                     step="0.5"
-                    placeholder="e.g., 2"
                     class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
@@ -280,9 +358,8 @@ const currentDayHistory = computed(() => {
                 <div class="space-y-2">
                   <label class="block text-gray-600 font-medium">Month Time Goal (hours)</label>
                   <input
-                    v-model="newActivity.month_time_goal_hours"
+                    v-model="activityMonthTimeGoal"
                     type="number"
-                    placeholder="e.g., 40"
                     class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     step="0.5"
                   />
@@ -303,11 +380,11 @@ const currentDayHistory = computed(() => {
         </div>
       </dialog>
 
-      <dialog id="my_modal_2" class="modal">
+      <dialog id="add_new_activity_type_modal" class="modal">
         <div class="modal-box p-0">
           <header
             class="w-full px-8 py-4 flex justify-between items-center"
-            :style="{ backgroundColor: `${newActivity.color ?? 'transparent'}` }"
+            :style="{ backgroundColor: `${activityColor ?? 'transparent'}` }"
           >
             <h3 class="text-lg font-bold">Add New Activity</h3>
             <form method="dialog">
@@ -349,6 +426,49 @@ const currentDayHistory = computed(() => {
           </div>
         </div>
       </dialog>
+      <dialog id="confirm-delete-modal" class="modal">
+        <div class="modal-box">
+          <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          </form>
+          <h3 class="text-lg font-bold">Delete</h3>
+          <p class="py-4">Are you sure you want to delete this activity?</p>
+          <p>
+            Your activity progress will be saved in the history and you can restore activity later.
+          </p>
+          <div class="modal-action flex justify-end">
+            <form method="dialog" class="flex gap-4 mt-4">
+              <button
+                class="btn btn-ghost px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+                @click="onDeleteActivity"
+              >
+                Delete
+              </button>
+              <button
+                class="btn btn-primary px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+                @click="document.getElementById('confirm-delete-modal').close()"
+              >
+                Cancel
+              </button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </div>
   </div>
 </template>
+
+<style scoped>
+.icon-btn {
+  @apply btn btn-ghost btn-xs;
+
+  width: 30px;
+  height: 30px;
+  padding: 0.45rem;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+</style>

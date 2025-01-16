@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     default: 'week',
   },
+  showOptions: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const getCurrentWeekRange = () => {
@@ -85,6 +89,8 @@ const range = computed(() => {
 const from = computed(() => range.value.from);
 const to = computed(() => range.value.to);
 
+const goals = ref({});
+
 const { data, refetch } = useGetHistoryByRange(from, to);
 
 watch([from, to], () => {
@@ -112,6 +118,10 @@ const chartData = computed(() => {
   Object.entries(history.value).forEach(([type, activities]) => {
     Object.values(activities).forEach((activity) => {
       labels.push(activity.title);
+      goals.value = {
+        ...goals.value,
+        [activity.title]: activity.week_time_goal_min,
+      };
       data.push(activity.sum_min / 60);
       backgroundColors.push(activity.color);
     });
@@ -140,6 +150,15 @@ const chartOptions = computed(() => ({
     },
     tooltip: {
       callbacks: {
+        title: (ctx) => {
+          const [{ label }] = ctx;
+
+          if (!goals.value[label]) {
+            return label;
+          }
+
+          return `${label} (Goal: ${goals.value[label] / 60} hours)`;
+        },
         label: (context) => `${context.label}: ${context.raw.toFixed(1)} hours`,
       },
     },
@@ -148,8 +167,8 @@ const chartOptions = computed(() => ({
 </script>
 
 <template>
-  <div class="p-6 rounded-md shadow-md space-y-6">
-    <div class="flex gap-2 mb-4">
+  <div class="p-6 rounded-md space-y-6 bg-base-200">
+    <div v-if="showOptions" class="flex gap-2 mb-4">
       <button
         v-for="mode in modes"
         :key="mode.key"
@@ -161,7 +180,7 @@ const chartOptions = computed(() => ({
     </div>
 
     <div v-if="currentMode === 'list'" class="space-y-4">
-      <div v-for="(activities, typeTitle) in history" :key="typeTitle" class="border-t pt-4">
+      <div v-for="(activities, typeTitle) in history" :key="typeTitle">
         <h2 class="text-lg font-bold mb-2">{{ typeTitle }}</h2>
         <ul class="space-y-2">
           <li
@@ -177,7 +196,13 @@ const chartOptions = computed(() => ({
             </div>
             <div>
               <p class="font-medium">{{ activity.title }}</p>
-              <p class="text-sm text-gray-500">{{ (activity.sum_min / 60).toFixed(1) }} hours</p>
+              <p class="text-sm text-gray-500">⌛ {{ (activity.sum_min / 60).toFixed(1) }} hours</p>
+              <p
+                v-if="props.range === 'week' && activity.week_time_goal_min"
+                class="text-sm text-gray-500"
+              >
+                🎯 Goal: {{ activity.week_time_goal_min / 60 }} hours
+              </p>
             </div>
           </li>
         </ul>

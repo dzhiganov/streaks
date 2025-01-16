@@ -1,5 +1,5 @@
 <script setup>
-import { ActivityIcon, GraphIcon, SettingsIcon } from '@/assets/icons';
+import { ActivityIcon, GraphIcon } from '@/assets/icons';
 import { useRouter } from 'vue-router';
 
 const { signOut, data, getSession } = useAuth();
@@ -19,7 +19,6 @@ const route = useRoute();
 onMounted(async () => {
   const session = await getSession();
   userSession.value = session?.user ?? {};
-  console.log(userSession.value);
 });
 
 const isActive = (path) => route.path === path;
@@ -27,7 +26,7 @@ const isActive = (path) => route.path === path;
 const navLinks = [
   { title: 'Activities', path: '/app/home', icon: ActivityIcon },
   { title: 'Statistics', path: '/app/stats', icon: GraphIcon },
-  { title: 'Settings', path: '/app/settings', icon: SettingsIcon },
+  // { title: 'Settings', path: '/app/settings', icon: SettingsIcon, disabled: true },
 ];
 
 onMounted(() => {
@@ -39,9 +38,7 @@ onMounted(() => {
 
 <template>
   <div class="grid grid-rows-[auto_1fr] grid-cols-[250px_1fr] min-h-screen">
-    <header
-      class="flex justify-between items-center text-white py-1 px-8 col-span-2 bg-accent-content"
-    >
+    <header class="flex justify-between items-center text-white py-1 px-8 col-span-2 main-card">
       <div class="flex items-center gap-2">
         <NuxtImg src="/favicon.svg" alt="Streaks" class="w-8 h-8" />
         <h1 class="text-2xl font-bold">Streaks</h1>

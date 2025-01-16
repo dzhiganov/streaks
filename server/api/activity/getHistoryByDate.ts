@@ -25,15 +25,14 @@ export default defineEventHandler(async (event) => {
       .populate({
         path: 'activity',
         model: Models.Activity,
-        select: 'title color icon type description',
+        select:
+          'title color icon type description week_time_goal_min day_time_goal_min month_time_goal_min',
         populate: {
           path: 'type',
           model: Models.ActivityType,
           select: 'title',
         },
       });
-
-    console.log('query.date', query.date, logs);
 
     return {
       history: groupHistoryByActivityType(logs),

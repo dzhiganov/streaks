@@ -12,7 +12,8 @@ const currentMode = ref('month');
 
 <template>
   <div>
-    <h1>Statistics</h1>
+    <h1 class="text-2xl font-bold mb-4">Statistics</h1>
+
     <div>
       <div class="flex gap-2 mb-4">
         <button
@@ -24,7 +25,7 @@ const currentMode = ref('month');
           {{ mode.label }}
         </button>
       </div>
-      <ActivityGraph :range="currentMode" />
+      <ActivityGraph :range="currentMode" :show-options="true" />
     </div>
   </div>
 </template>
