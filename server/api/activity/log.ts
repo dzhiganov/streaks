@@ -1,7 +1,7 @@
-import { defineEventHandler, readBody } from "h3";
-import { User, Log } from "~~/server/models/user.model";
-import { getServerSession } from "#auth";
+import { getServerSession } from '#auth';
+import { defineEventHandler, readBody } from 'h3';
 import mongoose from 'mongoose';
+import { Log, User } from '~~/server/models/user.model';
 
 export default defineEventHandler(async (event) => {
   const session = await mongoose.startSession();
@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
 
     const body = await readBody(event);
     const sessionData = await getServerSession(event);
+
     const logEntry = await Log.create(
       [
         {
@@ -23,8 +24,10 @@ export default defineEventHandler(async (event) => {
           created_by: sessionData.user.userId,
         },
       ],
-      { session }
+      { session },
     );
+
+    console.log('test', logEntry);
 
     // Update User
     await User.findByIdAndUpdate(
@@ -32,7 +35,7 @@ export default defineEventHandler(async (event) => {
       {
         $push: { history: logEntry[0]._id },
       },
-      { session }
+      { session },
     );
 
     await session.commitTransaction();

@@ -138,12 +138,15 @@ const onEditActivity = (activity) => {
 const onDeleteActivity = () => {
   document.getElementById('confirm-delete-modal').showModal();
 };
+
+const getProgress = (timeGoal, timeRest) => {
+  return 100 - (timeRest / timeGoal) * 100;
+};
 </script>
 
 <template>
-  <div class="max-w-3xl w-full mt-8">
+  <div class="max-w-3xl w-full mt-8 mx-auto">
     <h1 class="text-2xl font-bold mb-4">Activities</h1>
-
     <div class="max-w-4xl mx-auto mt-8 grid grid-cols-2 gap-6">
       <div class="main-card p-4 rounded-lg shadow">
         <h2 class="text-lg font-bold mb-4">Log Activity</h2>
@@ -199,38 +202,58 @@ const onDeleteActivity = () => {
             <li
               v-for="(activity, activityTitle) in activities"
               :key="activityTitle"
-              class="group flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="group flex items-center p-2 rounded-lg hover:bg-base-200 dark:hover:bg-base-100"
             >
               <div class="flex gap-4 items-center w-full">
                 <div
-                  class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg"
+                  class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg shrink-0"
                   :style="{ backgroundColor: activity.color }"
                 >
                   {{ String.fromCodePoint(parseInt(activity.icon, 16)) }}
                 </div>
                 <div>
                   <p class="font-medium">{{ activity.title }}</p>
-                  <p v-if="activity.day_time_goal_min" class="text-sm text-gray-500">
+                  <div v-if="activity.day_time_goal_min" class="text-sm text-gray-500">
                     <span>Left this day: </span
-                    ><span class="font-bold text-primary"
+                    ><span v-if="activity.day_rest_time_min > 60" class="font-bold"
                       >{{ (activity.day_rest_time_min / 60).toFixed(2) * 1 }} hours</span
                     >
-                  </p>
-                  <p v-else-if="activity.week_time_goal_min" class="text-sm text-gray-500">
+                    <span v-else class="font-bold">{{ activity.day_rest_time_min }} minutes</span>
+                    <progress
+                      class="progress progress-primary w-44"
+                      :value="getProgress(activity.day_time_goal_min, activity.day_rest_time_min)"
+                      max="100"
+                    ></progress>
+                  </div>
+                  <div v-else-if="activity.week_time_goal_min" class="text-sm text-gray-500">
                     <span>Left this week: </span
-                    ><span class="font-bold text-primary"
+                    ><span v-if="activity.week_rest_time_min > 60" class="font-bold"
                       >{{ (activity.week_rest_time_min / 60).toFixed(2) * 1 }} hours</span
                     >
-                  </p>
-                  <p v-else-if="activity.month_time_goal_min" class="text-sm text-gray-500">
+                    <span v-else class="font-bold">{{ activity.week_rest_time_min }} minutes</span>
+                    <progress
+                      class="progress progress-primary w-44"
+                      :value="getProgress(activity.week_time_goal_min, activity.week_rest_time_min)"
+                      max="100"
+                    ></progress>
+                  </div>
+                  <div v-else-if="activity.month_time_goal_min" class="text-sm text-gray-500">
                     <span>Left this month: </span
-                    ><span class="font-bold text-primary"
+                    ><span v-if="activity.month_rest_time_min > 60" class="font-bold"
                       >{{ (activity.month_rest_time_min / 60).toFixed(2) * 1 }} hours</span
                     >
-                  </p>
-                  <p v-else class="text-sm text-gray-500">
+                    <span v-else class="font-bold">{{ activity.month_rest_time_min }} minutes</span>
+                    <progress
+                      class="progress progress-primary w-44"
+                      :value="
+                        getProgress(activity.month_time_goal_min, activity.month_rest_time_min)
+                      "
+                      max="100"
+                    ></progress>
+                  </div>
+                  <div v-else class="text-sm text-gray-500">
                     <span>No goal</span>
-                  </p>
+                  </div>
                 </div>
               </div>
               <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -260,17 +283,10 @@ const onDeleteActivity = () => {
     <div class="mt-8 px-4">
       <dialog id="add_new_activity_modal" class="modal">
         <div class="modal-box p-0">
-          <header
-            class="w-full px-8 py-4 flex justify-between items-center"
-            :style="{ backgroundColor: `${activityColor ?? 'transparent'}` }"
-          >
-            <h3 class="text-lg font-bold text-primary-content">Add New Activity</h3>
+          <header class="w-full px-8 py-4 flex justify-between items-center">
+            <h3 class="text-lg font-bold">Add New Activity</h3>
             <form method="dialog">
-              <button
-                class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-primary-content"
-              >
-                ✕
-              </button>
+              <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
             </form>
           </header>
           <div class="p-8 pt-2">
@@ -382,10 +398,7 @@ const onDeleteActivity = () => {
 
       <dialog id="add_new_activity_type_modal" class="modal">
         <div class="modal-box p-0">
-          <header
-            class="w-full px-8 py-4 flex justify-between items-center"
-            :style="{ backgroundColor: `${activityColor ?? 'transparent'}` }"
-          >
+          <header class="w-full px-8 py-4 flex justify-between items-center">
             <h3 class="text-lg font-bold">Add New Activity</h3>
             <form method="dialog">
               <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>

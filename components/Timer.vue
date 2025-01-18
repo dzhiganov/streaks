@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { MusicIcon, PauseIcon, PlayIcon, SquareIcon } from '~/assets/icons';
+import { PauseIcon, PlayIcon, SettingsIcon, SquareIcon } from '~/assets/icons';
 import { useGetActivities, useLogActivity } from '~/services/activity.service';
 
 const durationInSeconds = ref(0);
@@ -13,21 +13,31 @@ const { mutate: logActivity } = useLogActivity();
 
 const activities = computed(() => activitiesData?.value?.activities || []);
 
+const mode = ref('stopwatch');
+const customDuration = ref({ hours: 0, minutes: 25, seconds: 0 });
+const isSettingsOpen = ref(false);
+
+const updateDurationForMode = () => {
+  if (mode.value === 'stopwatch') {
+    durationInSeconds.value = 0;
+  } else {
+    durationInSeconds.value =
+      (customDuration.value.hours || 0) * 3600 +
+      (customDuration.value.minutes || 0) * 60 +
+      (customDuration.value.seconds || 0);
+  }
+};
+
 const formattedTime = computed(() => {
   const hours = Math.floor(durationInSeconds.value / 3600);
   const minutes = Math.floor((durationInSeconds.value % 3600) / 60);
   const seconds = durationInSeconds.value % 60;
+
   return `${hours.toString().padStart(2, '0')}:${minutes
     .toString()
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 });
 
-const progressPercentage = computed(() => {
-  const maxDuration = 3600; // 1 hour max for progress
-  return Math.min((durationInSeconds.value / maxDuration) * 100, 100);
-});
-
-// Save state to localStorage
 const saveToLocalStorage = () => {
   localStorage.setItem(
     'activityTimer',
@@ -35,25 +45,37 @@ const saveToLocalStorage = () => {
       durationInSeconds: durationInSeconds.value,
       selectedActivity: selectedActivity.value,
       isTimerRunning: isTimerRunning.value,
+      mode: mode.value,
+      customDuration: customDuration.value,
     }),
   );
 };
 
-// Restore state from localStorage
 const restoreFromLocalStorage = () => {
   const savedState = JSON.parse(localStorage.getItem('activityTimer'));
   if (savedState) {
     durationInSeconds.value = savedState.durationInSeconds || 0;
     selectedActivity.value = savedState.selectedActivity || null;
-    isTimerRunning.value = false; // Always start paused on reload
+    mode.value = savedState.mode || 'stopwatch';
+    customDuration.value = savedState.customDuration || { hours: 0, minutes: 25, seconds: 0 };
+    isTimerRunning.value = false;
   }
 };
 
 const startTimer = () => {
-  if (isTimerRunning.value || !selectedActivity.value) return;
+  if (isTimerRunning.value || (!selectedActivity.value && mode.value === 'stopwatch')) return;
+
   isTimerRunning.value = true;
   timerInterval.value = setInterval(() => {
-    durationInSeconds.value++;
+    if (mode.value === 'stopwatch') {
+      durationInSeconds.value++;
+    } else {
+      if (durationInSeconds.value > 0) {
+        durationInSeconds.value--;
+      } else {
+        stopTimer();
+      }
+    }
   }, 1000);
 };
 
@@ -72,11 +94,30 @@ const stopTimer = () => {
       time_hours: (durationInSeconds.value / 3600).toFixed(2),
     });
   }
-  durationInSeconds.value = 0;
+  updateDurationForMode(); // Reset to initial state
   saveToLocalStorage();
 };
 
-// Watch for changes in duration and periodically save to localStorage
+const toggleMode = (v) => {
+  mode.value = v;
+  updateDurationForMode();
+  saveToLocalStorage();
+};
+
+const openSettings = () => {
+  isSettingsOpen.value = true;
+};
+
+const closeSettings = () => {
+  isSettingsOpen.value = false;
+};
+
+const saveSettings = () => {
+  updateDurationForMode();
+  saveToLocalStorage();
+  closeSettings();
+};
+
 watch(
   [durationInSeconds, selectedActivity],
   () => {
@@ -85,22 +126,20 @@ watch(
   { deep: true },
 );
 
-// Restore state on mount
 onMounted(() => {
   restoreFromLocalStorage();
+  updateDurationForMode();
 
-  // Pause the timer when the page is about to unload
   window.addEventListener('beforeunload', pauseTimer);
 });
 
-// Clean up event listeners on unmount
 onUnmounted(() => {
   window.removeEventListener('beforeunload', pauseTimer);
   clearInterval(timerInterval.value);
 });
 
-const audioRef = ref(null); // Reference to the audio element
-const isTrackPlaying = ref(false); // State for track playback
+const audioRef = ref(null);
+const isTrackPlaying = ref(false);
 
 const toggleTrackPlayback = () => {
   if (!audioRef.value) return;
@@ -123,10 +162,27 @@ const cancelTimer = () => {
 </script>
 
 <template>
-  <div class="max-w-md mx-auto rounded-lg main-card">
-    <h2 class="text-lg font-bold mb-4 text-center">Activity Timer</h2>
+  <div class="max-w-md mx-auto rounded-lg main-card relative">
+    <div role="tablist" class="tabs tabs-boxed mb-6">
+      <button
+        role="tab"
+        class="tab"
+        :class="{ 'tab-active': mode === 'stopwatch' }"
+        @click="toggleMode('stopwatch')"
+      >
+        Stopwatch
+      </button>
+      <button
+        role="tab"
+        class="tab"
+        :class="{ 'tab-active': mode === 'timer' }"
+        @click="toggleMode('timer')"
+      >
+        Timer
+      </button>
+    </div>
 
-    <div class="mb-4">
+    <div class="mb-4 flex justify-center items-center">
       <select
         class="select select-bordered w-full max-w-xs mx-auto dark:select-primary"
         v-model="selectedActivity"
@@ -140,7 +196,6 @@ const cancelTimer = () => {
     </div>
 
     <div class="relative w-40 h-40 mx-auto">
-      <div class="absolute rounded-full"></div>
       <div
         class="absolute inset-4 flex items-center justify-center rounded-full bg-base-300 shadow-md transition-all duration-300"
         :class="{ 'border-4 border-primary': isTimerRunning }"
@@ -149,51 +204,93 @@ const cancelTimer = () => {
       </div>
     </div>
 
-    <div class="flex w-full relative">
-      <div class="flex justify-center gap-4 items-center absolute bottom-0 left-0">
+    <div class="flex justify-center gap-4 mt-6">
+      <div class="flex justify-center gap-4 items-center absolute bottom-2 left-0">
+        <button class="btn btn-circle btn-sm" @click="cancelTimer">✕</button>
+      </div>
+
+      <button
+        class="btn btn-primary"
+        :class="{ 'btn-disabled': isTimerRunning }"
+        @click="startTimer"
+        :disabled="isTimerRunning"
+      >
+        <PlayIcon />
+      </button>
+      <button
+        class="btn btn-warning"
+        :class="{ 'btn-disabled': !isTimerRunning }"
+        @click="pauseTimer"
+        :disabled="!isTimerRunning"
+      >
+        <PauseIcon />
+      </button>
+      <button
+        class="btn btn-danger"
+        :class="{ 'btn-disabled': !durationInSeconds }"
+        @click="stopTimer"
+        :disabled="!durationInSeconds"
+      >
+        <SquareIcon />
+      </button>
+
+      <div class="flex justify-center gap-4 items-center absolute bottom-2 right-0">
         <button
+          @click="openSettings"
           class="btn btn-circle btn-sm"
-          :class="{ 'btn-primary': isTrackPlaying, 'btn-neutral': !isTrackPlaying }"
-          @click="cancelTimer"
+          :class="{ 'btn-disabled': mode !== 'timer' }"
         >
-          ✕
+          <SettingsIcon />
         </button>
       </div>
 
-      <div class="flex justify-center gap-4 mt-6 mx-auto">
+      <!-- <audio controls ref="audioRef" loop volume="0.4">
+        <source src="/audio/bg-music.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <div class="flex justify-center gap-4 items-center absolute bottom-0 right-0">
         <button
-          class="btn btn-primary"
-          :class="{ 'btn-disabled': isTimerRunning }"
-          @click="startTimer"
-          :disabled="isTimerRunning"
+          class="btn btn-circle btn-sm"
+          :class="{ 'btn-primary': isTrackPlaying, 'btn-neutral': !isTrackPlaying }"
+          @click="toggleTrackPlayback"
         >
-          <PlayIcon />
+          <MusicIcon />
         </button>
-        <button
-          class="btn btn-warning"
-          :class="{ 'btn-disabled': !isTimerRunning }"
-          @click="pauseTimer"
-          :disabled="!isTimerRunning"
-        >
-          <PauseIcon />
-        </button>
-        <button
-          class="btn btn-danger"
-          :class="{ 'btn-disabled': !durationInSeconds }"
-          @click="stopTimer"
-          :disabled="!durationInSeconds"
-        >
-          <SquareIcon />
-        </button>
+      </div> -->
+    </div>
 
-        <div class="flex justify-center gap-4 items-center absolute bottom-0 right-0">
-          <button
-            class="btn btn-circle btn-sm"
-            :class="{ 'btn-primary': isTrackPlaying, 'btn-neutral': !isTrackPlaying }"
-            @click="toggleTrackPlayback"
-          >
-            <MusicIcon />
-          </button>
+    <!-- Settings Modal -->
+    <div v-if="isSettingsOpen" class="modal modal-open">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">Timer Settings</h3>
+        <div class="mt-4">
+          <label class="block font-medium mb-2">Hours:</label>
+          <input
+            v-model.number="customDuration.hours"
+            type="number"
+            class="input input-bordered w-full"
+            min="0"
+          />
+          <label class="block font-medium mb-2 mt-4">Minutes:</label>
+          <input
+            v-model.number="customDuration.minutes"
+            type="number"
+            class="input input-bordered w-full"
+            min="0"
+            max="59"
+          />
+          <label class="block font-medium mb-2 mt-4">Seconds:</label>
+          <input
+            v-model.number="customDuration.seconds"
+            type="number"
+            class="input input-bordered w-full"
+            min="0"
+            max="59"
+          />
+        </div>
+        <div class="modal-action">
+          <button @click="closeSettings" class="btn btn-ghost">Cancel</button>
+          <button @click="saveSettings" class="btn btn-primary">Save</button>
         </div>
       </div>
     </div>

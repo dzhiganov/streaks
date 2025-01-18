@@ -38,7 +38,9 @@ onMounted(() => {
 
 <template>
   <div class="grid grid-rows-[auto_1fr] grid-cols-[250px_1fr] min-h-screen">
-    <header class="flex justify-between items-center text-white py-1 px-8 col-span-2 main-card">
+    <header
+      class="flex justify-between items-center text-base-content py-1 px-8 col-span-2 main-card"
+    >
       <div class="flex items-center gap-2">
         <NuxtImg src="/favicon.svg" alt="Streaks" class="w-8 h-8" />
         <h1 class="text-2xl font-bold">Streaks</h1>
