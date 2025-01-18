@@ -74,9 +74,17 @@ const startTimer = () => {
         durationInSeconds.value--;
       } else {
         stopTimer();
+        playCompletionSound();
       }
     }
   }, 1000);
+};
+
+const playCompletionSound = () => {
+  if (audioRef.value) {
+    audioRef.value.currentTime = 0; // Reset to start
+    audioRef.value.play();
+  }
 };
 
 const pauseTimer = () => {
@@ -186,7 +194,10 @@ const cancelTimer = () => {
       <select
         class="select select-bordered w-full max-w-xs mx-auto dark:select-primary"
         v-model="selectedActivity"
-        :disabled="isTimerRunning || durationInSeconds > 0"
+        :disabled="
+          (mode === 'stopwatch' && (isTimerRunning || durationInSeconds > 0)) ||
+          (mode === 'timer' && isTimerRunning)
+        "
       >
         <option disabled selected>Select Activity</option>
         <option v-for="{ _id, title } in activities" :key="_id" :value="_id">
@@ -298,6 +309,8 @@ const cancelTimer = () => {
     <p v-if="!selectedActivity" class="text-sm text-center text-gray-500 mt-4 dark:text-gray-400">
       Please select an activity to start the timer.
     </p>
+
+    <audio ref="audioRef" src="/audio/alarm.mp3"></audio>
   </div>
 </template>
 
