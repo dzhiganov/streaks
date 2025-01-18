@@ -42,8 +42,8 @@ onMounted(() => {
       class="flex justify-between items-center text-base-content py-1 px-8 col-span-2 main-card"
     >
       <div class="flex items-center gap-2">
-        <NuxtImg src="/favicon.svg" alt="Streaks" class="w-8 h-8" />
-        <h1 class="text-2xl font-bold">Streaks</h1>
+        <NuxtImg src="/favicon.svg" alt="Habits" class="w-8 h-8" />
+        <h1 class="text-2xl font-bold">Habits</h1>
       </div>
       <div class="flex items-center gap-2">
         <label class="swap swap-rotate">

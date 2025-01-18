@@ -8,6 +8,7 @@ import {
   useAddActivityType,
   useGetActivities,
   useGetActivityTypes,
+  useGetHistoryByRange,
   useLogActivity,
   useUpdateActivity,
 } from '~/services/activity.service';
@@ -142,11 +143,71 @@ const onDeleteActivity = () => {
 const getProgress = (timeGoal, timeRest) => {
   return 100 - (timeRest / timeGoal) * 100;
 };
+
+const range = computed(() => getCurrentWeekRange());
+
+const getCurrentWeekRange = () => {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  monday.setHours(0, 0, 0, 0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+
+  return {
+    from: monday.toISOString().split('T')[0],
+    to: sunday.toISOString().split('T')[0],
+  };
+};
+
+const from = computed(() => range.value.from);
+const to = computed(() => range.value.to);
+
+const { data: historyData } = useGetHistoryByRange(from, to);
+
+const history = computed(() => {
+  const d = historyData?.value?.history || [];
+
+  const res = [];
+
+  Object.values(d).forEach((activities) => {
+    Object.values(activities).forEach((activity) => {
+      res.push({
+        title: activity.title,
+        color: activity.color,
+        icon: activity.icon,
+        sum_min: activity.sum_min,
+      });
+    });
+  });
+
+  return res.sort((a, b) => b.sum_min - a.sum_min);
+});
+
+watch(history, () => {
+  console.log(history.value);
+});
 </script>
 
 <template>
   <div class="max-w-3xl w-full mt-8 mx-auto">
-    <h1 class="text-2xl font-bold mb-4">Activities</h1>
+    <h1 class="text-4xl font-bold mb-4">Activities</h1>
+    <div class="flex gap-4 items-center bg-base-300 p-4 rounded-lg">
+      <div class="text-lg">This week</div>
+      <div v-for="activity in history" :key="activity.title" class="flex gap-2 items-center">
+        <div
+          class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg shrink-0"
+          :style="{ backgroundColor: activity.color }"
+        >
+          {{ String.fromCodePoint(parseInt(activity.icon, 16)) }}
+        </div>
+        {{ (activity.sum_min / 60).toFixed(2) * 1 }} hours
+      </div>
+    </div>
     <div class="max-w-4xl mx-auto mt-8 grid grid-cols-2 gap-6">
       <div class="main-card p-4 rounded-lg shadow">
         <h2 class="text-lg font-bold mb-4">Log Activity</h2>

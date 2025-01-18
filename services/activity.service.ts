@@ -51,7 +51,7 @@ const useGetHistoryByDate = (date: Ref<string>) =>
     staleTime: 1000 * 60 * 5,
   });
 
-const useLogActivity = () => {
+const useLogActivity = (onSuccessFn: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -65,6 +65,10 @@ const useLogActivity = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['history'] });
+
+      if (onSuccessFn) {
+        onSuccessFn();
+      }
     },
   });
 };

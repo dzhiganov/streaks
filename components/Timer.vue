@@ -7,9 +7,20 @@ const durationInSeconds = ref(0);
 const timerInterval = ref(null);
 const isTimerRunning = ref(false);
 const selectedActivity = ref(null);
+const showNotification = ref(null);
 
 const { data: activitiesData } = useGetActivities();
-const { mutate: logActivity } = useLogActivity();
+const { mutate: logActivity } = useLogActivity(() => {
+  showNotification.value = 'Activity logged';
+});
+
+watch(showNotification, () => {
+  if (showNotification.value) {
+    setTimeout(() => {
+      showNotification.value = null;
+    }, 3000);
+  }
+});
 
 const activities = computed(() => activitiesData?.value?.activities || []);
 
@@ -82,7 +93,7 @@ const startTimer = () => {
 
 const playCompletionSound = () => {
   if (audioRef.value) {
-    audioRef.value.currentTime = 0; // Reset to start
+    audioRef.value.currentTime = 0;
     audioRef.value.play();
   }
 };
@@ -102,7 +113,7 @@ const stopTimer = () => {
       time_hours: (durationInSeconds.value / 3600).toFixed(2),
     });
   }
-  updateDurationForMode(); // Reset to initial state
+  updateDurationForMode();
   saveToLocalStorage();
 };
 
@@ -254,23 +265,8 @@ const cancelTimer = () => {
           <SettingsIcon />
         </button>
       </div>
-
-      <!-- <audio controls ref="audioRef" loop volume="0.4">
-        <source src="/audio/bg-music.mp3" type="audio/mpeg" />
-        Your browser does not support the audio element.
-      </audio>
-      <div class="flex justify-center gap-4 items-center absolute bottom-0 right-0">
-        <button
-          class="btn btn-circle btn-sm"
-          :class="{ 'btn-primary': isTrackPlaying, 'btn-neutral': !isTrackPlaying }"
-          @click="toggleTrackPlayback"
-        >
-          <MusicIcon />
-        </button>
-      </div> -->
     </div>
 
-    <!-- Settings Modal -->
     <div v-if="isSettingsOpen" class="modal modal-open">
       <div class="modal-box">
         <h3 class="font-bold text-lg">Timer Settings</h3>
@@ -312,6 +308,28 @@ const cancelTimer = () => {
 
     <audio ref="audioRef" src="/audio/alarm.mp3"></audio>
   </div>
+  <teleport to="body">
+    <div
+      v-if="showNotification"
+      role="alert"
+      class="alert alert-success absolute bottom-4 right-4 w-80"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>{{ showNotification }}</span>
+    </div></teleport
+  >
 </template>
 
 <style scoped>
