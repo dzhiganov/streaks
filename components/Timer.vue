@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { PauseIcon, PlayIcon, SettingsIcon, SquareIcon } from '~/assets/icons';
 import { useGetActivities, useLogActivity } from '~/services/activity.service';
+import { formatTime } from '~/utils/time/formatTime';
 
 const durationInSeconds = ref(0);
 const timerInterval = ref(null);
@@ -77,18 +78,37 @@ const startTimer = () => {
   if (isTimerRunning.value || (!selectedActivity.value && mode.value === 'stopwatch')) return;
 
   isTimerRunning.value = true;
-  timerInterval.value = setInterval(() => {
+  const interval = 1000; // 1 second
+  let startTime = Date.now();
+
+  const tick = () => {
+    if (!isTimerRunning.value) return;
+
+    const currentTime = Date.now();
+    const elapsedTime = Math.floor((currentTime - startTime) / interval);
+
+    // Update the timer value based on elapsed time
     if (mode.value === 'stopwatch') {
-      durationInSeconds.value++;
+      durationInSeconds.value += elapsedTime;
     } else {
-      if (durationInSeconds.value > 0) {
-        durationInSeconds.value--;
-      } else {
+      durationInSeconds.value -= elapsedTime;
+      if (durationInSeconds.value <= 0) {
+        durationInSeconds.value = 0;
         stopTimer();
         playCompletionSound();
+        return;
       }
     }
-  }, 1000);
+
+    // Reset startTime for the next tick and account for any drift
+    startTime += elapsedTime * interval;
+
+    // Schedule the next tick
+    timerInterval.value = setTimeout(tick, interval - (currentTime - startTime));
+  };
+
+  // Start the first tick
+  timerInterval.value = setTimeout(tick, interval);
 };
 
 const playCompletionSound = () => {
@@ -98,23 +118,35 @@ const playCompletionSound = () => {
   }
 };
 
+const stopCompletionSound = () => {
+  if (audioRef.value) {
+    audioRef.value.pause();
+  }
+};
+
 const pauseTimer = () => {
   isTimerRunning.value = false;
-  clearInterval(timerInterval.value);
+  clearTimeout(timerInterval.value);
   saveToLocalStorage();
 };
 
 const stopTimer = () => {
   isTimerRunning.value = false;
-  clearInterval(timerInterval.value);
-  if (selectedActivity.value && durationInSeconds.value > 0) {
-    logActivity({
-      activity: selectedActivity.value,
-      time_hours: (durationInSeconds.value / 3600).toFixed(2),
-    });
+  clearTimeout(timerInterval.value);
+
+  if (selectedActivity.value && (durationInSeconds.value > 0 || mode.value === 'timer')) {
+    document.getElementById('confirm-save-modal').showModal();
   }
-  updateDurationForMode();
   saveToLocalStorage();
+  stopCompletionSound();
+};
+
+const handleSaveTimer = () => {
+  logActivity({
+    activity: selectedActivity.value,
+    time_hours: (durationInSeconds.value / 3600).toFixed(2),
+  });
+  updateDurationForMode();
 };
 
 const toggleMode = (v) => {
@@ -177,6 +209,12 @@ const cancelTimer = () => {
   clearInterval(timerInterval.value);
   durationInSeconds.value = 0;
   localStorage.removeItem('activityTimer');
+};
+
+const closeModal = () => {
+  document.getElementById('confirm-save-modal').close();
+  stopCompletionSound();
+  updateDurationForMode();
 };
 </script>
 
@@ -330,6 +368,40 @@ const cancelTimer = () => {
       <span>{{ showNotification }}</span>
     </div></teleport
   >
+
+  <dialog id="confirm-save-modal" class="modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <h3 class="text-2xl font-bold">Save logged time in history?</h3>
+      <p class="py-2 pt-8">
+        Activity:
+        <span class="font-bold">{{
+          activities.find((a) => a._id === selectedActivity)?.title
+        }}</span>
+      </p>
+      <p class="py-2">
+        Time: <span class="font-bold">{{ formatTime({ seconds: durationInSeconds }) }}</span>
+      </p>
+      <div class="modal-action flex justify-end">
+        <form method="dialog" class="flex gap-4 mt-4">
+          <button
+            class="btn btn-primary px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+            @click="handleSaveTimer"
+          >
+            Yes
+          </button>
+          <button
+            class="btn btn-ghost px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+            @click="closeModal"
+          >
+            No
+          </button>
+        </form>
+      </div>
+    </div>
+  </dialog>
 </template>
 
 <style scoped>

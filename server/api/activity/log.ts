@@ -27,8 +27,6 @@ export default defineEventHandler(async (event) => {
       { session },
     );
 
-    console.log('test', logEntry);
-
     // Update User
     await User.findByIdAndUpdate(
       sessionData.user.userId,

@@ -1,5 +1,6 @@
 <script setup>
 import 'cally';
+import dayjs from 'dayjs';
 import { ref } from 'vue';
 import { CrossIcon, EditIcon } from '~/assets/icons';
 import IconPicker from '~/components/IconPicker.vue';
@@ -121,7 +122,6 @@ const onLogActivity = async () => {
 };
 
 const onEditActivity = (activity) => {
-  console.log(activity);
   document.getElementById('add_new_activity_modal').showModal();
   activityId.value = activity._id;
   activityTitle.value = activity.title;
@@ -147,20 +147,13 @@ const getProgress = (timeGoal, timeRest) => {
 const range = computed(() => getCurrentWeekRange());
 
 const getCurrentWeekRange = () => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-  monday.setHours(0, 0, 0, 0);
-
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
+  const today = dayjs();
+  const monday = today.startOf('week').add(1, 'day');
+  const sunday = monday.add(6, 'day').endOf('day');
 
   return {
-    from: monday.toISOString().split('T')[0],
-    to: sunday.toISOString().split('T')[0],
+    from: monday.format('YYYY-MM-DD'),
+    to: sunday.format('YYYY-MM-DD'),
   };
 };
 
@@ -186,10 +179,6 @@ const history = computed(() => {
   });
 
   return res.sort((a, b) => b.sum_min - a.sum_min);
-});
-
-watch(history, () => {
-  console.log(history.value);
 });
 </script>
 

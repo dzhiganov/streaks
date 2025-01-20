@@ -11,6 +11,7 @@ import {
   Title,
   Tooltip,
 } from 'chart.js';
+import dayjs from 'dayjs';
 import { computed, ref } from 'vue';
 import { Bar, Pie } from 'vue-chartjs';
 import { useGetHistoryByRange } from '~/services/activity.service';
@@ -27,40 +28,32 @@ const props = defineProps({
 });
 
 const getCurrentWeekRange = () => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-  monday.setHours(0, 0, 0, 0);
-
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  sunday.setHours(23, 59, 59, 999);
+  const monday = dayjs().startOf('isoWeek');
+  const sunday = monday.add(6, 'day').endOf('day');
 
   return {
-    from: monday.toISOString().split('T')[0],
-    to: sunday.toISOString().split('T')[0],
+    from: monday.format('YYYY-MM-DD'),
+    to: sunday.format('YYYY-MM-DD'),
   };
 };
 
 const getCurrentMonthRange = () => {
-  const today = new Date();
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const firstDayOfMonth = dayjs().startOf('month');
+  const lastDayOfMonth = dayjs().endOf('month');
+
   return {
-    from: firstDayOfMonth.toISOString().split('T')[0],
-    to: lastDayOfMonth.toISOString().split('T')[0],
+    from: firstDayOfMonth.format('YYYY-MM-DD'),
+    to: lastDayOfMonth.format('YYYY-MM-DD'),
   };
 };
 
 const getCurrentYearRange = () => {
-  const today = new Date();
-  const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-  const lastDayOfYear = new Date(today.getFullYear(), 11, 31);
+  const firstDayOfYear = dayjs().startOf('year');
+  const lastDayOfYear = dayjs().endOf('year');
+
   return {
-    from: firstDayOfYear.toISOString().split('T')[0],
-    to: lastDayOfYear.toISOString().split('T')[0],
+    from: firstDayOfYear.format('YYYY-MM-DD'),
+    to: lastDayOfYear.format('YYYY-MM-DD'),
   };
 };
 

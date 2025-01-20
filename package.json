@@ -17,6 +17,7 @@
     "cally": "^0.7.2",
     "chart.js": "^4.4.7",
     "daisyui": "^4.12.23",
+    "dayjs": "^1.11.13",
     "install": "^0.13.0",
     "mongoose": "^8.9.3",
     "nodemailer": "^6.9.16",
