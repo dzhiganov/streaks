@@ -77,7 +77,7 @@ onMounted(() => {
           </div>
           <ul
             tabindex="0"
-            class="menu menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow"
+            class="menu menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow bg-base-300"
           >
             <li>
               <NuxtLink to="/support">Support</NuxtLink>

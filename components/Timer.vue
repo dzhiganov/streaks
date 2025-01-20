@@ -346,6 +346,7 @@ const closeModal = () => {
 
     <audio ref="audioRef" src="/audio/alarm.mp3"></audio>
   </div>
+
   <teleport to="body">
     <div
       v-if="showNotification"

@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import { computed, ref } from 'vue';
 import { Bar, Pie } from 'vue-chartjs';
 import { useGetHistoryByRange } from '~/services/activity.service';
+import { getIcon } from '~/utils/getIcon';
 
 const props = defineProps({
   range: {
@@ -185,7 +186,7 @@ const chartOptions = computed(() => ({
               class="w-10 h-10 rounded-full flex items-center justify-center"
               :style="{ backgroundColor: activity.color }"
             >
-              {{ String.fromCodePoint(parseInt(activity.icon, 16)) }}
+            {{ getIcon(activity.icon, activity.title) }}
             </div>
             <div>
               <p class="font-medium">{{ activity.title }}</p>

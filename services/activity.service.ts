@@ -73,17 +73,21 @@ const useLogActivity = (onSuccessFn: () => void) => {
   });
 };
 
-const useAddActivity = () => {
+const useAddActivity = (onSuccessFn: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (activityType: { title: string; description: string }) =>
-      apiFetch('/api/activity/addActivity', {
+      apiFetch('/api/activity/addNewActivity', {
         method: 'POST',
         body: JSON.stringify(activityType),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
+
+      if (onSuccessFn) {
+        onSuccessFn();
+      }
     },
   });
 };
@@ -110,10 +114,12 @@ const useGetActivityTypes = () =>
     staleTime: 1000 * 60 * 5,
   });
 
-const useGetActivities = () =>
+const useGetActivities = (
+  { onlyActive = false }: { onlyActive: boolean } = { onlyActive: false },
+) =>
   useQuery({
-    queryKey: ['activities'],
-    queryFn: () => apiFetch('/api/activity/getActivities'),
+    queryKey: ['history'],
+    queryFn: () => apiFetch(`/api/activity/getActivities?onlyActive=${onlyActive}`),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -124,7 +130,7 @@ const useGetActivity = (activityId: string) =>
     staleTime: 1000 * 60 * 5,
   });
 
-const useUpdateActivity = () => {
+const useUpdateActivity = (onSuccessFn: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -135,6 +141,10 @@ const useUpdateActivity = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
+
+      if (onSuccessFn) {
+        onSuccessFn();
+      }
     },
   });
 };

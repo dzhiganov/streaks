@@ -13,8 +13,8 @@
 }
 
 :root {
-  --font-subheader: "Gabarito", sans-serif;
-  --font-header: "Space Grotesk", sans-serif;
+  --font-subheader: 'Gabarito', sans-serif;
+  --font-header: 'Space Grotesk', sans-serif;
   --secondary-text-color: rgba(47, 48, 60, 0.6);
   --main-text-color: rgb(47, 48, 60);
 }

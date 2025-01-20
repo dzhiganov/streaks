@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
     });
 
     return {
-      activities: updatedActivities,
+      activities: updatedActivities.filter((activity) => activity.active),
     };
   } catch (err) {
     console.error('Error: ', err);

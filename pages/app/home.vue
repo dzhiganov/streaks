@@ -13,6 +13,7 @@ import {
   useLogActivity,
   useUpdateActivity,
 } from '~/services/activity.service';
+import { getIcon } from '~/utils/getIcon';
 
 const OWL_EMOJI_CODE_POINT = `1f989`;
 const DEFAULT_ACTIVITY_COLOR = `Forest Green`;
@@ -31,17 +32,40 @@ const activityWeekTimeGoal = ref(0);
 const activityDayTimeGoal = ref(0);
 const activityMonthTimeGoal = ref(0);
 
+const showNotification = ref(null);
+
+watch(showNotification, () => {
+  if (showNotification.value) {
+    setTimeout(() => {
+      showNotification.value = null;
+    }, 3000);
+  }
+});
+
+const selectRandomColor = () => {
+  const randomColor = colors[Math.floor(Math.random() * colors.length)].value;
+  activityColor.value = randomColor;
+};
+
+onMounted(() => {
+  selectRandomColor();
+});
+
 const newActivityType = ref({
   title: '',
   description: '',
 });
 
-const { data: activitiesData } = useGetActivities();
+const { data: activitiesData, refetch: refetchActivities } = useGetActivities({ onlyActive: true });
 const { data: activityTypesData } = useGetActivityTypes();
-const { mutate: addNewActivity } = useAddActivity();
+const { mutate: addNewActivity } = useAddActivity(() => {
+  refetchActivities();
+});
 const { mutate: addNewType } = useAddActivityType();
 const { mutate: logActivity } = useLogActivity();
-const { mutate: updateActivity } = useUpdateActivity();
+const { mutate: updateActivity } = useUpdateActivity(() => {
+  refetchActivities();
+});
 
 const activityTypes = computed(() => activityTypesData?.value?.activity_types || []);
 const activities = computed(() => activitiesData?.value?.activities || []);
@@ -91,6 +115,18 @@ const onSaveActivity = async () => {
       id: activityId.value,
     });
   }
+
+  activityId.value = null;
+  activityTitle.value = '';
+  activityDescription.value = '';
+  activityType.value = '';
+  activityIcon.value = OWL_EMOJI_CODE_POINT;
+  activityColor.value = DEFAULT_ACTIVITY_COLOR;
+  activityWeekTimeGoal.value = 0;
+  activityDayTimeGoal.value = 0;
+  activityMonthTimeGoal.value = 0;
+
+  showNotification.value = 'Activity saved';
 };
 
 const onSaveActivityType = async () => {
@@ -119,7 +155,24 @@ const onLogActivity = async () => {
     activity: selectedActivity.value,
     time_hours: duration.value,
   });
+
+  showNotification.value = 'Activity logged';
+  duration.value = '';
 };
+
+const selectFirstActivity = () => {
+  if (activities.value.length > 0) {
+    selectedActivity.value = activities.value[0]._id;
+  }
+};
+
+watch(
+  activities,
+  () => {
+    selectFirstActivity();
+  },
+  { immediate: true },
+);
 
 const onEditActivity = (activity) => {
   document.getElementById('add_new_activity_modal').showModal();
@@ -137,7 +190,10 @@ const onEditActivity = (activity) => {
 };
 
 const onDeleteActivity = () => {
-  document.getElementById('confirm-delete-modal').showModal();
+  updateActivity({
+    id: activityId.value,
+    active: false,
+  });
 };
 
 const getProgress = (timeGoal, timeRest) => {
@@ -180,21 +236,29 @@ const history = computed(() => {
 
   return res.sort((a, b) => b.sum_min - a.sum_min);
 });
+
+const onClickDeleteButton = (activity) => {
+  document.getElementById('confirm-delete-modal').showModal();
+  activityId.value = activity._id;
+};
 </script>
 
 <template>
   <div class="max-w-3xl w-full mt-8 mx-auto">
     <h1 class="text-4xl font-bold mb-4">Activities</h1>
     <div class="flex gap-4 items-center bg-base-300 p-4 rounded-lg">
-      <div class="text-lg">This week</div>
-      <div v-for="activity in history" :key="activity.title" class="flex gap-2 items-center">
-        <div
-          class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg shrink-0"
-          :style="{ backgroundColor: activity.color }"
-        >
-          {{ String.fromCodePoint(parseInt(activity.icon, 16)) }}
+      <div class="text-lg font-bold">This week</div>
+      <div v-if="history.length === 0" class="text-gray-500">No activities</div>
+      <div v-else>
+        <div v-for="activity in history" :key="activity.title" class="flex gap-2 items-center">
+          <div
+            class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg shrink-0"
+            :style="{ backgroundColor: activity.color }"
+          >
+            {{ getIcon(activity.icon, activity.title) }}
+          </div>
+          {{ (activity.sum_min / 60).toFixed(2) * 1 }} hours
         </div>
-        {{ (activity.sum_min / 60).toFixed(2) * 1 }} hours
       </div>
     </div>
     <div class="max-w-4xl mx-auto mt-8 grid grid-cols-2 gap-6">
@@ -256,10 +320,10 @@ const history = computed(() => {
             >
               <div class="flex gap-4 items-center w-full">
                 <div
-                  class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg shrink-0"
+                  class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg shrink-0 text-white"
                   :style="{ backgroundColor: activity.color }"
                 >
-                  {{ String.fromCodePoint(parseInt(activity.icon, 16)) }}
+                  {{ getIcon(activity.icon, activity.title) }}
                 </div>
                 <div>
                   <p class="font-medium">{{ activity.title }}</p>
@@ -310,7 +374,7 @@ const history = computed(() => {
                 <button class="icon-btn" @click="onEditActivity(activity)">
                   <EditIcon />
                 </button>
-                <button class="icon-btn" @click="onDeleteActivity(activity)">
+                <button class="icon-btn" @click="onClickDeleteButton(activity)">
                   <CrossIcon />
                 </button>
               </div>
@@ -331,7 +395,15 @@ const history = computed(() => {
     </div>
 
     <div class="mt-8 px-4">
-      <dialog id="add_new_activity_modal" class="modal">
+      <dialog
+        id="add_new_activity_modal"
+        class="modal"
+        @close="
+          () => {
+            activityId = null;
+          }
+        "
+      >
         <div class="modal-box p-0">
           <header class="w-full px-8 py-4 flex justify-between items-center">
             <h3 class="text-lg font-bold">Add New Activity</h3>
@@ -347,7 +419,7 @@ const history = computed(() => {
                   class="select select-bordered w-full"
                   v-model="activityType"
                   placeholder="Select Activity Type"
-                  :disabled="activityId"
+                  :disabled="Boolean(activityId)"
                 >
                   <option disabled selected>Select Activity Type</option>
                   <option v-for="{ _id, title } in activityTypes" :key="_id" :value="_id">
@@ -363,7 +435,7 @@ const history = computed(() => {
                   type="text"
                   placeholder="Enter Title"
                   class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  :disabled="activityId"
+                  :disabled="Boolean(activityId)"
                 />
               </div>
 
@@ -387,15 +459,20 @@ const history = computed(() => {
               </div>
 
               <div class="space-y-2">
-                <label class="block text-gray-600 font-medium">Color</label>
+                <label class="block text-gray-600 font-medium">{{ label }}</label>
                 <div class="p-3 rounded-md flex gap-2 items-center">
                   <button
                     v-for="color in colors"
                     :key="color.value"
                     @click="onSelectColor(color.value)"
-                    :style="{ backgroundColor: color.value }"
-                    class="w-8 h-8 rounded-full border-2 hover:border-gray-500"
-                    :class="{ 'border-2 border-gray-500': activityColor === color.value }"
+                    :style="{
+                      backgroundColor: color.value,
+                    }"
+                    :class="{
+                      'relative after:content-[\'\'] after:absolute after:inset-[-4px] after:rounded-full after:border-2 after:border-white':
+                        activityColor === color.value,
+                    }"
+                    class="w-8 h-8 rounded-full"
                   ></button>
                 </div>
               </div>
@@ -449,7 +526,7 @@ const history = computed(() => {
       <dialog id="add_new_activity_type_modal" class="modal">
         <div class="modal-box p-0">
           <header class="w-full px-8 py-4 flex justify-between items-center">
-            <h3 class="text-lg font-bold">Add New Activity</h3>
+            <h3 class="text-lg font-bold">Add New Activity Type</h3>
             <form method="dialog">
               <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
             </form>
@@ -503,7 +580,7 @@ const history = computed(() => {
             <form method="dialog" class="flex gap-4 mt-4">
               <button
                 class="btn btn-ghost px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
-                @click="onDeleteActivity"
+                @click="onDeleteActivity(activity)"
               >
                 Delete
               </button>
@@ -519,6 +596,29 @@ const history = computed(() => {
       </dialog>
     </div>
   </div>
+
+  <teleport to="body">
+    <div
+      v-if="showNotification"
+      role="alert"
+      class="alert alert-success absolute bottom-4 right-4 w-80"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>{{ showNotification }}</span>
+    </div></teleport
+  >
 </template>
 
 <style scoped>
