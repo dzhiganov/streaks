@@ -5,8 +5,8 @@ export default {
   daisyui: {
     themes: [
       {
-        light: {
-          ...require('daisyui/src/theming/themes')['light'],
+        winter: {
+          ...require('daisyui/src/theming/themes')['winter'],
           '.main-card': {
             'background-color': '#e6e6e6',
           },
@@ -36,6 +36,7 @@ export default {
     fontFamily: {
       body: ['Gabarito', 'sans-serif'],
       header: ['Space Grotesk', 'sans-serif'],
+      sans: ['Inter', 'sans-serif'],
     },
   },
   darkMode: ['class', '[data-theme="dark"]'],

@@ -9,6 +9,7 @@ const timerInterval = ref(null);
 const isTimerRunning = ref(false);
 const selectedActivity = ref(null);
 const showNotification = ref(null);
+const timePassed = ref(0);
 
 const { data: activitiesData } = useGetActivities();
 const { mutate: logActivity } = useLogActivity(() => {
@@ -74,7 +75,7 @@ const restoreFromLocalStorage = () => {
   }
 };
 
-const startTimer = () => {
+const startStopwatch = () => {
   if (isTimerRunning.value || (!selectedActivity.value && mode.value === 'stopwatch')) return;
 
   isTimerRunning.value = true;
@@ -111,6 +112,42 @@ const startTimer = () => {
   timerInterval.value = setTimeout(tick, interval);
 };
 
+const startTimer = () => {
+  if (isTimerRunning.value || !selectedActivity.value) return;
+
+  isTimerRunning.value = true;
+  const interval = 1000; // 1 second
+  let startTime = Date.now();
+  let remainingTime = durationInSeconds.value;
+  let timePassed_temp = 0;
+
+  const tick = () => {
+    if (!isTimerRunning.value) return;
+
+    const currentTime = Date.now();
+    const elapsedTime = Math.floor((currentTime - startTime) / interval);
+
+    remainingTime -= elapsedTime;
+    timePassed_temp += elapsedTime;
+
+    if (remainingTime <= 0) {
+      durationInSeconds.value = 0;
+      timePassed.value = timePassed_temp;
+      stopTimer();
+      playCompletionSound();
+      return;
+    }
+
+    durationInSeconds.value = remainingTime;
+
+    startTime += elapsedTime * interval;
+
+    timerInterval.value = setTimeout(tick, interval - (currentTime - startTime));
+  };
+
+  timerInterval.value = setTimeout(tick, interval);
+};
+
 const playCompletionSound = () => {
   if (audioRef.value) {
     audioRef.value.currentTime = 0;
@@ -144,7 +181,10 @@ const stopTimer = () => {
 const handleSaveTimer = () => {
   logActivity({
     activity: selectedActivity.value,
-    time_hours: (durationInSeconds.value / 3600).toFixed(2),
+    time_hours:
+      mode.value === 'stopwatch'
+        ? (durationInSeconds.value / 3600).toFixed(2)
+        : (timePassed.value / 3600).toFixed(2),
   });
   updateDurationForMode();
 };
@@ -182,6 +222,12 @@ onMounted(() => {
   updateDurationForMode();
 
   window.addEventListener('beforeunload', pauseTimer);
+});
+
+watch(activities, () => {
+  if (activities.value.length > 0) {
+    selectedActivity.value = activities.value[0]._id;
+  }
 });
 
 onUnmounted(() => {
@@ -272,8 +318,16 @@ const closeModal = () => {
       <button
         class="btn btn-primary"
         :class="{ 'btn-disabled': isTimerRunning }"
-        @click="startTimer"
-        :disabled="isTimerRunning"
+        @click="
+          () => {
+            if (mode === 'stopwatch') {
+              startStopwatch();
+            } else {
+              startTimer();
+            }
+          }
+        "
+        :disabled="isTimerRunning || !selectedActivity"
       >
         <PlayIcon />
       </button>
@@ -289,7 +343,7 @@ const closeModal = () => {
         class="btn btn-danger"
         :class="{ 'btn-disabled': !durationInSeconds }"
         @click="stopTimer"
-        :disabled="!durationInSeconds"
+        :disabled="!durationInSeconds || !isTimerRunning"
       >
         <SquareIcon />
       </button>
@@ -340,10 +394,6 @@ const closeModal = () => {
       </div>
     </div>
 
-    <p v-if="!selectedActivity" class="text-sm text-center text-gray-500 mt-4 dark:text-gray-400">
-      Please select an activity to start the timer.
-    </p>
-
     <audio ref="audioRef" src="/audio/alarm.mp3"></audio>
   </div>
 
@@ -383,7 +433,10 @@ const closeModal = () => {
         }}</span>
       </p>
       <p class="py-2">
-        Time: <span class="font-bold">{{ formatTime({ seconds: durationInSeconds }) }}</span>
+        Time:
+        <span class="font-bold">{{
+          formatTime({ seconds: mode === 'stopwatch' ? durationInSeconds : timePassed })
+        }}</span>
       </p>
       <div class="modal-action flex justify-end">
         <form method="dialog" class="flex gap-4 mt-4">

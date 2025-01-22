@@ -43,11 +43,11 @@ onMounted(() => {
     >
       <div class="flex items-center gap-2">
         <NuxtImg src="/favicon.svg" alt="Habits" class="w-8 h-8" />
-        <h1 class="text-2xl font-bold">Habits</h1>
+        <h1 class="text-2xl font-bold font-header">Habits</h1>
       </div>
       <div class="flex items-center gap-2">
         <label class="swap swap-rotate">
-          <input type="checkbox" class="theme-controller" value="light" />
+          <input type="checkbox" class="theme-controller" value="dark" />
 
           <svg
             class="swap-off h-8 w-8 fill-current"

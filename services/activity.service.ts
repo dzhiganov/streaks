@@ -134,11 +134,30 @@ const useUpdateActivity = (onSuccessFn: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (activity: { id: string; data: any }) =>
-      apiFetch(`/api/activity/updateActivity`, {
+    mutationFn: (activity: any) => {
+      const updatedObject = {
+        ...activity,
+      };
+
+      const convertToMinutes = (hours: number) => hours * 60;
+
+      if (activity.day_time_goal_hours) {
+        updatedObject.day_time_goal_min = convertToMinutes(activity.day_time_goal_hours);
+      }
+      if (activity.week_time_goal_hours) {
+        updatedObject.week_time_goal_min = convertToMinutes(activity.week_time_goal_hours);
+      }
+      if (activity.month_time_goal_hours) {
+        updatedObject.month_time_goal_min = convertToMinutes(activity.month_time_goal_hours);
+      }
+
+      console.log(updatedObject);
+
+      return apiFetch(`/api/activity/updateActivity`, {
         method: 'POST',
-        body: JSON.stringify(activity),
-      }),
+        body: JSON.stringify(updatedObject),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
 
