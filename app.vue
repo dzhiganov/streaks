@@ -4,7 +4,7 @@ useHead({
   meta: [{ name: 'description', content: 'App description' }],
   htmlAttrs: {
     lang: 'en',
-    ['data-theme']: 'winter',
+    ['data-theme']: 'wireframe',
   },
 });
 </script>

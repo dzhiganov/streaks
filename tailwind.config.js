@@ -5,16 +5,16 @@ export default {
   daisyui: {
     themes: [
       {
-        winter: {
-          ...require('daisyui/src/theming/themes')['winter'],
+        wireframe: {
+          ...require('daisyui/src/theming/themes')['wireframe'],
           '.main-card': {
             'background-color': '#e6e6e6',
           },
         },
       },
       {
-        dark: {
-          ...require('daisyui/src/theming/themes')['dark'],
+        business: {
+          ...require('daisyui/src/theming/themes')['business'],
           '.main-card': {
             'background-color': 'rgb(31, 41, 55)',
           },
@@ -39,5 +39,5 @@ export default {
       sans: ['Inter', 'sans-serif'],
     },
   },
-  darkMode: ['class', '[data-theme="dark"]'],
+  darkMode: ['class', '[data-theme="business"]'],
 };

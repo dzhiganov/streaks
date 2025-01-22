@@ -37,7 +37,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="grid grid-rows-[auto_1fr] grid-cols-[250px_1fr] min-h-screen">
+  <div class="grid grid-rows-[auto_1fr_auto] grid-cols-[250px_1fr] min-h-screen">
     <header
       class="flex justify-between items-center text-base-content py-1 px-8 col-span-2 main-card"
     >
@@ -47,7 +47,7 @@ onMounted(() => {
       </div>
       <div class="flex items-center gap-2">
         <label class="swap swap-rotate">
-          <input type="checkbox" class="theme-controller" value="dark" />
+          <input type="checkbox" class="theme-controller" value="business" />
 
           <svg
             class="swap-off h-8 w-8 fill-current"
@@ -77,7 +77,7 @@ onMounted(() => {
           </div>
           <ul
             tabindex="0"
-            class="menu menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow bg-base-300"
+            class="menu menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow main-card"
           >
             <li>
               <NuxtLink to="/support">Support</NuxtLink>
@@ -110,5 +110,15 @@ onMounted(() => {
     <main class="p-4 overflow-auto">
       <NuxtPage />
     </main>
+    <footer class="col-span-2 text-center p-4 flex justify-center items-center">
+      <div class="flex gap-4 text-sm">
+        <p>{{ new Date().getFullYear() }}, Dmitrii Zhiganov</p>
+        <p>
+          <NuxtLink to="/tos">Legal</NuxtLink>
+          <span class="mx-2">|</span>
+          <NuxtLink to="/privacy">Privacy</NuxtLink>
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
