@@ -301,7 +301,9 @@ const onClickDeleteButton = (activity) => {
           </div>
 
           <div class="mt-4 flex justify-center">
-            <button class="btn btn-primary mt-2 w-full" @click="onLogActivity">Log activity</button>
+            <button class="btn btn-primary mt-2 w-full rounded-xl" @click="onLogActivity">
+              Log activity
+            </button>
           </div>
         </div>
       </div>
@@ -376,13 +378,13 @@ const onClickDeleteButton = (activity) => {
       <div class="main-card p-4 rounded-lg shadow">
         <h2 class="text-lg font-bold mb-4">Add New</h2>
         <button
-          class="btn border-2 border-primary mb-2 w-full"
+          class="btn border-2 border-primary mb-2 w-full rounded-xl"
           onclick="add_new_activity_modal.showModal();"
         >
           + Activity
         </button>
         <button
-          class="btn border-2 border-primary w-full"
+          class="btn border-2 border-primary w-full rounded-xl"
           onclick="add_new_activity_type_modal.showModal();"
         >
           + Activity Type
@@ -507,7 +509,7 @@ const onClickDeleteButton = (activity) => {
               <div class="modal-action flex justify-end">
                 <form method="dialog" class="flex gap-4 mt-4">
                   <button
-                    class="btn btn-primary px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+                    class="btn btn-primary px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
                     @click="onSaveActivity"
                   >
                     Save
@@ -551,7 +553,7 @@ const onClickDeleteButton = (activity) => {
               <div class="modal-action flex justify-end">
                 <form method="dialog" class="flex gap-4 mt-4">
                   <button
-                    class="btn btn-primary px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+                    class="btn btn-primary px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
                     @click="onSaveActivityType"
                   >
                     Save
@@ -575,13 +577,13 @@ const onClickDeleteButton = (activity) => {
           <div class="modal-action flex justify-end">
             <form method="dialog" class="flex gap-4 mt-4">
               <button
-                class="btn btn-ghost px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+                class="btn btn-ghost px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
                 @click="onDeleteActivity(activity)"
               >
                 Delete
               </button>
               <button
-                class="btn btn-primary px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+                class="btn btn-primary px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
                 @click="document.getElementById('confirm-delete-modal').close()"
               >
                 Cancel

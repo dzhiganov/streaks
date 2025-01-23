@@ -388,8 +388,8 @@ const closeModal = () => {
           />
         </div>
         <div class="modal-action">
-          <button @click="closeSettings" class="btn btn-ghost">Cancel</button>
-          <button @click="saveSettings" class="btn btn-primary">Save</button>
+          <button @click="closeSettings" class="btn btn-ghost rounded-xl">Cancel</button>
+          <button @click="saveSettings" class="btn btn-primary rounded-xl">Save</button>
         </div>
       </div>
     </div>
@@ -441,13 +441,13 @@ const closeModal = () => {
       <div class="modal-action flex justify-end">
         <form method="dialog" class="flex gap-4 mt-4">
           <button
-            class="btn btn-primary px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+            class="btn btn-primary px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
             @click="handleSaveTimer"
           >
             Yes
           </button>
           <button
-            class="btn btn-ghost px-6 py-2 rounded-md shadow-md hover:bg-primary-dark transition duration-300"
+            class="btn btn-ghost px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
             @click="closeModal"
           >
             No
