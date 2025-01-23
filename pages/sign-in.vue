@@ -18,7 +18,7 @@ const { signIn } = useAuth();
   <div class="h-screen w-full">
     <div class="card mx-auto w-96 shadow-md flex justify-center flex-col gap-4 mt-16 p-6">
       <div class="flex flex-col gap-8 w-full justify-center items-center">
-        <button @click="signIn('google')" class="btn w-full btn-neutral">
+        <button @click="signIn('google')" class="btn w-full btn-primary">
           <GoogleIcon />
           Sign in with Google
         </button>

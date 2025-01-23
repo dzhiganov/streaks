@@ -2,12 +2,7 @@
 import { ref } from 'vue';
 import ActivityGraph from '~/components/ActivityGraph.vue';
 
-const modes = [
-  { key: 'year', label: 'Year' },
-  { key: 'month', label: 'Month' },
-  { key: 'week', label: 'Week' },
-];
-const currentMode = ref('month');
+
 </script>
 
 <template>

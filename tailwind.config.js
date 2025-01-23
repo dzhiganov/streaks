@@ -5,10 +5,10 @@ export default {
   daisyui: {
     themes: [
       {
-        wireframe: {
-          ...require('daisyui/src/theming/themes')['wireframe'],
+        lofi: {
+          ...require('daisyui/src/theming/themes')['lofi'],
           '.main-card': {
-            'background-color': '#e6e6e6',
+            border: '1px solid #ccc',
           },
         },
       },
@@ -16,7 +16,7 @@ export default {
         business: {
           ...require('daisyui/src/theming/themes')['business'],
           '.main-card': {
-            'background-color': 'rgb(31, 41, 55)',
+            border: '1px solid #2e2e2e',
           },
         },
       },

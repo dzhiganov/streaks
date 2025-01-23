@@ -265,7 +265,7 @@ const closeModal = () => {
 </script>
 
 <template>
-  <div class="max-w-md mx-auto rounded-lg main-card relative">
+  <div class="max-w-md mx-auto rounded-lg relative">
     <div role="tablist" class="tabs tabs-boxed mb-6">
       <button
         role="tab"

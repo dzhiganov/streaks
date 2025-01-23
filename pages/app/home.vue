@@ -2,8 +2,9 @@
 import 'cally';
 import dayjs from 'dayjs';
 import { ref } from 'vue';
-import { CheckIcon, CrossIcon, EditIcon } from '~/assets/icons';
+import { CrossIcon, EditIcon } from '~/assets/icons';
 import IconPicker from '~/components/IconPicker.vue';
+import TimeGoal from '~/components/TimeGoal.vue';
 import {
   useAddActivity,
   useAddActivityType,
@@ -245,8 +246,8 @@ const onClickDeleteButton = (activity) => {
 </script>
 
 <template>
-  <div class="max-w-3xl w-full mt-8 mx-auto">
-    <h1 class="text-4xl font-bold mb-4">Activities</h1>
+  <div class="max-w-3xl w-full ml-12 mt-4">
+    <h1 class="text-4xl font-bold mb-4 font-header">Activities</h1>
     <div class="flex gap-4 items-center bg-base-300 p-4 rounded-lg">
       <div class="text-lg font-bold">This week</div>
       <div v-if="history.length === 0" class="text-gray-500">No activities</div>
@@ -277,7 +278,8 @@ const onClickDeleteButton = (activity) => {
             />
           </div>
 
-          <div class="mt-2">
+          <div class="mt-4">
+            <label for="date" class="block font-medium">Activity</label>
             <select class="select select-bordered w-full" v-model="selectedActivity">
               <option disabled selected>Select Activity</option>
               <option v-for="{ _id, title } in activities" :key="_id" :value="_id">
@@ -286,19 +288,20 @@ const onClickDeleteButton = (activity) => {
             </select>
           </div>
 
-          <div class="mt-2">
+          <div class="mt-4">
+            <label for="date" class="block font-medium">Duration (hours)</label>
             <input
               v-model="duration"
               type="number"
-              placeholder="Duration (hours)"
+              placeholder="0"
               class="input input-bordered w-full"
               :max="60 * 24"
               step="0.5"
             />
           </div>
 
-          <div class="mt-6">
-            <button class="btn btn-primary mt-2 w-full" @click="onLogActivity">Save</button>
+          <div class="mt-4 flex justify-center">
+            <button class="btn btn-primary mt-2 w-full" @click="onLogActivity">Log activity</button>
           </div>
         </div>
       </div>
@@ -326,105 +329,37 @@ const onClickDeleteButton = (activity) => {
                 >
                   {{ getIcon(activity.icon, activity.title) }}
                 </div>
-                <div class="overflow-hidden w-full">
-                  <div class="w-3/5 overflow-hidden text-ellipsis whitespace-nowrap">
-                    <p class="font-medium flex gap-2">
-                      <div v-if="getProgress(activity.week_time_goal_min, activity.week_rest_time_min) >= 100" class="flex items-center gap-2">
-                        <CheckIcon />
-                      </div>
+                <div class="w-full overflow-hidden truncate">
+                  <div>
+                    <p class="w-full font-medium flex gap-2 w-full truncate">
                       {{ activity.title }}
                     </p>
                   </div>
-                  <div v-if="activity.day_time_goal_min" class="text-sm text-gray-500">
-                    <div
-                      v-if="
-                        getProgress(activity.day_time_goal_min, activity.day_rest_time_min) >= 100
-                      "
-                    >
-                      <div class="text-primary"></div>
-                    </div>
-                    <template v-else>
-                      <span>Left this day: </span
-                      ><span v-if="activity.day_rest_time_min > 60" class="font-bold"
-                        >{{ (activity.day_rest_time_min / 60).toFixed(2) * 1 }} hours</span
-                      >
-                      <span v-else class="font-bold">{{ activity.day_rest_time_min }} minutes</span>
-
-                      <progress
-                        v-else
-                        class="progress progress-primary w-44"
-                        :value="getProgress(activity.day_time_goal_min, activity.day_rest_time_min)"
-                        max="100"
-                      ></progress>
-                    </template>
-                  </div>
-                  <div v-else-if="activity.week_time_goal_min" class="text-sm text-gray-500">
-                    <div
-                      v-if="
-                        getProgress(activity.week_time_goal_min, activity.week_rest_time_min) >= 100
-                      "
-                    ></div>
-                    <template v-else>
-                      <span>Left this week: </span
-                      ><span v-if="activity.week_rest_time_min > 60" class="font-bold"
-                        >{{ (activity.week_rest_time_min / 60).toFixed(2) * 1 }} hours</span
-                      >
-                      <span v-else class="font-bold"
-                        >{{ activity.week_rest_time_min }} minutes</span
-                      >
-                      <div
-                        v-if="
-                          getProgress(activity.week_time_goal_min, activity.week_rest_time_min) >=
-                          100
-                        "
-                      ></div>
-                      <progress
-                        v-else
-                        class="progress progress-primary w-44"
-                        :value="
-                          getProgress(activity.week_time_goal_min, activity.week_rest_time_min)
-                        "
-                        max="100"
-                      ></progress>
-                    </template>
-                  </div>
-                  <div v-else-if="activity.month_time_goal_min" class="text-sm text-gray-500">
-                    <div
-                      v-if="
-                        getProgress(activity.week_time_goal_min, activity.week_rest_time_min) >= 100
-                      "
-                    ></div>
-                    <template v-else>
-                      <span>Left this month: </span
-                      ><span v-if="activity.month_rest_time_min > 60" class="font-bold"
-                        >{{ (activity.month_rest_time_min / 60).toFixed(2) * 1 }} hours</span
-                      >
-                      <span v-else class="font-bold"
-                        >{{ activity.month_rest_time_min }} minutes</span
-                      >
-                      <div
-                        v-if="
-                          getProgress(activity.week_time_goal_min, activity.week_rest_time_min) >=
-                          100
-                        "
-                      ></div>
-                      <progress
-                        v-else
-                        class="progress progress-primary w-44"
-                        :value="
-                          getProgress(activity.month_time_goal_min, activity.month_rest_time_min)
-                        "
-                        max="100"
-                      ></progress>
-                    </template>
-                  </div>
-                  <div v-else class="text-sm text-gray-500">
+                  <TimeGoal
+                    v-if="activity.day_time_goal_min"
+                    type="day"
+                    :goalMinutes="activity.day_time_goal_min"
+                    :restMinutes="activity.day_rest_time_min"
+                  />
+                  <TimeGoal
+                    v-else-if="activity.week_time_goal_min"
+                    type="week"
+                    :goalMinutes="activity.week_time_goal_min"
+                    :restMinutes="activity.week_rest_time_min"
+                  />
+                  <TimeGoal
+                    v-else-if="activity.month_time_goal_min"
+                    type="month"
+                    :goalMinutes="activity.month_time_goal_min"
+                    :restMinutes="activity.month_rest_time_min"
+                  />
+                  <div v-else>
                     <span>No goal</span>
                   </div>
                 </div>
               </div>
               <div
-                class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity absolute right-2"
+                class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 bg-base-300 items-center p-2 rounded-lg"
               >
                 <button class="icon-btn" @click="onEditActivity(activity)">
                   <EditIcon />
@@ -440,10 +375,16 @@ const onClickDeleteButton = (activity) => {
 
       <div class="main-card p-4 rounded-lg shadow">
         <h2 class="text-lg font-bold mb-4">Add New</h2>
-        <button class="btn mb-2 w-full" onclick="add_new_activity_modal.showModal();">
+        <button
+          class="btn border-2 border-primary mb-2 w-full"
+          onclick="add_new_activity_modal.showModal();"
+        >
           + Activity
         </button>
-        <button class="btn w-full" onclick="add_new_activity_type_modal.showModal();">
+        <button
+          class="btn border-2 border-primary w-full"
+          onclick="add_new_activity_type_modal.showModal();"
+        >
           + Activity Type
         </button>
       </div>

@@ -14,14 +14,11 @@ import {
 import dayjs from 'dayjs';
 import { computed, ref } from 'vue';
 import { Bar, Pie } from 'vue-chartjs';
+import { ClockIcon, GoalIcon } from '~/assets/icons';
 import { useGetHistoryByRange } from '~/services/activity.service';
 import { getIcon } from '~/utils/getIcon';
 
 const props = defineProps({
-  range: {
-    type: String,
-    default: 'week',
-  },
   showOptions: {
     type: Boolean,
     default: true,
@@ -70,11 +67,18 @@ ChartJS.register(
   ArcElement,
 );
 
+const timelineModes = [
+  { key: 'year', label: 'Year' },
+  { key: 'month', label: 'Month' },
+  { key: 'week', label: 'Week' },
+];
+const currentTimelineMode = ref('month');
+
 const range = computed(() => {
-  if (props.range === 'week') {
+  if (currentTimelineMode === 'week') {
     return getCurrentWeekRange();
   }
-  if (props.range === 'month') {
+  if (currentTimelineMode === 'month') {
     return getCurrentMonthRange();
   }
   return getCurrentYearRange();
@@ -161,16 +165,37 @@ const chartOptions = computed(() => ({
 </script>
 
 <template>
-  <div class="p-6 rounded-md space-y-6 bg-base-200">
-    <div v-if="showOptions" class="flex gap-2 mb-4">
-      <button
-        v-for="mode in modes"
-        :key="mode.key"
-        @click="currentMode = mode.key"
-        :class="['btn', currentMode === mode.key ? 'btn-primary' : 'btn-ghost']"
-      >
-        {{ mode.label }}
-      </button>
+  <div class="p-6 rounded-md space-y-6 bg-base-200 overflow-hidden">
+    <div class="flex gap-4 items-center">
+      <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">View mode</span>
+        </div>
+        <select
+          v-if="showOptions"
+          v-model="currentMode"
+          class="select select-bordered w-full max-w-xs"
+        >
+          <option v-for="mode in modes" :key="mode.key" :value="mode.key">
+            {{ mode.label }}
+          </option>
+        </select>
+      </label>
+
+      <label class="form-control w-full max-w-xs">
+        <div class="label">
+          <span class="label-text">Time range</span>
+        </div>
+        <select
+          v-if="showOptions"
+          v-model="currentTimelineMode"
+          class="select select-bordered w-full max-w-xs"
+        >
+          <option v-for="mode in timelineModes" :key="mode.key" :value="mode.key">
+            {{ mode.label }}
+          </option>
+        </select>
+      </label>
     </div>
 
     <div v-if="currentMode === 'list'" class="space-y-4">
@@ -186,16 +211,22 @@ const chartOptions = computed(() => ({
               class="w-10 h-10 rounded-full flex items-center justify-center"
               :style="{ backgroundColor: activity.color }"
             >
-            {{ getIcon(activity.icon, activity.title) }}
+              {{ getIcon(activity.icon, activity.title) }}
             </div>
             <div>
-              <p class="font-medium">{{ activity.title }}</p>
-              <p class="text-sm text-gray-500">⌛ {{ (activity.sum_min / 60).toFixed(1) }} hours</p>
+              <div class="overflow-hidden truncate w-full">
+                <p class="font-medium">{{ activity.title }}</p>
+              </div>
+
+              <p class="text-sm flex gap-2 items-center">
+                <ClockIcon class="w-4 h-4" /> Complete:
+                {{ (activity.sum_min / 60).toFixed(1) }} hours
+              </p>
               <p
-                v-if="props.range === 'week' && activity.week_time_goal_min"
-                class="text-sm text-gray-500"
+                v-if="currentTimelineMode === 'week' && activity.week_time_goal_min"
+                class="text-sm flex gap-2 items-center mt-1"
               >
-                🎯 Goal: {{ activity.week_time_goal_min / 60 }} hours
+                <GoalIcon class="w-4 h-4" /> Goal: {{ activity.week_time_goal_min / 60 }} hours
               </p>
             </div>
           </li>
