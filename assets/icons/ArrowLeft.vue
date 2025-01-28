@@ -1,5 +1,11 @@
 <template>
-    <svg class="h-4 w-4" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M38 24H10M10 24L24 38M10 24L24 10" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M38 24H10M10 24L24 38M10 24L24 10"
+      stroke="currentColor"
+      stroke-width="4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
 </template>

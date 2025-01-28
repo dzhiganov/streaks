@@ -51,6 +51,34 @@ const useGetHistoryByDate = (date: Ref<string>) =>
     staleTime: 1000 * 60 * 5,
   });
 
+const useGetHistory = ({
+  date,
+  range,
+}: {
+  date: Ref<string>;
+  range: Ref<{ from: string; to: string }>;
+}) => {
+  return useQuery({
+    queryKey: ['history', date, range],
+    queryFn: () => {
+      let query;
+
+      if (range.value) {
+        query = new URLSearchParams({
+          from: range.value.from,
+          to: range.value.to,
+        });
+      } else {
+        query = new URLSearchParams({
+          date: date.value,
+        });
+      }
+
+      return apiFetch(`/api/activity/getHistory?${query.toString()}`);
+    },
+  });
+};
+
 const useLogActivity = (onSuccessFn: () => void) => {
   const queryClient = useQueryClient();
 
@@ -62,6 +90,25 @@ const useLogActivity = (onSuccessFn: () => void) => {
           activity: activity.activity,
           time_min: activity.time_hours * 60,
         }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['history'] });
+
+      if (onSuccessFn) {
+        onSuccessFn();
+      }
+    },
+  });
+};
+
+const useUpdateLogActivity = (onSuccessFn: () => void) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (activity: { activity: string; time_hours: number; date: string; id: string }) =>
+      apiFetch(`/api/activity/updateLog`, {
+        method: 'POST',
+        body: JSON.stringify(activity),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['history'] });
@@ -174,8 +221,10 @@ export {
   useGetActivities,
   useGetActivity,
   useGetActivityTypes,
+  useGetHistory,
   useGetHistoryByDate,
   useGetHistoryByRange,
   useLogActivity,
   useUpdateActivity,
+  useUpdateLogActivity,
 };

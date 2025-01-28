@@ -4,7 +4,7 @@ useHead({
   meta: [{ name: 'description', content: 'App description' }],
   htmlAttrs: {
     lang: 'en',
-    ['data-theme']: 'lofi',
+    ['data-theme']: 'light',
   },
 });
 </script>

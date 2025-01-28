@@ -5,18 +5,24 @@ export default {
   daisyui: {
     themes: [
       {
-        lofi: {
-          ...require('daisyui/src/theming/themes')['lofi'],
+        light: {
+          ...require('daisyui/src/theming/themes')['light'],
           '.main-card': {
             border: '1px solid #ccc',
+          },
+          '.border-neutral-content': {
+            borderColor: '#e4e1e1',
           },
         },
       },
       {
-        business: {
-          ...require('daisyui/src/theming/themes')['business'],
+        dark: {
+          ...require('daisyui/src/theming/themes')['dark'],
           '.main-card': {
             border: '1px solid #2e2e2e',
+          },
+          '.border-neutral-content': {
+            borderColor: '#343434',
           },
         },
       },
@@ -36,8 +42,8 @@ export default {
     fontFamily: {
       body: ['Gabarito', 'sans-serif'],
       header: ['Space Grotesk', 'sans-serif'],
-      sans: ['Inter', 'sans-serif'],
+      sans: ['DM Sans', 'sans-serif'],
     },
   },
-  darkMode: ['class', '[data-theme="business"]'],
+  darkMode: ['class', '[data-theme="dark"]'],
 };

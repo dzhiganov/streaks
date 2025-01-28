@@ -49,10 +49,7 @@ const progress = computed(() => {
     <template v-else>
       <div class="flex items-center gap-2">
         <span>{{ title }}</span>
-        <span v-if="restMinutes >= 60" class="font-bold">{{
-          formatTime({ minutes: restMinutes })
-        }}</span>
-        <span v-else class="font-bold">{{ restMinutes }} minutes</span>
+        <span class="font-bold">{{ formatTime({ minutes: restMinutes }, { short: true }) }}</span>
       </div>
 
       <progress class="progress progress-primary" :value="progress" max="100"></progress>
