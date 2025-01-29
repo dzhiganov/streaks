@@ -10,6 +10,7 @@ export { default as CopyIcon } from './CopyIcon.vue';
 export { default as CrossCircleIcon } from './CrossCircleIcon.vue';
 export { default as CrossIcon } from './CrossIcon.vue';
 export { default as EditIcon } from './EditIcon.vue';
+export { default as EyeIcon } from './EyeIcon.vue';
 export { default as GoalIcon } from './GoalIcon.vue';
 export { default as GoogleIcon } from './GoogleIcon.vue';
 export { default as GraphIcon } from './GraphIcon.vue';

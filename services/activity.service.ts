@@ -40,8 +40,19 @@ const apiFetch = async <T>(url: string, options?: RequestInit): Promise<T> => {
 
 const useGetHistoryByRange = (from: Ref<string>, to: Ref<string>) =>
   useQuery({
-    queryKey: ['history', { from: from.value, to: to.value }],
+    queryKey: computed(() => ['history', from, to]),
     queryFn: () => apiFetch(`/api/activity/getHistoryByRange?from=${from.value}&to=${to.value}`),
+  });
+
+const useGetHistory = (
+  { page = '1', pageSize = '10' }: { page: string; pageSize: string } = {
+    page: '1',
+    pageSize: '10',
+  },
+) =>
+  useQuery({
+    queryKey: ['history', page, pageSize],
+    queryFn: () => apiFetch(`/api/activity/getHistory?page=${page}&pageSize=${pageSize}`),
   });
 
 const useGetHistoryByDate = (date: Ref<string>) =>
@@ -51,7 +62,7 @@ const useGetHistoryByDate = (date: Ref<string>) =>
     staleTime: 1000 * 60 * 5,
   });
 
-const useGetHistory = ({
+const useGetGroupedHistory = ({
   date,
   range,
 }: {
@@ -74,7 +85,7 @@ const useGetHistory = ({
         });
       }
 
-      return apiFetch(`/api/activity/getHistory?${query.toString()}`);
+      return apiFetch(`/api/activity/getGroupedHistory?${query.toString()}`);
     },
   });
 };
@@ -221,6 +232,7 @@ export {
   useGetActivities,
   useGetActivity,
   useGetActivityTypes,
+  useGetGroupedHistory,
   useGetHistory,
   useGetHistoryByDate,
   useGetHistoryByRange,

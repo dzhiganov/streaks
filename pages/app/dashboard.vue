@@ -3,7 +3,8 @@ import 'cally';
 import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { ref } from 'vue';
-import { ArrowLeft, ArrowRight, PlusIcon } from '~/assets/icons';
+import { ArrowLeft, ArrowRight, EyeIcon, PlusIcon } from '~/assets/icons';
+import ActivityGraph from '~/components/ActivityGraph.vue';
 import Goals from '~/components/Goals.vue';
 import Header from '~/components/Header.vue';
 import HistoryTable from '~/components/HistoryTable.vue';
@@ -44,12 +45,11 @@ const onEditLogActivity = (val) => {
   document.getElementById('log_activity_modal').showModal();
 };
 
-const selectedDateProxy = computed({
-  get: () => selectedDate.value,
-  set: (newValue) => {
-    selectedDate.value = newValue;
-  },
-});
+const view = ref('table');
+
+const toggleView = () => {
+  view.value = view.value === 'table' ? 'graph' : 'table';
+};
 </script>
 <template>
   <div class="grid min-h-screen grid-rows-[auto_1fr] grid-cols-[300px_1fr]">
@@ -126,14 +126,20 @@ const selectedDateProxy = computed({
               Today
             </button>
           </div>
+          <button class="btn btn-ghost btn-sm ml-auto" @click="toggleView">
+            <EyeIcon class="w-5 h-5" />
+            <span>Toggle View</span>
+          </button>
         </div>
       </div>
 
       <HistoryTable
+        v-if="view === 'table'"
         :date="selectedDate"
         :range="selectedRange"
         @edit-log-activity="onEditLogActivity"
       />
+      <ActivityGraph v-if="view === 'graph'" :range="selectedRange" />
     </main>
   </div>
   <NewActivityModal />

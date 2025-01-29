@@ -11,49 +11,27 @@ import {
   Title,
   Tooltip,
 } from 'chart.js';
-import dayjs from 'dayjs';
 import { computed, ref } from 'vue';
 import { Bar, Pie } from 'vue-chartjs';
 import { ClockIcon, GoalIcon } from '~/assets/icons';
 import { useGetHistoryByRange } from '~/services/activity.service';
 import { getIcon } from '~/utils/getIcon';
+import {
+  getCurrentDayRange,
+  getCurrentMonthRange,
+  getCurrentWeekRange,
+  getCurrentYearRange,
+} from '~/utils/ranges.js';
 
 const props = defineProps({
   showOptions: {
     type: Boolean,
     default: true,
   },
+  range: {
+    type: String,
+  },
 });
-
-const getCurrentWeekRange = () => {
-  const monday = dayjs().startOf('isoWeek');
-  const sunday = monday.add(6, 'day').endOf('day');
-
-  return {
-    from: monday.format('YYYY-MM-DD'),
-    to: sunday.format('YYYY-MM-DD'),
-  };
-};
-
-const getCurrentMonthRange = () => {
-  const firstDayOfMonth = dayjs().startOf('month');
-  const lastDayOfMonth = dayjs().endOf('month');
-
-  return {
-    from: firstDayOfMonth.format('YYYY-MM-DD'),
-    to: lastDayOfMonth.format('YYYY-MM-DD'),
-  };
-};
-
-const getCurrentYearRange = () => {
-  const firstDayOfYear = dayjs().startOf('year');
-  const lastDayOfYear = dayjs().endOf('year');
-
-  return {
-    from: firstDayOfYear.format('YYYY-MM-DD'),
-    to: lastDayOfYear.format('YYYY-MM-DD'),
-  };
-};
 
 ChartJS.register(
   Title,
@@ -66,25 +44,25 @@ ChartJS.register(
   BarElement,
   ArcElement,
 );
-
-const timelineModes = [
-  { key: 'year', label: 'Year' },
-  { key: 'month', label: 'Month' },
-  { key: 'week', label: 'Week' },
-];
-const currentTimelineMode = ref('month');
+const { range: timeRange } = toRefs(props);
 
 const range = computed(() => {
-  if (currentTimelineMode === 'week') {
+  if (timeRange.value === 'week') {
     return getCurrentWeekRange();
   }
-  if (currentTimelineMode === 'month') {
+  if (timeRange.value === 'month') {
     return getCurrentMonthRange();
   }
-  return getCurrentYearRange();
+  if (timeRange.value === 'year') {
+    return getCurrentYearRange();
+  }
+
+  return getCurrentDayRange();
 });
 
-const from = computed(() => range.value.from);
+const from = computed(() => {
+  return range.value.from;
+});
 const to = computed(() => range.value.to);
 
 const goals = ref({});
@@ -98,11 +76,10 @@ watch([from, to], () => {
 const history = computed(() => data?.value?.history || {});
 
 const modes = [
-  { key: 'list', label: 'List View' },
   { key: 'pie', label: 'Pie Chart' },
   { key: 'bar', label: 'Bar Chart' },
 ];
-const currentMode = ref('list');
+const currentMode = ref('bar');
 
 function sortedActivities(activities) {
   return Object.values(activities).sort((a, b) => b.sum_min - a.sum_min);
@@ -181,21 +158,6 @@ const chartOptions = computed(() => ({
           </option>
         </select>
       </label>
-
-      <label class="form-control w-full max-w-xs">
-        <div class="label">
-          <span class="label-text">Time range</span>
-        </div>
-        <select
-          v-if="showOptions"
-          v-model="currentTimelineMode"
-          class="select select-bordered w-full max-w-xs"
-        >
-          <option v-for="mode in timelineModes" :key="mode.key" :value="mode.key">
-            {{ mode.label }}
-          </option>
-        </select>
-      </label>
     </div>
 
     <div v-if="currentMode === 'list'" class="space-y-4">
@@ -223,7 +185,7 @@ const chartOptions = computed(() => ({
                 {{ (activity.sum_min / 60).toFixed(1) }} hours
               </p>
               <p
-                v-if="currentTimelineMode === 'week' && activity.week_time_goal_min"
+                v-if="range === 'week' && activity.week_time_goal_min"
                 class="text-sm flex gap-2 items-center mt-1"
               >
                 <GoalIcon class="w-4 h-4" /> Goal: {{ activity.week_time_goal_min / 60 }} hours

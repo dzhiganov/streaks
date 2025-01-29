@@ -7,9 +7,7 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const session = await getServerSession(event);
 
-    const { date, from, to, page = '1', pageSize = '10' } = query;
-    const pageNumber = Math.max(1, parseInt(page, 10));
-    const pageSizeNumber = Math.max(1, parseInt(pageSize, 10));
+    const { date, from, to } = query;
 
     if (!date && (!from || !to)) {
       throw new Error('Either "date" or "range" (from and to) must be provided');
@@ -17,6 +15,7 @@ export default defineEventHandler(async (event) => {
 
     let dateFilter = {};
     if (date) {
+      // Filter by a specific date
       const specificDate = new Date(String(date));
       if (isNaN(specificDate.getTime())) {
         throw new Error('Invalid "date" parameter');
@@ -26,6 +25,7 @@ export default defineEventHandler(async (event) => {
       nextDay.setDate(nextDay.getDate() + 1);
       dateFilter = { date: { $gte: specificDate, $lt: nextDay } };
     } else if (from && to) {
+      // Filter by a range of dates
       const fromDate = new Date(String(from));
       const toDate = new Date(String(to));
       if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
@@ -38,13 +38,7 @@ export default defineEventHandler(async (event) => {
       dateFilter = { date: { $gte: fromDate, $lte: toDate } };
     }
 
-    // Count total items (for pagination metadata)
-    const totalItems = await Models.Log.countDocuments({
-      created_by: session.user.userId,
-      ...dateFilter,
-    });
-
-    // Fetch logs with pagination
+    // Fetch logs based on the calculated date filter
     const logs = await Models.Log.find({
       created_by: session.user.userId,
       ...dateFilter,
@@ -60,18 +54,33 @@ export default defineEventHandler(async (event) => {
           model: Models.ActivityType,
           select: 'title',
         },
-      })
-      .skip((pageNumber - 1) * pageSizeNumber)
-      .limit(pageSizeNumber);
+      });
+
+    // Group logs by Activity Type and then by Activity
+    const groupedHistory = logs.reduce((acc, log) => {
+      const activityType = log.activity.type.title;
+      const activityTitle = log.activity.title;
+
+      if (!acc[activityType]) {
+        acc[activityType] = {};
+      }
+
+      if (!acc[activityType][activityTitle]) {
+        acc[activityType][activityTitle] = {
+          sum: 0,
+          rows: [],
+        };
+      }
+
+      // Add log details to rows and update the sum
+      acc[activityType][activityTitle].rows.push(log);
+      acc[activityType][activityTitle].sum += log.time_min;
+
+      return acc;
+    }, {});
 
     return {
-      history: logs,
-      pagination: {
-        page: pageNumber,
-        pageSize: pageSizeNumber,
-        totalPages: Math.ceil(totalItems / pageSizeNumber),
-        totalItems,
-      },
+      history: groupedHistory,
     };
   } catch (error) {
     console.error('Error fetching history:', error.message);

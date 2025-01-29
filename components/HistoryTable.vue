@@ -1,7 +1,7 @@
 <script setup>
 import dayjs from 'dayjs';
 import { EditIcon, RepeatIcon } from '~/assets/icons';
-import { useGetHistory } from '~/services/activity.service';
+import { useGetGroupedHistory } from '~/services/activity.service';
 import {
   getCurrentDayRange,
   getCurrentMonthRange,
@@ -45,7 +45,7 @@ watch(
   { immediate: true },
 );
 
-const { data } = useGetHistory({ date, range: computedRange });
+const { data } = useGetGroupedHistory({ date, range: computedRange });
 
 const groupedActivities = computed(() => data.value?.history ?? {});
 
@@ -71,6 +71,7 @@ const getTimeColor = (time) => {
           <th>Duration (Total)</th>
           <th>Duration</th>
           <th>Logged At</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
