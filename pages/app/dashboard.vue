@@ -43,6 +43,13 @@ const onEditLogActivity = (val) => {
   editedActivityId.value = val;
   document.getElementById('log_activity_modal').showModal();
 };
+
+const selectedDateProxy = computed({
+  get: () => selectedDate.value,
+  set: (newValue) => {
+    selectedDate.value = newValue;
+  },
+});
 </script>
 <template>
   <div class="grid min-h-screen grid-rows-[auto_1fr] grid-cols-[300px_1fr]">
@@ -90,7 +97,14 @@ const onEditLogActivity = (val) => {
           </ul>
         </div>
         <div>
-          <calendar-date v-model.lazy="selectedDate">
+          <calendar-date
+            :value="selectedDate"
+            @change="
+              (event) => {
+                selectedDate = event.target.value;
+              }
+            "
+          >
             <ArrowLeft slot="previous" class="w-5 h-5 text-gray-500" />
             <ArrowRight slot="next" class="w-5 h-5 text-gray-500" />
             <calendar-month />
