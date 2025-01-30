@@ -3,6 +3,7 @@ export { default as ArrowLeft } from './ArrowLeft.vue';
 export { default as ArrowRight } from './ArrowRight.vue';
 export { default as ArrowRightCircle } from './ArrowRightCircle.vue';
 export { default as ArrowRightUpIcon } from './ArrowRightUpIcon.vue';
+export { default as AwardIcon } from './AwardIcon.vue';
 export { default as CheckCircleIcon } from './CheckCircleIcon.vue';
 export { default as CheckIcon } from './CheckIcon.vue';
 export { default as ClockIcon } from './ClockIcon.vue';

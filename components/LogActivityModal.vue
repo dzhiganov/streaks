@@ -1,6 +1,7 @@
 <script setup>
 import dayjs from 'dayjs';
 import {
+  useDeleteLogActivity,
   useGetActivities,
   useLogActivity,
   useUpdateLogActivity,
@@ -11,29 +12,49 @@ const props = defineProps({
     type: Date,
     default: new Date(),
   },
-  editedActivity: {
+  predefinedActivity: {
     type: Object,
     default: null,
   },
 });
 
-const { editedActivity } = toRefs(props);
+const editedActivity = defineModel('editedActivity', {
+  type: Object,
+  default: null,
+});
+
+const predefinedActivity = defineModel('predefinedActivity', {
+  type: Object,
+  default: null,
+});
 
 const selectedDate = ref(dayjs(props.date).format('YYYY-MM-DD'));
-const selectedActivity = ref(1);
+const selectedActivity = ref(null);
 const duration = ref(0);
 const { data: activitiesData, refetch } = useGetActivities({ onlyActive: true });
 const activities = computed(() => activitiesData?.value?.activities || []);
 
+watch(
+  predefinedActivity,
+  (newVal) => {
+    if (newVal) {
+      selectedActivity.value = newVal.activityId;
+      duration.value = newVal.time_min / 60;
+    }
+  },
+  { immediate: true },
+);
+
 const { mutate: logActivity } = useLogActivity();
 const { mutate: updateLogActivity } = useUpdateLogActivity();
+const { mutate: deleteLogActivity } = useDeleteLogActivity();
 
 const onLogActivity = async () => {
   if (editedActivity.value) {
     updateLogActivity({
       activity: selectedActivity.value,
       time_hours: duration.value,
-      id: props.activityId,
+      id: editedActivity.value._id,
     });
   } else {
     logActivity({
@@ -42,9 +63,15 @@ const onLogActivity = async () => {
       date: selectedDate.value,
     });
 
-    showNotification.value = 'Activity logged';
+    // showNotification.value = 'Activity logged';
     duration.value = '';
   }
+  document.getElementById('log_activity_modal').close();
+};
+
+const onDeleteLogActivity = () => {
+  deleteLogActivity(editedActivity.value._id);
+  document.getElementById('log_activity_modal').close();
 };
 
 const setTodayDate = () => {
@@ -62,13 +89,18 @@ watch(
   },
   { immediate: true },
 );
+
+const onClose = () => {
+  editedActivity.value = null;
+  predefinedActivity.value = null;
+};
 </script>
 
 <template>
-  <dialog id="log_activity_modal" class="modal">
+  <dialog id="log_activity_modal" class="modal" @close="onClose">
     <div class="modal-box p-0">
       <header class="w-full px-8 py-4 flex justify-between items-center">
-        <h3 class="text-lg font-bold">Add activity</h3>
+        <h3 class="text-lg font-bold">{{ editedActivity ? 'Update activity' : 'Log activity' }}</h3>
         <form method="dialog">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
         </form>
@@ -116,7 +148,14 @@ watch(
           />
         </div>
 
-        <div class="mt-8 flex justify-center">
+        <div v-if="editedActivity" class="mt-8 flex justify-end gap-4">
+          <button class="btn btn-primary mt-2 rounded-xl w-24" @click="onLogActivity">Save</button>
+          <button class="btn btn-primary mt-2 rounded-xl btn-neutral" @click="onDeleteLogActivity">
+            Delete
+          </button>
+        </div>
+
+        <div v-else class="mt-8 flex justify-center">
           <button class="btn btn-primary mt-2 w-full rounded-xl" @click="onLogActivity">
             Log activity
           </button>

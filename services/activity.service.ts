@@ -65,9 +65,11 @@ const useGetHistoryByDate = (date: Ref<string>) =>
 const useGetGroupedHistory = ({
   date,
   range,
+  limit,
 }: {
   date: Ref<string>;
   range: Ref<{ from: string; to: string }>;
+  limit?: Ref<number>;
 }) => {
   return useQuery({
     queryKey: ['history', date, range],
@@ -84,6 +86,9 @@ const useGetGroupedHistory = ({
           date: date.value,
         });
       }
+      if (limit?.value) {
+        query.set('limit', limit.value.toString());
+      }
 
       return apiFetch(`/api/activity/getGroupedHistory?${query.toString()}`);
     },
@@ -98,6 +103,7 @@ const useLogActivity = (onSuccessFn: () => void) => {
       apiFetch('/api/activity/log', {
         method: 'POST',
         body: JSON.stringify({
+          date: activity.date,
           activity: activity.activity,
           time_min: activity.time_hours * 60,
         }),
@@ -119,7 +125,10 @@ const useUpdateLogActivity = (onSuccessFn: () => void) => {
     mutationFn: (activity: { activity: string; time_hours: number; date: string; id: string }) =>
       apiFetch(`/api/activity/updateLog`, {
         method: 'POST',
-        body: JSON.stringify(activity),
+        body: JSON.stringify({
+          ...activity,
+          time_min: activity.time_hours * 60,
+        }),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['history'] });
@@ -209,8 +218,6 @@ const useUpdateActivity = (onSuccessFn: () => void) => {
         updatedObject.month_time_goal_min = convertToMinutes(activity.month_time_goal_hours);
       }
 
-      console.log(updatedObject);
-
       return apiFetch(`/api/activity/updateActivity`, {
         method: 'POST',
         body: JSON.stringify(updatedObject),
@@ -226,9 +233,24 @@ const useUpdateActivity = (onSuccessFn: () => void) => {
   });
 };
 
+const useDeleteLogActivity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (activityId: string) =>
+      apiFetch(`/api/activity/deleteLog?activityId=${activityId}`, {
+        method: 'PATCH',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['history'] });
+    },
+  });
+};
+
 export {
   useAddActivity,
   useAddActivityType,
+  useDeleteLogActivity,
   useGetActivities,
   useGetActivity,
   useGetActivityTypes,

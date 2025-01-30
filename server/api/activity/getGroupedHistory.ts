@@ -7,7 +7,8 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const session = await getServerSession(event);
 
-    const { date, from, to } = query;
+    const { date, from, to, limit = '5' } = query; // Default: 5 rows per category
+    const limitNumber = Math.max(1, parseInt(limit, 10));
 
     if (!date && (!from || !to)) {
       throw new Error('Either "date" or "range" (from and to) must be provided');
@@ -15,7 +16,6 @@ export default defineEventHandler(async (event) => {
 
     let dateFilter = {};
     if (date) {
-      // Filter by a specific date
       const specificDate = new Date(String(date));
       if (isNaN(specificDate.getTime())) {
         throw new Error('Invalid "date" parameter');
@@ -25,7 +25,6 @@ export default defineEventHandler(async (event) => {
       nextDay.setDate(nextDay.getDate() + 1);
       dateFilter = { date: { $gte: specificDate, $lt: nextDay } };
     } else if (from && to) {
-      // Filter by a range of dates
       const fromDate = new Date(String(from));
       const toDate = new Date(String(to));
       if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
@@ -38,7 +37,7 @@ export default defineEventHandler(async (event) => {
       dateFilter = { date: { $gte: fromDate, $lte: toDate } };
     }
 
-    // Fetch logs based on the calculated date filter
+    // Fetch all logs for grouping
     const logs = await Models.Log.find({
       created_by: session.user.userId,
       ...dateFilter,
@@ -56,10 +55,15 @@ export default defineEventHandler(async (event) => {
         },
       });
 
-    // Group logs by Activity Type and then by Activity
+    let topActivity = null;
+    let maxDuration = 0;
+
+    // Group logs by Activity Type → Activity
     const groupedHistory = logs.reduce((acc, log) => {
       const activityType = log.activity.type.title;
       const activityTitle = log.activity.title;
+      const activityId = log.activity._id.toString();
+      const activityTypeId = log.activity.type._id.toString();
 
       if (!acc[activityType]) {
         acc[activityType] = {};
@@ -67,20 +71,49 @@ export default defineEventHandler(async (event) => {
 
       if (!acc[activityType][activityTitle]) {
         acc[activityType][activityTitle] = {
+          activityId,
+          typeId: activityTypeId,
+          type: activityType,
           sum: 0,
           rows: [],
         };
       }
 
-      // Add log details to rows and update the sum
-      acc[activityType][activityTitle].rows.push(log);
+      // Add all logs to calculate the total sum
       acc[activityType][activityTitle].sum += log.time_min;
+      acc[activityType][activityTitle].rows.push(log);
+
+      // Update top activity
+      if (acc[activityType][activityTitle].sum > maxDuration) {
+        maxDuration = acc[activityType][activityTitle].sum;
+        topActivity = {
+          activityId,
+          typeId: activityTypeId,
+          type: activityType,
+          sum: maxDuration,
+          name: activityTitle,
+        };
+      }
 
       return acc;
     }, {});
 
+    // Apply limit per category
+    const limitedHistory = Object.entries(groupedHistory).reduce((acc, [type, activities]) => {
+      acc[type] = Object.entries(activities).reduce((activityAcc, [title, data]) => {
+        activityAcc[title] = {
+          sum: data.sum, // Keep total sum
+          rows: data.rows.slice(0, limitNumber), // Limit number of rows
+        };
+        return activityAcc;
+      }, {});
+      return acc;
+    }, {});
+
     return {
-      history: groupedHistory,
+      history: limitedHistory,
+      top: topActivity,
+      limit: limitNumber,
     };
   } catch (error) {
     console.error('Error fetching history:', error.message);

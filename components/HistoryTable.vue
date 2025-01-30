@@ -8,6 +8,7 @@ import {
   getCurrentWeekRange,
   getCurrentYearRange,
 } from '~/utils/ranges';
+import { formatTime } from '~/utils/time/formatTime';
 
 const props = defineProps({
   date: {
@@ -20,7 +21,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(['edit-log-activity']);
+const emits = defineEmits(['edit-log-activity', 'repeat-log-activity']);
 
 const computedRange = ref([]);
 
@@ -45,7 +46,13 @@ watch(
   { immediate: true },
 );
 
-const { data } = useGetGroupedHistory({ date, range: computedRange });
+const limit = computed(() => (range.value === 'year' ? 100 : 10000));
+
+const { data } = useGetGroupedHistory({
+  date,
+  range: computedRange,
+  limit,
+});
 
 const groupedActivities = computed(() => data.value?.history ?? {});
 
@@ -92,11 +99,13 @@ const getTimeColor = (time) => {
             <tr class="bg-base-200">
               <td>{{ typeIndex + 1 }}.{{ activityIndex + 1 }}</td>
               <td>{{ activityType }}</td>
-              <td class="font-semibold">{{ activityName }}</td>
-              <td class="font-semibold">{{ activity.sum }} min</td>
+              <td class="font-semibold">
+                {{ activityName }}
+              </td>
+              <td class="font-semibold">{{ formatTime({ minutes: activity.sum }) }}</td>
               <td colspan="4"></td>
             </tr>
-            <tr v-for="(row, rowIndex) in activity.rows" :key="row._id" class="">
+            <tr v-for="row in activity.rows" :key="row._id" class="">
               <td></td>
               <td></td>
               <td></td>
@@ -104,10 +113,10 @@ const getTimeColor = (time) => {
               <td class="font-semibold" :class="{ [getTimeColor(row.time_min)]: true }">
                 {{ row.time_min }} min
               </td>
-              <td>{{ dayjs(row.created_at).format('D MMM YYYY HH:mm') }}</td>
+              <td>{{ dayjs(row.date).format('D MMM YYYY') }}</td>
               <td>
                 <div class="flex items-center gap-4">
-                  <button class="icon-btn">
+                  <button class="icon-btn" @click="emits('repeat-log-activity', row)">
                     <RepeatIcon class="w-4 h-4" />
                   </button>
                   <button class="icon-btn" @click="emits('edit-log-activity', row)">

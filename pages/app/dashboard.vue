@@ -10,12 +10,13 @@ import Header from '~/components/Header.vue';
 import HistoryTable from '~/components/HistoryTable.vue';
 import NewActivityModal from '~/components/NewActivityModal.vue';
 import NewActivityTypeModal from '~/components/NewActivityTypeModal.vue';
-
+import YearViewWarning from '~/components/YearViewWarning.vue';
 dayjs.extend(isToday);
 
 const selectedRange = ref('day');
 const selectedDate = ref(dayjs().format('YYYY-MM-DD'));
 const editedActivityId = ref(null);
+const predefinedActivity = ref(null);
 
 const rangeTitle = computed(() => {
   if (selectedRange.value === 'day') {
@@ -49,6 +50,14 @@ const view = ref('table');
 
 const toggleView = () => {
   view.value = view.value === 'table' ? 'graph' : 'table';
+};
+
+const onRepeatLogActivity = (row) => {
+  predefinedActivity.value = {
+    activityId: row.activity._id,
+    time_min: row.time_min,
+  };
+  document.getElementById('log_activity_modal').showModal();
 };
 </script>
 <template>
@@ -138,13 +147,19 @@ const toggleView = () => {
         :date="selectedDate"
         :range="selectedRange"
         @edit-log-activity="onEditLogActivity"
+        @repeat-log-activity="onRepeatLogActivity"
       />
       <ActivityGraph v-if="view === 'graph'" :range="selectedRange" />
     </main>
   </div>
   <NewActivityModal />
   <NewActivityTypeModal />
-  <LogActivityModal :date="selectedDate" :edited-activity="editedActivityId" />
+  <LogActivityModal
+    :date="selectedDate"
+    v-model:edited-activity="editedActivityId"
+    v-model:predefined-activity="predefinedActivity"
+  />
+  <YearViewWarning v-if="selectedRange === 'year'" />
 </template>
 
 <style>
