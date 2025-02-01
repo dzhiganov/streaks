@@ -149,7 +149,7 @@ const onRepeatLogActivity = (row) => {
         @edit-log-activity="onEditLogActivity"
         @repeat-log-activity="onRepeatLogActivity"
       />
-      <ActivityGraph v-if="view === 'graph'" :range="selectedRange" />
+      <ActivityGraph v-if="view === 'graph'" :date="selectedDate" :range="selectedRange" />
     </main>
   </div>
   <NewActivityModal />
@@ -159,7 +159,7 @@ const onRepeatLogActivity = (row) => {
     v-model:edited-activity="editedActivityId"
     v-model:predefined-activity="predefinedActivity"
   />
-  <YearViewWarning v-if="selectedRange === 'year'" />
+  <YearViewWarning v-if="selectedRange === 'year' && view === 'table'" />
 </template>
 
 <style>

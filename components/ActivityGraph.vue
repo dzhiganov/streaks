@@ -31,6 +31,9 @@ const props = defineProps({
   range: {
     type: String,
   },
+  date: {
+    type: String,
+  },
 });
 
 ChartJS.register(
@@ -44,20 +47,21 @@ ChartJS.register(
   BarElement,
   ArcElement,
 );
-const { range: timeRange } = toRefs(props);
+
+const { range: timeRange, date } = toRefs(props);
 
 const range = computed(() => {
   if (timeRange.value === 'week') {
-    return getCurrentWeekRange();
+    return getCurrentWeekRange(date.value);
   }
   if (timeRange.value === 'month') {
-    return getCurrentMonthRange();
+    return getCurrentMonthRange(date.value);
   }
   if (timeRange.value === 'year') {
-    return getCurrentYearRange();
+    return getCurrentYearRange(date.value);
   }
 
-  return getCurrentDayRange();
+  return getCurrentDayRange(date.value);
 });
 
 const from = computed(() => {
@@ -79,6 +83,7 @@ const modes = [
   { key: 'pie', label: 'Pie Chart' },
   { key: 'bar', label: 'Bar Chart' },
 ];
+
 const currentMode = ref('bar');
 
 function sortedActivities(activities) {
@@ -118,7 +123,7 @@ const chartData = computed(() => {
 
 const chartOptions = computed(() => ({
   responsive: true,
-  maintainAspectRatio: false, // Allows the chart to fill the container's height
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       position: 'top',
