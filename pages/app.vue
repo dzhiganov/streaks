@@ -1,5 +1,4 @@
 <script setup>
-import { ActivityIcon, GraphIcon } from '@/assets/icons';
 import { useRouter } from 'vue-router';
 
 const { signOut, data, getSession } = useAuth();
@@ -21,25 +20,11 @@ onMounted(async () => {
   userSession.value = session?.user ?? {};
 });
 
-const isActive = (path) => route.path === path;
-
-const navLinks = [
-  { title: 'Activities', path: '/app/home', icon: ActivityIcon },
-  { title: 'Statistics', path: '/app/stats', icon: GraphIcon },
-  // { title: 'Settings', path: '/app/settings', icon: SettingsIcon, disabled: true },
-];
-
 onMounted(() => {
   if (route.path === '/app') {
-    router.push('/app/home');
+    router.push('/app/dashboard');
   }
 });
-
-const isDrawerOpen = ref(false);
-
-const toggleDrawer = () => {
-  isDrawerOpen.value = !isDrawerOpen.value;
-};
 </script>
 
 <template>
