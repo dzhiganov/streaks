@@ -30,9 +30,11 @@ const props = defineProps({
   },
   range: {
     type: String,
+    default: 'day',
   },
   date: {
     type: String,
+    default: '',
   },
 });
 
@@ -73,9 +75,7 @@ const goals = ref({});
 
 const { data, refetch } = useGetHistoryByRange(from, to);
 
-watch([from, to], () => {
-  refetch();
-});
+watch([from, to], () => refetch());
 
 const history = computed(() => data?.value?.history || {});
 
