@@ -1,7 +1,7 @@
 import { getServerSession } from '#auth';
 import dayjs from 'dayjs';
-import isBetween from 'dayjs/plugin/isBetween';
-import isoWeek from 'dayjs/plugin/isoWeek';
+import isBetween from 'dayjs/plugin/isBetween.js';
+import isoWeek from 'dayjs/plugin/isoWeek.js';
 import { defineEventHandler } from 'h3';
 import { Activity, Log } from '~~/server/models/user.model';
 
