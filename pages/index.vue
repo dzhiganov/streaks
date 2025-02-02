@@ -1,5 +1,5 @@
 <script setup>
-import { ArrowRightCircle } from '../assets/icons';
+import { ArrowRightCircle, CrossIcon } from '../assets/icons';
 
 definePageMeta({
   middleware: ['auth'],
@@ -39,7 +39,7 @@ definePageMeta({
               <h1 class="text-6xl font-semibold text-center">
                 Record your work, analyze your progress
               </h1>
-              <p class="text-xl text-center">Easy to use, powerfully effective.</p>
+              <p class="text-xl text-center">Simple and super powerful</p>
               <button class="btn btn-primary w-48 flex items-center gap-2">
                 <span>Start for free</span>
                 <ArrowRightCircle />
@@ -62,7 +62,7 @@ definePageMeta({
         <div
           class="rounded-3xl p-8 ring-1 ring-gray-900/10 sm:p-10 relative bg-gray-900 shadow-2xl"
         >
-          <h3 id="tier-enterprise" class="text-base/7 font-semibold text-indigo-400">Lifetime</h3>
+          <h3 id="tier-enterprise" class="text-base/7 font-semibold text-indigo-400">Pro Plan</h3>
           <p class="mt-4 flex items-baseline gap-x-2">
             <span class="text-5xl font-semibold tracking-tight text-white">€ 19</span>
             <span class="text-xl text-gray-400">.99</span>
@@ -174,12 +174,11 @@ definePageMeta({
           >
         </div>
 
-        <!-- Secondary card -->
         <div class="rounded-3xl p-8 ring-1 ring-gray-300 sm:p-10 relative bg-white shadow-2xl">
-          <h3 id="tier-enterprise" class="text-base font-semibold text-indigo-500">Lifetime</h3>
+          <h3 id="tier-enterprise" class="text-base font-semibold text-indigo-500">Free Plan</h3>
           <p class="mt-4 flex items-baseline gap-x-2">
-            <span class="text-5xl font-semibold tracking-tight text-gray-900">€ 19</span>
-            <span class="text-xl text-gray-600">.99</span>
+            <span class="text-5xl font-semibold tracking-tight text-gray-900">€ 0</span>
+            <span class="text-xl text-gray-600">.00</span>
           </p>
           <p class="mt-6 text-base text-gray-700">Lifetime access to the app*</p>
           <ul role="list" class="mt-8 space-y-3 text-sm text-gray-700 sm:mt-10">
@@ -197,7 +196,7 @@ definePageMeta({
                   clip-rule="evenodd"
                 ></path>
               </svg>
-              Unlimited activities history
+              Up to 10 activity logs every day
             </li>
             <li class="flex gap-x-3">
               <svg
@@ -213,22 +212,10 @@ definePageMeta({
                   clip-rule="evenodd"
                 ></path>
               </svg>
-              Unlimited activity types and categories
+              Up to3 activity types and categories
             </li>
             <li class="flex gap-x-3">
-              <svg
-                class="h-6 w-5 flex-none text-indigo-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-                data-slot="icon"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
+              <CrossIcon class="w-5 h-5" />
               Customization
             </li>
             <li class="flex gap-x-3">
@@ -245,7 +232,7 @@ definePageMeta({
                   clip-rule="evenodd"
                 ></path>
               </svg>
-              Multiple visual data representations
+              One Visual data representations
             </li>
             <li class="flex gap-x-3">
               <svg
@@ -264,19 +251,7 @@ definePageMeta({
               Customer support
             </li>
             <li class="flex gap-x-3">
-              <svg
-                class="h-6 w-5 flex-none text-indigo-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-                data-slot="icon"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
+              <CrossIcon class="w-5 h-5" />
               Export data to CSV
             </li>
           </ul>
@@ -293,37 +268,45 @@ definePageMeta({
   </div>
 
   <footer
-    class="mt-20 p-10 text-base-content flex flex-col justify-center items-center gap-8 w-full"
+    class="mt-20 p-10 text-base-content flex flex-col justify-center items-center gap-8 w-full border-t border-gray-300"
   >
     <div>
       <p>Copyright © {{ new Date().getFullYear() }} - All rights reserved</p>
     </div>
-    <div class="flex justify-center w-full gap-12">
+    <div class="flex justify-between w-full gap-12">
       <div>
-        <div class="font-semibold text-lg mb-2">Links</div>
-        <ul class="list">
-          <li>
-            <NuxtLink to="/sign-in">Login</NuxtLink>
-          </li>
-          <li>
-            <a href="#faq">FAQ</a>
-          </li>
-          <li>
-            <NuxtLink to="/support">Support</NuxtLink>
-          </li>
-          <li>
-            <a href="#pricing">Pricing</a>
-          </li>
-        </ul>
+        <div class="flex items-center gap-2">
+          <NuxtImg src="/favicon.svg" alt="Habits" class="w-8 h-8" />
+          <h1 class="text-2xl font-bold font-header">Habits</h1>
+        </div>
+      </div>
+      <div class="flex justify-end w-full gap-16">
+        <div>
+          <div class="font-semibold text-lg mb-2">Links</div>
+          <ul class="list flex flex-col gap-2">
+            <li>
+              <NuxtLink to="/sign-in">Login</NuxtLink>
+            </li>
+            <li>
+              <a href="#faq">FAQ</a>
+            </li>
+            <li>
+              <NuxtLink to="/support">Support</NuxtLink>
+            </li>
+            <li>
+              <a href="#pricing">Pricing</a>
+            </li>
+          </ul>
+        </div>
       </div>
       <div>
         <div class="font-semibold text-lg mb-2">Legal</div>
-        <ul class="list">
+        <ul class="list flex flex-col gap-2">
           <li>
-            <NuxtLink to="/tos"> Terms and Conditions </NuxtLink>
+            <NuxtLink to="/tos">Terms</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/privacy-policy"> Privacy policy </NuxtLink>
+            <NuxtLink to="/privacy-policy">Privacy</NuxtLink>
           </li>
         </ul>
       </div>

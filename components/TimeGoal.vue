@@ -15,6 +15,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  activityTitle: {
+    type: String,
+    default: '',
+  },
 });
 
 const getProgress = (timeGoal, timeRest) => {
@@ -31,28 +35,52 @@ const title = computed(() => {
 const progress = computed(() => {
   return getProgress(props.goalMinutes, props.restMinutes);
 });
+
+const progressColor = computed(() => {
+  if (progress.value >= 100) {
+    return 'text-orange-400';
+  } else if (progress.value >= 80) {
+    return 'text-green-700';
+  } else if (progress.value >= 50) {
+    return 'text-green-500';
+  } else {
+    return 'text-neutral';
+  }
+});
 </script>
 
 <template>
-  <div class="text-sm text-gray-500">
-    <div v-if="progress >= 100">
-      <div class="text-primary">
-        <span
-          v-if="getProgress(goalMinutes, restMinutes) >= 100"
-          class="flex items-center gap-1 text-success"
-        >
-          <CheckIcon />
-          <span>Done</span>
-        </span>
-      </div>
+  <div class="flex items-center gap-3">
+    <div
+      class="radial-progress font-semibold"
+      :class="progressColor"
+      :style="'--value:' + progress + ';--size:3rem; font-size: 0.8rem;'"
+      role="progressbar"
+    >
+      {{ `${progress} %` }}
     </div>
-    <template v-else>
-      <div class="flex items-center gap-2">
-        <span>{{ title }}</span>
-        <span class="font-bold">{{ formatTime({ minutes: restMinutes }, { short: true }) }}</span>
+    <div>
+      <p class="w-full font-medium flex gap-2 w-full truncate font-semibold">
+        {{ activityTitle }}
+      </p>
+      <div>
+        <div class="text-primary">
+          <span
+            v-if="getProgress(goalMinutes, restMinutes) >= 100"
+            class="flex items-center gap-1 text-success"
+          >
+            <CheckIcon />
+            <span>Done</span>
+          </span>
+        </div>
       </div>
 
-      <progress class="progress progress-primary" :value="progress" max="100"></progress>
-    </template>
+      <div class="flex items-center gap-2 text-sm text-gray-500">
+        <span>{{ title }}</span>
+        <span class="font-bold text-neutral">{{
+          formatTime({ minutes: restMinutes }, { short: true })
+        }}</span>
+      </div>
+    </div>
   </div>
 </template>

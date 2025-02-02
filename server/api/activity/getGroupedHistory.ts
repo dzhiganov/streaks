@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const session = await getServerSession(event);
 
-    const { date, from, to, limit = '5' } = query; // Default: 5 rows per category
+    const { date, from, to, limit = '5' } = query;
     const limitNumber = Math.max(1, parseInt(limit, 10));
 
     if (!date && (!from || !to)) {
@@ -37,7 +37,6 @@ export default defineEventHandler(async (event) => {
       dateFilter = { date: { $gte: fromDate, $lte: toDate } };
     }
 
-    // Fetch all logs for grouping
     const logs = await Models.Log.find({
       created_by: session.user.userId,
       ...dateFilter,
@@ -55,10 +54,6 @@ export default defineEventHandler(async (event) => {
         },
       });
 
-    let topActivity = null;
-    let maxDuration = 0;
-
-    // Group logs by Activity Type → Activity
     const groupedHistory = logs.reduce((acc, log) => {
       const activityType = log.activity.type.title;
       const activityTitle = log.activity.title;
@@ -76,34 +71,22 @@ export default defineEventHandler(async (event) => {
           type: activityType,
           sum: 0,
           rows: [],
+          color: log.activity.color,
         };
       }
 
-      // Add all logs to calculate the total sum
       acc[activityType][activityTitle].sum += log.time_min;
       acc[activityType][activityTitle].rows.push(log);
-
-      // Update top activity
-      if (acc[activityType][activityTitle].sum > maxDuration) {
-        maxDuration = acc[activityType][activityTitle].sum;
-        topActivity = {
-          activityId,
-          typeId: activityTypeId,
-          type: activityType,
-          sum: maxDuration,
-          name: activityTitle,
-        };
-      }
 
       return acc;
     }, {});
 
-    // Apply limit per category
     const limitedHistory = Object.entries(groupedHistory).reduce((acc, [type, activities]) => {
       acc[type] = Object.entries(activities).reduce((activityAcc, [title, data]) => {
         activityAcc[title] = {
-          sum: data.sum, // Keep total sum
-          rows: data.rows.slice(0, limitNumber), // Limit number of rows
+          sum: data.sum,
+          rows: data.rows.slice(0, limitNumber),
+          color: data.color,
         };
         return activityAcc;
       }, {});
@@ -112,7 +95,6 @@ export default defineEventHandler(async (event) => {
 
     return {
       history: limitedHistory,
-      top: topActivity,
       limit: limitNumber,
     };
   } catch (error) {

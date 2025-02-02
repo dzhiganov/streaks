@@ -69,33 +69,25 @@ const onDeleteActivity = () => {
           class="group flex items-center p-2 rounded-lg hover:bg-base-200 dark:hover:bg-base-100 relative"
         >
           <div class="flex gap-4 items-center w-full">
-            <div
-              class="w-10 h-10 flex items-center justify-center rounded-full shadow-lg shrink-0 text-white"
-              :style="{ backgroundColor: activity.color }"
-            >
-              {{ getIcon(activity.icon, activity.title) }}
-            </div>
             <div class="w-full overflow-hidden truncate">
-              <div>
-                <p class="w-full font-medium flex gap-2 w-full truncate">
-                  {{ activity.title }}
-                </p>
-              </div>
               <TimeGoal
                 v-if="activity.day_time_goal_min"
                 type="day"
+                :activityTitle="activity.title"
                 :goalMinutes="activity.day_time_goal_min"
                 :restMinutes="activity.day_rest_time_min"
               />
               <TimeGoal
                 v-else-if="activity.week_time_goal_min"
                 type="week"
+                :activityTitle="activity.title"
                 :goalMinutes="activity.week_time_goal_min"
                 :restMinutes="activity.week_rest_time_min"
               />
               <TimeGoal
                 v-else-if="activity.month_time_goal_min"
                 type="month"
+                :activityTitle="activity.title"
                 :goalMinutes="activity.month_time_goal_min"
                 :restMinutes="activity.month_rest_time_min"
               />

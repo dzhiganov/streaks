@@ -86,7 +86,7 @@ const getTimeColor = (time) => {
           v-for="(activities, activityType, typeIndex) in groupedActivities"
           :key="activityType"
         >
-          <tr class="bg-base-300">
+          <tr class="bg-base-400">
             <td colspan="8" class="font-bold text-lg">
               {{ activityType }}
             </td>
@@ -96,11 +96,16 @@ const getTimeColor = (time) => {
             v-for="(activity, activityName, activityIndex) in activities"
             :key="activityName"
           >
-            <tr class="bg-base-200">
+            <tr class="bg-base-300">
               <td>{{ typeIndex + 1 }}.{{ activityIndex + 1 }}</td>
               <td>{{ activityType }}</td>
               <td class="font-semibold">
-                {{ activityName }}
+                <div
+                  :style="{ backgroundColor: activity.color }"
+                  class="rounded-xl px-2 py-0.5 text-sm text-center w-fit"
+                >
+                  {{ activityName }}
+                </div>
               </td>
               <td class="font-semibold">{{ formatTime({ minutes: activity.sum }) }}</td>
               <td colspan="4"></td>
@@ -110,9 +115,7 @@ const getTimeColor = (time) => {
               <td></td>
               <td></td>
               <td></td>
-              <td class="font-semibold" :class="{ [getTimeColor(row.time_min)]: true }">
-                {{ row.time_min }} min
-              </td>
+              <td class="font-semibold">{{ row.time_min }} min</td>
               <td>{{ dayjs(row.date).format('D MMM YYYY') }}</td>
               <td>
                 <div class="flex items-center gap-4">
