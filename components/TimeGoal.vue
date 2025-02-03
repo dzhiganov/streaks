@@ -51,7 +51,7 @@ const progressColor = computed(() => {
 <template>
   <div class="flex items-center gap-3">
     <div
-      class="radial-progress font-semibold"
+      class="radial-progress font-semibold shrink-0"
       :class="progressColor"
       :style="'--value:' + progress + ';--size:3rem; font-size: 0.8rem;'"
       role="progressbar"

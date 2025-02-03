@@ -56,6 +56,12 @@ export const UserSchema = new Schema({
     type: [{ type: Schema.Types.ObjectId, ref: 'ActivityType' }],
     default: [],
   },
+  subscription: {
+    plan: { type: String, enum: ['basic', 'pro'], default: 'basic' },
+    lifetime: { type: Boolean, default: false },
+    purchasedAt: { type: Date, default: null },
+    expiresAt: { type: Date, default: null }, // null for lifetime
+  },
 });
 
 export const User = model('user', UserSchema);

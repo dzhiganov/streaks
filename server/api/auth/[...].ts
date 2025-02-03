@@ -54,6 +54,12 @@ export default NuxtAuthHandler({
             photo: profile.image,
             balance: 3,
             created_at: new Date(),
+            subscription: {
+              plan: 'basic',
+              lifetime: false,
+              purchasedAt: null,
+              expiresAt: null,
+            },
           };
 
           await User.create(newUser);

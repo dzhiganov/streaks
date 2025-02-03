@@ -24,5 +24,6 @@ export { default as RefreshIcon } from './RefreshIcon.vue';
 export { default as RepeatIcon } from './RepeatIcon.vue';
 export { default as SettingsIcon } from './SettingsIcon.vue';
 export { default as SquareIcon } from './SquareIcon.vue';
+export { default as StarIcon } from './StarIcon.vue';
 export { default as StopTimerIcon } from './StopTimerIcon.vue';
 export { default as TimerIcon } from './TimerIcon.vue';

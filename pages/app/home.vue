@@ -16,6 +16,7 @@ import {
 } from '~/services/activity.service';
 import { getIcon } from '~/utils/getIcon';
 
+
 const OWL_EMOJI_CODE_POINT = `1f989`;
 const DEFAULT_ACTIVITY_COLOR = `Forest Green`;
 

@@ -12,7 +12,6 @@ const activityId = ref('');
 const activityTitle = ref('');
 const activityDescription = ref('');
 const activityType = ref('');
-const activityIcon = ref(null);
 const activityColor = ref(DEFAULT_ACTIVITY_COLOR);
 const activityWeekTimeGoal = ref(0);
 const activityDayTimeGoal = ref(0);
@@ -98,7 +97,6 @@ const onSaveActivity = async () => {
       title: activityTitle.value,
       description: activityDescription.value,
       type: activityType.value,
-      icon: activityIcon.value,
       color: activityColor.value,
       week_time_goal_hours: activityWeekTimeGoal.value,
       day_time_goal_hours: activityDayTimeGoal.value,
@@ -115,7 +113,6 @@ const onSaveActivity = async () => {
           title: activityTitle.value,
           description: activityDescription.value,
           type: activityType.value,
-          icon: activityIcon.value,
           color: activityColor.value,
           week_time_goal_hours: activityWeekTimeGoal.value,
           day_time_goal_hours: activityDayTimeGoal.value,
@@ -130,7 +127,6 @@ const onSaveActivity = async () => {
   activityTitle.value = '';
   activityDescription.value = '';
   activityType.value = '';
-  activityIcon.value = null;
   activityColor.value = DEFAULT_ACTIVITY_COLOR;
   activityWeekTimeGoal.value = 0;
   activityDayTimeGoal.value = 0;
@@ -145,7 +141,6 @@ const onEditActivity = (activity) => {
   activityTitle.value = activity.title;
   activityDescription.value = activity.description;
   activityType.value = activity.type;
-  activityIcon.value = activity.icon;
   activityColor.value = activity.color;
   activityWeekTimeGoal.value = activity.week_time_goal_min ? activity.week_time_goal_min / 60 : 0;
   activityDayTimeGoal.value = activity.day_time_goal_min ? activity.day_time_goal_min / 60 : 0;
@@ -209,14 +204,7 @@ const onEditActivity = (activity) => {
           </div>
 
           <div class="space-y-2">
-            <label class="block text-gray-600 font-medium">Icon</label>
-            <div class="rounded-md">
-              <IconPicker :modelValue="activityIcon" @update:modelValue="activityIcon = $event" />
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <label class="block text-gray-600 font-medium">{{ label }}</label>
+            <label class="block text-gray-600 font-medium">Color</label>
             <div class="p-3 rounded-md flex gap-2 items-center">
               <button
                 v-for="color in colors"
@@ -234,19 +222,10 @@ const onEditActivity = (activity) => {
             </div>
           </div>
 
+          <h3 class="text-lg font-bold">Time Goals</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">Week Time Goal (hours)</label>
-              <input
-                v-model="activityWeekTimeGoal"
-                type="number"
-                step="0.5"
-                class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-
-            <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">Day Time Goal (hours)</label>
+              <label class="block text-gray-600 font-medium">Day, hours</label>
               <input
                 v-model="activityDayTimeGoal"
                 type="number"
@@ -256,7 +235,17 @@ const onEditActivity = (activity) => {
             </div>
 
             <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">Month Time Goal (hours)</label>
+              <label class="block text-gray-600 font-medium">Week, hours</label>
+              <input
+                v-model="activityWeekTimeGoal"
+                type="number"
+                step="0.5"
+                class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-gray-600 font-medium">Month, hours</label>
               <input
                 v-model="activityMonthTimeGoal"
                 type="number"

@@ -31,15 +31,17 @@ const predefinedActivity = defineModel('predefinedActivity', {
 const selectedDate = ref(dayjs(props.date).format('YYYY-MM-DD'));
 const selectedActivity = ref(null);
 const duration = ref(0);
-const { data: activitiesData, refetch } = useGetActivities({ onlyActive: true });
+const { data: activitiesData } = useGetActivities({ onlyActive: true });
 const activities = computed(() => activitiesData?.value?.activities || []);
+
+const predefinedTimeOptions = computed(() => [25, 30, 50, 60, 90]);
 
 watch(
   predefinedActivity,
   (newVal) => {
     if (newVal) {
       selectedActivity.value = newVal.activityId;
-      duration.value = newVal.time_min / 60;
+      duration.value = newVal.time_min;
     }
   },
   { immediate: true },
@@ -53,13 +55,13 @@ const onLogActivity = async () => {
   if (editedActivity.value) {
     updateLogActivity({
       activity: selectedActivity.value,
-      time_hours: duration.value,
+      time_min: duration.value,
       id: editedActivity.value._id,
     });
   } else {
     logActivity({
       activity: selectedActivity.value,
-      time_hours: duration.value,
+      time_min: duration.value,
       date: selectedDate.value,
     });
 
@@ -83,7 +85,7 @@ watch(
   (newVal) => {
     if (newVal) {
       selectedActivity.value = newVal.activity._id;
-      duration.value = newVal.time_min / 60;
+      duration.value = newVal.time_min;
       selectedDate.value = dayjs(newVal.date).format('YYYY-MM-DD');
     }
   },
@@ -137,15 +139,25 @@ const onClose = () => {
         </div>
 
         <div class="mt-4">
-          <label for="date" class="block font-medium">Duration (hours)</label>
+          <label for="date" class="block font-medium">Duration (minutes)</label>
           <input
             v-model="duration"
             type="number"
             placeholder="0"
             class="input input-bordered w-full"
             :max="60 * 24"
-            step="0.5"
+            step="1"
           />
+          <div class="flex justify-start mt-2">
+            <button
+              v-for="option in predefinedTimeOptions"
+              :key="option"
+              class="btn btn-ghost btn-sm text-blue-500"
+              @click="duration = option"
+            >
+              {{ option }}
+            </button>
+          </div>
         </div>
 
         <div v-if="editedActivity" class="mt-8 flex justify-end gap-4">

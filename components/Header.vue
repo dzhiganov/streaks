@@ -15,6 +15,7 @@ onMounted(async () => {
       <NuxtImg src="/favicon.svg" alt="Habits" class="w-8 h-8" />
       <h1 class="text-2xl font-bold font-header">Habits</h1>
     </div>
+
     <slot />
     <div class="flex items-center gap-2">
       <label class="swap swap-rotate">
@@ -48,6 +49,9 @@ onMounted(async () => {
           tabindex="0"
           class="menu menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow main-card bg-base-100"
         >
+          <li class="text-lg font-semibold">
+            <NuxtLink to="/upgrade">Upgrade to PRO</NuxtLink>
+          </li>
           <li>
             <NuxtLink to="/support">Support</NuxtLink>
           </li>

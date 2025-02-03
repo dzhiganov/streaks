@@ -99,13 +99,13 @@ const useLogActivity = (onSuccessFn: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (activity: { activity: string; time_hours: number; date: string }) =>
+    mutationFn: (activity: { activity: string; time_min: number; date: string }) =>
       apiFetch('/api/activity/log', {
         method: 'POST',
         body: JSON.stringify({
           date: activity.date,
           activity: activity.activity,
-          time_min: activity.time_hours * 60,
+          time_min: activity.time_min,
         }),
       }),
     onSuccess: () => {
@@ -122,12 +122,12 @@ const useUpdateLogActivity = (onSuccessFn: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (activity: { activity: string; time_hours: number; date: string; id: string }) =>
+    mutationFn: (activity: { activity: string; time_min: number; date: string; id: string }) =>
       apiFetch(`/api/activity/updateLog`, {
         method: 'POST',
         body: JSON.stringify({
           ...activity,
-          time_min: activity.time_hours * 60,
+          time_min: activity.time_min,
         }),
       }),
     onSuccess: () => {

@@ -1,6 +1,6 @@
 <script setup>
 import dayjs from 'dayjs';
-import { EditIcon, RepeatIcon } from '~/assets/icons';
+import { EditIcon } from '~/assets/icons';
 import { useGetGroupedHistory } from '~/services/activity.service';
 import {
   getCurrentDayRange,
@@ -71,7 +71,7 @@ const getTimeColor = (time) => {
   <div class="overflow-x-auto rounded-box bg-base-100">
     <table class="table">
       <thead>
-        <tr class="">
+        <tr class="border-b border-neutral-content">
           <th>#</th>
           <th>Activity Type</th>
           <th>Activity</th>
@@ -104,7 +104,7 @@ const getTimeColor = (time) => {
                   :style="{ backgroundColor: activity.color }"
                   class="rounded-xl px-2 py-0.5 text-sm text-center w-fit"
                 >
-                  {{ activityName }}
+                  <span class="text-base-300">{{ activityName }}</span>
                 </div>
               </td>
               <td class="font-semibold">{{ formatTime({ minutes: activity.sum }) }}</td>
@@ -118,10 +118,10 @@ const getTimeColor = (time) => {
               <td class="font-semibold">{{ row.time_min }} min</td>
               <td>{{ dayjs(row.date).format('D MMM YYYY') }}</td>
               <td>
-                <div class="flex items-center gap-4">
-                  <button class="icon-btn" @click="emits('repeat-log-activity', row)">
+                <div class="flex justify-end items-center gap-4">
+                  <!-- <button class="icon-btn" @click="emits('repeat-log-activity', row)">
                     <RepeatIcon class="w-4 h-4" />
-                  </button>
+                  </button> -->
                   <button class="icon-btn" @click="emits('edit-log-activity', row)">
                     <EditIcon class="w-4 h-4" />
                   </button>
