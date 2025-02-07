@@ -19,6 +19,7 @@ const activityMonthTimeGoal = ref(0);
 const showNotification = ref(null);
 const { data: activityTypesData } = useGetActivityTypes();
 const selectedActivity = ref(1);
+const selectedGoal = ref('day');
 
 const { data: activitiesData, refetch: refetchActivities } = useGetActivities({ onlyActive: true });
 const { mutate: addNewActivity } = useAddActivity(() => {
@@ -26,6 +27,14 @@ const { mutate: addNewActivity } = useAddActivity(() => {
 });
 const { mutate: updateActivity } = useUpdateActivity(() => {
   refetchActivities();
+});
+
+const editedActivity = inject('editedActivity');
+
+watch(editedActivity, () => {
+  if (editedActivity.value) {
+    updateFields(editedActivity.value);
+  }
 });
 
 watch(showNotification, () => {
@@ -135,8 +144,7 @@ const onSaveActivity = async () => {
   showNotification.value = 'Activity saved';
 };
 
-const onEditActivity = (activity) => {
-  document.getElementById('add_new_activity_modal').showModal();
+const updateFields = (activity) => {
   activityId.value = activity._id;
   activityTitle.value = activity.title;
   activityDescription.value = activity.description;
@@ -148,6 +156,12 @@ const onEditActivity = (activity) => {
     ? activity.month_time_goal_min / 60
     : 0;
 };
+
+watch(selectedGoal, () => {
+  activityWeekTimeGoal.value = 0;
+  activityDayTimeGoal.value = 0;
+  activityMonthTimeGoal.value = 0;
+});
 </script>
 <template>
   <dialog
@@ -224,33 +238,66 @@ const onEditActivity = (activity) => {
 
           <h3 class="text-lg font-bold">Time Goals</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Day Goal -->
             <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">Day, hours</label>
+              <label class="block text-gray-600 font-medium">
+                <input
+                  type="radio"
+                  name="timeGoal"
+                  value="day"
+                  v-model="selectedGoal"
+                  class="mr-2"
+                />
+                Day, hours
+              </label>
               <input
+                type="number"
+                step="0.5"
                 v-model="activityDayTimeGoal"
-                type="number"
-                step="0.5"
-                class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                class="input input-bordered w-full rounded-md"
+                :disabled="selectedGoal !== 'day'"
               />
             </div>
 
+            <!-- Week Goal -->
             <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">Week, hours</label>
+              <label class="block text-gray-600 font-medium">
+                <input
+                  type="radio"
+                  name="timeGoal"
+                  value="week"
+                  v-model="selectedGoal"
+                  class="mr-2"
+                />
+                Week, hours
+              </label>
               <input
+                type="number"
+                step="0.5"
                 v-model="activityWeekTimeGoal"
-                type="number"
-                step="0.5"
-                class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                class="input input-bordered w-full rounded-md"
+                :disabled="selectedGoal !== 'week'"
               />
             </div>
 
+            <!-- Month Goal -->
             <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">Month, hours</label>
+              <label class="block text-gray-600 font-medium">
+                <input
+                  type="radio"
+                  name="timeGoal"
+                  value="month"
+                  v-model="selectedGoal"
+                  class="mr-2"
+                />
+                Month, hours
+              </label>
               <input
-                v-model="activityMonthTimeGoal"
                 type="number"
-                class="input input-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 step="0.5"
+                v-model="activityMonthTimeGoal"
+                class="input input-bordered w-full rounded-md"
+                :disabled="selectedGoal !== 'month'"
               />
             </div>
           </div>

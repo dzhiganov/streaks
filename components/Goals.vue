@@ -1,46 +1,17 @@
 <script setup>
 import { CrossIcon, EditIcon } from '~/assets/icons';
 import { useGetActivities } from '~/services/activity.service';
-import { getRandomColor } from '~/utils/colors';
 
-const OWL_EMOJI_CODE_POINT = `1f989`;
-const DEFAULT_ACTIVITY_COLOR = getRandomColor();
-
-const { data: activitiesData, refetch: refetchActivities } = useGetActivities({ onlyActive: true });
+const { data: activitiesData } = useGetActivities({ onlyActive: true });
 
 const activities = computed(() => activitiesData?.value?.activities || []);
 
+const emits = defineEmits(['editActivity']);
+
 const activityId = ref('');
-const activityTitle = ref('');
-const activityDescription = ref('');
-const activityType = ref('');
-const activityIcon = ref(OWL_EMOJI_CODE_POINT);
-const activityColor = ref(DEFAULT_ACTIVITY_COLOR);
-const activityWeekTimeGoal = ref(0);
-const activityDayTimeGoal = ref(0);
-const activityMonthTimeGoal = ref(0);
-
-const selectRandomColor = () => {
-  activityColor.value = getRandomColor();
-};
-
-onMounted(() => {
-  selectRandomColor();
-});
 
 const onEditActivity = (activity) => {
-  document.getElementById('add_new_activity_modal').showModal();
-  activityId.value = activity._id;
-  activityTitle.value = activity.title;
-  activityDescription.value = activity.description;
-  activityType.value = activity.type;
-  activityIcon.value = activity.icon;
-  activityColor.value = activity.color;
-  activityWeekTimeGoal.value = activity.week_time_goal_min ? activity.week_time_goal_min / 60 : 0;
-  activityDayTimeGoal.value = activity.day_time_goal_min ? activity.day_time_goal_min / 60 : 0;
-  activityMonthTimeGoal.value = activity.month_time_goal_min
-    ? activity.month_time_goal_min / 60
-    : 0;
+  emits('editActivity', activity);
 };
 
 const onClickDeleteButton = (activity) => {

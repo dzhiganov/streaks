@@ -247,6 +247,13 @@ const useDeleteLogActivity = () => {
   });
 };
 
+const useGetReport = () => {
+  return useQuery({
+    queryKey: ['report'],
+    queryFn: () => apiFetch('/api/activity/getReport'),
+  });
+};
+
 export {
   useAddActivity,
   useAddActivityType,
@@ -258,6 +265,7 @@ export {
   useGetHistory,
   useGetHistoryByDate,
   useGetHistoryByRange,
+  useGetReport,
   useLogActivity,
   useUpdateActivity,
   useUpdateLogActivity,

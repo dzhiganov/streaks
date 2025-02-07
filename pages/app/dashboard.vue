@@ -8,15 +8,19 @@ import ActivityGraph from '~/components/ActivityGraph.vue';
 import Goals from '~/components/Goals.vue';
 import Header from '~/components/Header.vue';
 import HistoryTable from '~/components/HistoryTable.vue';
-import NewActivityModal from '~/components/NewActivityModal.vue';
 import NewActivityTypeModal from '~/components/NewActivityTypeModal.vue';
+import Report from '~/components/Report.vue';
 import YearViewWarning from '~/components/YearViewWarning.vue';
+import { useGetReport } from '~/services/activity.service';
+
 dayjs.extend(isToday);
 
 const selectedRange = ref('day');
 const selectedDate = ref(dayjs().format('YYYY-MM-DD'));
 const editedActivityId = ref(null);
 const predefinedActivity = ref(null);
+
+const { data: reportData } = useGetReport();
 
 const rangeTitle = computed(() => {
   if (selectedRange.value === 'day') {
@@ -58,6 +62,15 @@ const onRepeatLogActivity = (row) => {
     time_min: row.time_min,
   };
   document.getElementById('log_activity_modal').showModal();
+};
+
+const editedActivity = ref({});
+
+provide('editedActivity', editedActivity);
+
+const onEditActivity = (activity) => {
+  editedActivity.value = activity;
+  document.getElementById('add_new_activity_modal').showModal();
 };
 </script>
 <template>
@@ -119,7 +132,8 @@ const onRepeatLogActivity = (row) => {
             <calendar-month />
           </calendar-date>
         </div>
-        <Goals />
+        <Goals @edit-activity="onEditActivity" />
+        <button class="btn btn-primary" onclick="report_modal.showModal()">Report</button>
       </div>
     </aside>
     <main class="px-12 py-4 flex flex-col">
@@ -159,6 +173,7 @@ const onRepeatLogActivity = (row) => {
     v-model:edited-activity="editedActivityId"
     v-model:predefined-activity="predefinedActivity"
   />
+  <Report />
   <YearViewWarning v-if="selectedRange === 'year' && view === 'table'" />
 </template>
 
