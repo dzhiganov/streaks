@@ -23,7 +23,7 @@
             </div>
             <div class="text-right">
               <div>
-                <span class="text-2xl font-bold mr-2"> {{ overallHours }}h </span>
+                <span class="text-2xl font-bold mr-2"> {{ overallHours }}</span>
               </div>
               <div>
                 <span
@@ -54,7 +54,9 @@
                   >{{ index + 1 }}. {{ activity.activityName }}</span
                 >
                 <div class="flex items-center">
-                  <span class="mr-2 font-semibold"> {{ minutesToHours(activity.totalMin) }}h </span>
+                  <span class="mr-2 font-semibold">
+                    {{ formatTime({ minutes: activity.totalMin }, { short: true }) }}
+                  </span>
                   <span
                     v-if="activityDiff(activity.activityId) !== null"
                     class="text-sm font-medium"
@@ -75,12 +77,12 @@
           <!-- 3) Best / Worst Day -->
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-semibold text-neutral">💪 Most Productive Day</h3>
-            <span class="text-sm"> {{ bestDayName }} ({{ bestDayHours }}h) </span>
+            <span class="text-sm"> {{ bestDayName }} ({{ bestDayHours }} ) </span>
           </div>
 
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-semibold text-neutral">😴 Least Productive Day</h3>
-            <span class="text-sm"> {{ worstDayName }} ({{ worstDayHours }}h) </span>
+            <span class="text-sm"> {{ worstDayName }} ({{ worstDayHours }}) </span>
           </div>
         </div>
       </div>
@@ -97,6 +99,7 @@ import dayjs from 'dayjs';
 import { computed, ref, watchEffect } from 'vue';
 import { AwardIcon } from '~/assets/icons';
 import { useGetReport } from '~/services/activity.service';
+import { formatTime } from '~/utils/time/formatTime';
 
 const { data: fetched, error, isFetching } = useGetReport();
 const report = ref<any>(null);
@@ -116,7 +119,7 @@ function minutesToHours(minutes: number): number {
 // Overall hours = total current-week minutes → hours
 const overallHours = computed(() => {
   if (!report.value) return 0;
-  return minutesToHours(report.value.overallPerformance || 0);
+  return formatTime({ minutes: report.value.overallPerformance || 0 }, { short: true });
 });
 
 // Overall difference in hours vs. last week
@@ -182,7 +185,7 @@ const bestDayName = computed(() => {
 
 const bestDayHours = computed(() => {
   if (!report.value) return 0;
-  return minutesToHours(report.value.bestDay?.totalMin || 0);
+  return formatTime({ minutes: report.value.bestDay?.totalMin || 0 }, { short: true });
 });
 
 // Worst day name + hours
@@ -194,14 +197,10 @@ const worstDayName = computed(() => {
 
 const worstDayHours = computed(() => {
   if (!report.value) return 0;
-  return minutesToHours(report.value.worstDay?.totalMin || 0);
+  return formatTime({ minutes: report.value.worstDay?.totalMin || 0 }, { short: true });
 });
 
 const onClose = () => {
   document.getElementById('report_modal')?.close();
 };
 </script>
-
-<style scoped>
-/* Adjust as needed */
-</style>

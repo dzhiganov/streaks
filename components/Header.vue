@@ -1,4 +1,6 @@
 <script setup>
+import { MailIcon } from '~/assets/icons';
+
 const { signOut, getSession } = useAuth();
 const userSession = ref({});
 
@@ -6,6 +8,8 @@ onMounted(async () => {
   const session = await getSession();
   userSession.value = session?.user ?? {};
 });
+
+const router = useRouter();
 </script>
 <template>
   <header
@@ -18,6 +22,12 @@ onMounted(async () => {
 
     <slot />
     <div class="flex items-center gap-2">
+      <button
+        class="btn btn-ghost btn-circle"
+        @click="router.push({ query: { view: 'messages' } })"
+      >
+        <MailIcon class="w-6 h-6" />
+      </button>
       <label class="swap swap-rotate">
         <input type="checkbox" class="theme-controller" value="dark" />
         <svg

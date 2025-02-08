@@ -21,7 +21,7 @@ const props = defineProps({
 });
 
 const getProgress = (timeGoal, timeRest) => {
-  const res = 100 - (timeRest / timeGoal) * 100;
+  const res = Math.round(100 - (timeRest / timeGoal) * 100);
   return res;
 };
 

@@ -250,7 +250,7 @@ const useDeleteLogActivity = () => {
 const useGetReport = () => {
   return useQuery({
     queryKey: ['report'],
-    queryFn: () => apiFetch('/api/activity/getReport'),
+    queryFn: () => apiFetch('/api/cron/makeWeeklyReport'),
   });
 };
 

@@ -8,10 +8,9 @@ import ActivityGraph from '~/components/ActivityGraph.vue';
 import Goals from '~/components/Goals.vue';
 import Header from '~/components/Header.vue';
 import HistoryTable from '~/components/HistoryTable.vue';
+import Messages from '~/components/Messages.vue';
 import NewActivityTypeModal from '~/components/NewActivityTypeModal.vue';
-import Report from '~/components/Report.vue';
 import YearViewWarning from '~/components/YearViewWarning.vue';
-import { useGetReport } from '~/services/activity.service';
 
 dayjs.extend(isToday);
 
@@ -19,8 +18,6 @@ const selectedRange = ref('day');
 const selectedDate = ref(dayjs().format('YYYY-MM-DD'));
 const editedActivityId = ref(null);
 const predefinedActivity = ref(null);
-
-const { data: reportData } = useGetReport();
 
 const rangeTitle = computed(() => {
   if (selectedRange.value === 'day') {
@@ -50,10 +47,15 @@ const onEditLogActivity = (val) => {
   document.getElementById('log_activity_modal').showModal();
 };
 
-const view = ref('table');
+const router = useRouter();
+const route = useRoute();
+
+onMounted(() => {
+  router.push({ query: { view: 'table' } });
+});
 
 const toggleView = () => {
-  view.value = view.value === 'table' ? 'graph' : 'table';
+  router.push({ query: { view: route.query.view === 'table' ? 'graph' : 'table' } });
 };
 
 const onRepeatLogActivity = (row) => {
@@ -137,7 +139,7 @@ const onEditActivity = (activity) => {
       </div>
     </aside>
     <main class="px-12 py-4 flex flex-col">
-      <div>
+      <div v-if="route.query?.view === 'table' || route.query?.view === 'graph'" class="mb-6">
         <div class="flex mb-2 gap-4 items-center">
           <div class="text-lg font-semibold">Activity for {{ rangeTitle }}</div>
           <div>
@@ -155,15 +157,23 @@ const onEditActivity = (activity) => {
           </button>
         </div>
       </div>
-
+      <ActivityGraph
+        v-if="route.query?.view === 'graph'"
+        :date="selectedDate"
+        :range="selectedRange"
+      />
+      <Messages
+        v-else-if="route.query?.view === 'messages'"
+        :date="selectedDate"
+        :range="selectedRange"
+      />
       <HistoryTable
-        v-if="view === 'table'"
+        v-else
         :date="selectedDate"
         :range="selectedRange"
         @edit-log-activity="onEditLogActivity"
         @repeat-log-activity="onRepeatLogActivity"
       />
-      <ActivityGraph v-if="view === 'graph'" :date="selectedDate" :range="selectedRange" />
     </main>
   </div>
   <NewActivityModal />
@@ -173,8 +183,7 @@ const onEditActivity = (activity) => {
     v-model:edited-activity="editedActivityId"
     v-model:predefined-activity="predefinedActivity"
   />
-  <Report />
-  <YearViewWarning v-if="selectedRange === 'year' && view === 'table'" />
+  <YearViewWarning v-if="selectedRange === 'year' && route.query?.view === 'table'" />
 </template>
 
 <style>

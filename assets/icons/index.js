@@ -15,6 +15,7 @@ export { default as EyeIcon } from './EyeIcon.vue';
 export { default as GoalIcon } from './GoalIcon.vue';
 export { default as GoogleIcon } from './GoogleIcon.vue';
 export { default as GraphIcon } from './GraphIcon.vue';
+export { default as MailIcon } from './MailIcon.vue';
 export { default as MinusIcon } from './MinusIcon.vue';
 export { default as MusicIcon } from './MusicIcon.vue';
 export { default as PauseIcon } from './PauseIcon.vue';
