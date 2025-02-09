@@ -3,9 +3,9 @@
     <div class="modal-box">
       <div class="max-w-md mx-auto p-4">
         <div v-if="isFetching" class="text-neutral">Loading...</div>
-        <div v-if="error" class="text-neutral">Failed to load report!</div>
+        <div v-else-if="error" class="text-neutral">Failed to load report!</div>
 
-        <div v-if="report" class="space-y-4">
+        <div v-else-if="report" class="space-y-4">
           <div class="p-4 pt-0 rounded-md text-center">
             <p
               class="text-neutral text-2xl font-semibold text-center flex items-center gap-2 justify-center"
@@ -96,13 +96,59 @@
 
 <script setup lang="ts">
 import dayjs from 'dayjs';
-import { computed, ref, watchEffect } from 'vue';
 import { AwardIcon } from '~/assets/icons';
 import { useGetReport } from '~/services/activity.service';
 import { formatTime } from '~/utils/time/formatTime';
 
-const { data: fetched, error, isFetching } = useGetReport();
+const props = defineProps<{
+  from: string;
+  to: string;
+}>();
+
+const { from, to } = toRefs(props);
+
+const isOpen = ref(false);
+
+const {
+  data: fetched,
+  error,
+  isFetching,
+} = useGetReport({
+  enabled: isOpen,
+  from: from,
+  to: to,
+});
 const report = ref<any>(null);
+const stopObserving = ref<() => void>(() => {});
+
+const observeDialog = (el: HTMLElement, callback: (isOpen: boolean) => void) => {
+  const observer = new MutationObserver(() => {
+    callback(el.open);
+  });
+
+  observer.observe(el, {
+    attributes: true,
+    attributeFilter: ['open'],
+  });
+
+  return () => {
+    observer.disconnect();
+  };
+};
+
+onMounted(() => {
+  const dialog = document.getElementById('report_modal');
+  if (dialog) {
+    stopObserving.value = observeDialog(dialog, (v) => {
+      console.log('v', v);
+      isOpen.value = v;
+    });
+  }
+});
+
+onUnmounted(() => {
+  stopObserving.value();
+});
 
 // Whenever our fetch returns new data, store it in "report"
 watchEffect(() => {

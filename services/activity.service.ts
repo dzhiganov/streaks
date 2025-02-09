@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { computed } from 'vue';
 
 export type Payload = {
   activity: number;
@@ -86,7 +87,7 @@ const useGetGroupedHistory = ({
           date: date.value,
         });
       }
-      if (limit?.value) {
+      if (limit?.value !== undefined) {
         query.set('limit', limit.value.toString());
       }
 
@@ -247,10 +248,27 @@ const useDeleteLogActivity = () => {
   });
 };
 
-const useGetReport = () => {
+const useGetReport = (params: { from: Ref<string>; to: Ref<string>; enabled: Ref<boolean> }) => {
   return useQuery({
     queryKey: ['report'],
-    queryFn: () => apiFetch('/api/cron/makeWeeklyReport'),
+    queryFn: () =>
+      apiFetch(`/api/activity/getReport?from=${params.from.value}&to=${params.to.value}`),
+    enabled: computed(() => params.enabled.value),
+  });
+};
+
+const useGetAggregatedHistory = (params: {
+  from: Ref<string>;
+  to: Ref<string>;
+  range: Ref<string>;
+}) => {
+  console.log(params);
+  return useQuery({
+    queryKey: ['aggregatedHistory'],
+    queryFn: () =>
+      apiFetch(
+        `/api/activity/getAggregatedHistory?from=${params.from.value}&to=${params.to.value}&range=${params.range.value}`,
+      ),
   });
 };
 
@@ -261,6 +279,7 @@ export {
   useGetActivities,
   useGetActivity,
   useGetActivityTypes,
+  useGetAggregatedHistory,
   useGetGroupedHistory,
   useGetHistory,
   useGetHistoryByDate,

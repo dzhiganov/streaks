@@ -22,6 +22,7 @@ import {
   getCurrentWeekRange,
   getCurrentYearRange,
 } from '~/utils/ranges.js';
+import LineChart from './LineChart.vue';
 
 const props = defineProps({
   showOptions: {
@@ -208,5 +209,7 @@ const chartOptions = computed(() => ({
     <div v-if="currentMode === 'bar'" class="h-96">
       <Bar :data="chartData" class="h-full" />
     </div>
+
+    <LineChart :date="date" :range="range" :rangeType="timeRange" />
   </div>
 </template>

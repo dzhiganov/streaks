@@ -3,13 +3,14 @@ import 'cally';
 import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { ref } from 'vue';
-import { ArrowLeft, ArrowRight, EyeIcon, PlusIcon } from '~/assets/icons';
-import ActivityGraph from '~/components/ActivityGraph.vue';
+import { ArrowLeft, ArrowRight, EyeIcon, FileTextIcon, PlusIcon } from '~/assets/icons';
 import Goals from '~/components/Goals.vue';
 import Header from '~/components/Header.vue';
 import HistoryTable from '~/components/HistoryTable.vue';
+import LineChart from '~/components/LineChart.vue';
 import Messages from '~/components/Messages.vue';
 import NewActivityTypeModal from '~/components/NewActivityTypeModal.vue';
+import ReportForm from '~/components/ReportForm.vue';
 import YearViewWarning from '~/components/YearViewWarning.vue';
 
 dayjs.extend(isToday);
@@ -135,7 +136,10 @@ const onEditActivity = (activity) => {
           </calendar-date>
         </div>
         <Goals @edit-activity="onEditActivity" />
-        <button class="btn btn-primary" onclick="report_modal.showModal()">Report</button>
+        <button class="btn btn-primary" onclick="report_modal.showModal()">
+          <FileTextIcon class="w-5 h-5" />
+          <span>Generate Report</span>
+        </button>
       </div>
     </aside>
     <main class="px-12 py-4 flex flex-col">
@@ -157,10 +161,10 @@ const onEditActivity = (activity) => {
           </button>
         </div>
       </div>
-      <ActivityGraph
+      <LineChart
         v-if="route.query?.view === 'graph'"
         :date="selectedDate"
-        :range="selectedRange"
+        :range-type="selectedRange"
       />
       <Messages
         v-else-if="route.query?.view === 'messages'"
@@ -183,6 +187,7 @@ const onEditActivity = (activity) => {
     v-model:edited-activity="editedActivityId"
     v-model:predefined-activity="predefinedActivity"
   />
+  <ReportForm />
   <YearViewWarning v-if="selectedRange === 'year' && route.query?.view === 'table'" />
 </template>
 

@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
       acc[type] = Object.entries(activities).reduce((activityAcc, [title, data]) => {
         activityAcc[title] = {
           sum: data.sum,
-          rows: data.rows.slice(0, limitNumber),
+          rows: data.rows.slice(0, Number(limit) === 0 ? data.rows.length : limitNumber),
           color: data.color,
         };
         return activityAcc;
@@ -95,7 +95,9 @@ export default defineEventHandler(async (event) => {
 
     return {
       history: limitedHistory,
-      limit: limitNumber,
+      limit: Number(limit) === 0 ? null : limitNumber,
+      from,
+      to,
     };
   } catch (error) {
     console.error('Error fetching history:', error.message);
