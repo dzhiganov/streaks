@@ -262,7 +262,6 @@ const useGetAggregatedHistory = (params: {
   to: Ref<string>;
   range: Ref<string>;
 }) => {
-  console.log(params);
   return useQuery({
     queryKey: ['aggregatedHistory'],
     queryFn: () =>
