@@ -21,7 +21,7 @@ jobs:
           npm ci
 
       - name: Build
-        run: NUXT_CONFIG_DIR=nuxt.config.ec2.ts npm run build
+        run: npm run build
 
       - name: Transfers Build Folder to EC2 Instance
         uses: easingthemes/ssh-deploy@v3
