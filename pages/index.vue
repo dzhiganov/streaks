@@ -54,7 +54,7 @@ definePageMeta({
 
             <div class="mt-12 shadow-2xl">
               <div class="flex justify-top">
-                <NuxtImg src="/promo-images/main-promo.png" alt="promo image" />
+                <NuxtImg src="/promo-images/main-promo.png" alt="promo image" class="w-full" />
               </div>
             </div>
           </div>
