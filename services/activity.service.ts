@@ -271,10 +271,24 @@ const useGetAggregatedHistory = (params: {
   });
 };
 
+const useGenerateReport = (params: {
+  from: Ref<string>;
+  to: Ref<string>;
+  enabled: Ref<boolean>;
+}) => {
+  return useQuery({
+    queryKey: ['report'],
+    queryFn: () =>
+      apiFetch(`/api/activity/generateReport?from=${params.from.value}&to=${params.to.value}`),
+    enabled: computed(() => params.enabled.value),
+  });
+};
+
 export {
   useAddActivity,
   useAddActivityType,
   useDeleteLogActivity,
+  useGenerateReport,
   useGetActivities,
   useGetActivity,
   useGetActivityTypes,

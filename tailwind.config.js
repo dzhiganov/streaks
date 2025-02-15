@@ -13,6 +13,18 @@ export default {
           '.border-neutral-content': {
             borderColor: '#e4e1e1',
           },
+          '.progress-low': {
+            color: '#b0b0b0',
+          },
+          '.progress-high': {
+            color: '#000000',
+          },
+          '.progress-very-high': {
+            color: '#fc9300',
+          },
+          '.progress-medium': {
+            color: '#4f4f4f',
+          },
         },
       },
       {
@@ -23,6 +35,18 @@ export default {
           },
           '.border-neutral-content': {
             borderColor: '#343434',
+          },
+          '.progress-low': {
+            color: '#4f4f4f',
+          },
+          '.progress-high': {
+            color: '#b0b0b0',
+          },
+          '.progress-very-high': {
+            color: '#fc9300',
+          },
+          '.progress-medium': {
+            color: '#717171',
           },
         },
       },

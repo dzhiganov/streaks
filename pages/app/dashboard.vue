@@ -77,7 +77,7 @@ const onEditActivity = (activity) => {
 };
 </script>
 <template>
-  <div class="grid min-h-screen grid-rows-[auto_1fr] grid-cols-[300px_1fr]">
+  <div class="grid min-h-screen grid-rows-[auto_1fr] grid-cols-[300px_minmax(0,1fr)]">
     <Header>
       <div class="flex items-center gap-4 w-full px-8">
         <div class="flex items-center gap-4 justify-end w-full">
@@ -136,7 +136,7 @@ const onEditActivity = (activity) => {
           </calendar-date>
         </div>
         <Goals @edit-activity="onEditActivity" />
-        <button class="btn btn-primary" onclick="report_modal.showModal()">
+        <button class="btn btn-neutral" onclick="report_modal.showModal()">
           <FileTextIcon class="w-5 h-5" />
           <span>Generate Report</span>
         </button>

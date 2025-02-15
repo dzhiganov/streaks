@@ -1,10 +1,9 @@
 <script setup>
 useHead({
-  title: 'Habits',
+  title: 'FlowTrack',
   meta: [{ name: 'description', content: 'App description' }],
   htmlAttrs: {
     lang: 'en',
-    ['data-theme']: 'light',
   },
 });
 </script>

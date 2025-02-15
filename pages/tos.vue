@@ -17,29 +17,29 @@ definePageMeta({
 
     <p class="mb-4">
       Your use of our website located at
-      <a class="link-primary" href="https://habits.com">https://habits.com</a>
-      (and all associated sites linked to it) or services ("Habits") signifies that you agree to
-      these Terms and Conditions. If you do not agree, please do not use Habits.
+      <a class="link-primary" href="https://flow-track.com">https://flow-track.com</a>
+      (and all associated sites linked to it) or services ("FlowTrack") signifies that you agree to
+      these Terms and Conditions. If you do not agree, please do not use FlowTrack.
     </p>
 
     <h3 class="text-xl font-semibold mt-6 mb-2">1. Changes to the Terms of Use</h3>
     <p class="mb-4">
-      We may update these Terms of Use at any time. By continuing to use Habits after changes are
+      We may update these Terms of Use at any time. By continuing to use FlowTrack after changes are
       posted, you accept the new terms. You can review the current Terms and Conditions at any time
       by reloading this page.
     </p>
 
-    <h3 class="text-xl font-semibold mt-6 mb-2">2. Changes to Habits</h3>
+    <h3 class="text-xl font-semibold mt-6 mb-2">2. Changes to FlowTrack</h3>
     <p class="mb-4">
-      We reserve the right to modify, suspend, or discontinue any aspect of Habits at any time
+      We reserve the right to modify, suspend, or discontinue any aspect of FlowTrack at any time
       without notice. We do not guarantee backward compatibility for any modifications.
     </p>
 
     <h3 class="text-xl font-semibold mt-6 mb-2">3. Overview of the Service</h3>
     <p class="mb-4">
-      Habits ("Service") is a platform designed to help you track, manage, and build your personal
-      habits. Our Service enables you to set goals, monitor progress, and gain insights to improve
-      your daily routines.
+      FlowTrack ("Service") is a platform designed to help you track, manage, and build your
+      personal habits. Our Service enables you to set goals, monitor progress, and gain insights to
+      improve your daily routines.
     </p>
 
     <h3 class="text-xl font-semibold mt-6 mb-2">4. Use of Service</h3>
@@ -63,7 +63,7 @@ definePageMeta({
     <ul class="list-decimal list-inside mb-4">
       <li>
         <strong>Credits Purchase:</strong> Users may purchase credits through the Service via
-        Stripe. Credits unlock premium features within Habits.
+        Stripe. Credits unlock premium features within FlowTrack.
       </li>
       <li>
         <strong>Non-Refundable:</strong> Credits are non-refundable. Once purchased, credits cannot
@@ -78,7 +78,7 @@ definePageMeta({
     <h3 class="text-xl font-semibold mt-6 mb-2">6. Intellectual Property</h3>
     <ul class="list-decimal list-inside mb-4">
       <li>
-        <strong>Ownership:</strong> All content you generate using Habits remains your property.
+        <strong>Ownership:</strong> All content you generate using FlowTrack remains your property.
         However, you grant us a non-exclusive, worldwide license to use, store, and process your
         input and generated content for service provision and improvement.
       </li>
@@ -99,7 +99,7 @@ definePageMeta({
 
     <h3 class="text-xl font-semibold mt-6 mb-2">7. AI-Generated Content</h3>
     <p class="mb-4">
-      <strong>Nature of AI-Generated Content:</strong> Habits may use AI to provide personalized
+      <strong>Nature of AI-Generated Content:</strong> FlowTrack may use AI to provide personalized
       habit recommendations and insights. The content is generated based on user input and may not
       always be accurate or tailored to your specific needs.
     </p>

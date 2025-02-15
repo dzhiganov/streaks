@@ -1,5 +1,8 @@
 <script setup>
+import { useTheme } from '~/composables/useTheme';
 import { formatTime } from '~/utils/time/formatTime';
+
+const theme = useTheme();
 
 const props = defineProps({
   type: {
@@ -37,13 +40,13 @@ const progress = computed(() => {
 
 const progressColor = computed(() => {
   if (progress.value > 100) {
-    return 'text-orange-400';
+    return 'text-orange-400 progress-very-high';
   } else if (progress.value === 100) {
-    return 'text-green-600';
+    return 'text-green-600 progress-high';
   } else if (progress.value >= 50) {
-    return 'text-neutral';
+    return 'text-neutral-content progress-medium';
   } else {
-    return 'text-gray-400';
+    return 'text-gray-500 progress-low';
   }
 });
 </script>
@@ -51,7 +54,7 @@ const progressColor = computed(() => {
 <template>
   <div class="flex items-center gap-3">
     <div
-      class="radial-progress font-semibold shrink-0"
+      class="radial-progress font-semibold shrink-0 progress-custom"
       :class="progressColor"
       :style="'--value:' + progress + ';--size:3rem; font-size: 0.8rem;'"
       role="progressbar"
@@ -65,10 +68,14 @@ const progressColor = computed(() => {
 
       <div class="flex items-center gap-2 text-sm text-gray-500">
         <span>{{ title }}</span>
-        <span class="font-bold text-neutral">{{
-          formatTime({ minutes: restMinutes }, { short: true })
-        }}</span>
+        <span class="font-bold">{{ formatTime({ minutes: restMinutes }, { short: true }) }}</span>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.progress-custom {
+  --thickness: 0.2rem;
+}
+</style>
