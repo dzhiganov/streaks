@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     let totalCurrentRange = 0;
     let totalPreviousRange = 0;
     let mostActiveDay = { date: '', totalMin: 0 };
-    let leastActiveDay = { date: '', totalMin: Infinity }; // Start with Infinity to find min
+    let leastActiveDay = { date: '', totalMin: Infinity };
 
     const perActivityCurrentRange: Record<string, number> = {};
     const perActivityPreviousRange: Record<string, number> = {};

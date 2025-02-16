@@ -1,5 +1,6 @@
 import { defineEventHandler, getHeader } from 'h3';
 import Stripe from 'stripe';
+import { User } from '~~/server/models/user.model';
 
 const buffer = (req: any) => {
   return new Promise<Buffer>((resolve, reject) => {
@@ -22,8 +23,6 @@ export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig(event);
   const stripeWebhookKey = runtimeConfig.stripeWebhookKey;
 
-  console.log('stripeWebhookKey', stripeWebhookKey);
-
   const stripe = new Stripe(stripeWebhookKey!, {
     apiVersion: '2022-11-15',
   });
@@ -42,8 +41,6 @@ export default defineEventHandler(async (event) => {
     return { status: 400, body: `Webhook Error: ${err.message}` };
   }
 
-  console.log('eventData', eventData);
-
   if (eventData.type === 'checkout.session.completed') {
     const session = eventData.data.object as Stripe.Checkout.Session;
     const userId = session.metadata?.userId;
@@ -53,8 +50,15 @@ export default defineEventHandler(async (event) => {
       return { status: 400, body: 'Missing user or package information in metadata' };
     }
 
+    await User.findByIdAndUpdate(session.metadata?.userId, {
+      plan: 'pro',
+      lifetime: true,
+      purchasedAt: new Date(),
+      transaction_id: '',
+      expiresAt: null, // null for lifetime
+    });
+
     console.log('✅ Payment successful');
-    // console.log('⚠️ Payment failed');
   }
 
   return { status: 200, body: {} };
