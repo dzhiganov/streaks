@@ -19,7 +19,6 @@ const buffer = (req: any) => {
 };
 
 export default defineEventHandler(async (event) => {
-  console.log('we are here');
   const runtimeConfig = useRuntimeConfig(event);
   const stripeWebhookKey = runtimeConfig.stripeWebhookKey;
 
@@ -59,8 +58,6 @@ export default defineEventHandler(async (event) => {
         expiresAt: null, // null for lifetime
       },
     });
-
-    console.log('RES', session.metadata?.userId, res);
 
     console.log('✅ Payment successful');
   }

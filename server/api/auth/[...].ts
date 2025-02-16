@@ -39,8 +39,6 @@ export default NuxtAuthHandler({
         return session;
       }
     },
-  },
-  events: {
     async signIn({ user, profile }) {
       // Add user to the DB if not existed
       try {
@@ -63,13 +61,20 @@ export default NuxtAuthHandler({
           };
 
           await User.create(newUser);
+
+          return true;
         }
+
+        return true;
       } catch (err) {
         console.error('Error in signIn callback:', err);
+
+        return `/error?message=login_failed`;
       }
     },
   },
   pages: {
     signIn: '/sign-in',
+    error: '/auth-error',
   },
 });

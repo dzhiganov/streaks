@@ -57,7 +57,8 @@ export const UserSchema = new Schema({
     default: [],
   },
   subscription: {
-    plan: { type: String, enum: ['basic', 'pro'], default: 'basic' },
+    trialExpiresAt: { type: Date, default: null },
+    plan: { type: String, enum: ['trial', 'lifetime', 'monthly', 'yearly'], default: 'trial' },
     lifetime: { type: Boolean, default: false },
     purchasedAt: { type: Date, default: null },
     transaction_id: { type: String, default: null },

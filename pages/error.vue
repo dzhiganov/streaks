@@ -2,7 +2,7 @@
 import { CrossIcon } from '../assets/icons';
 
 definePageMeta({
-  middleware: ['success-payment-validation'],
+  auth: false,
 });
 
 const { query } = useRoute();
@@ -10,18 +10,14 @@ const { message } = query;
 </script>
 <template>
   <div
-    v-if="numericAmount.data"
     class="text-center card mx-auto w-96 shadow-md flex justify-center flex-col gap-4 mt-16 bg-base-200 p-6 items-center"
   >
     <div class="flex flex-col gap-10">
       <div>
-        <div class="flex justify-center text-accent h-12">
-          <CrossIcon class="w-4 h-4 text-red-300" />
+        <div class="flex justify-center text-red-300 h-12">
+          <CrossIcon />
         </div>
         <div class="text-3xl">{{ message }}</div>
-      </div>
-      <div class="text-center">
-        {{ `${numericAmount.data} credits will be added to your account within 10 minutes` }}
       </div>
       <div class="text-sm">
         If you have any questions, please contact us at
