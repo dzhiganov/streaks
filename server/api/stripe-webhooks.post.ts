@@ -18,8 +18,11 @@ const buffer = (req: any) => {
 };
 
 export default defineEventHandler(async (event) => {
+  console.log('we are here');
   const runtimeConfig = useRuntimeConfig(event);
   const stripeWebhookKey = runtimeConfig.stripeWebhookKey;
+
+  console.log('stripeWebhookKey', stripeWebhookKey);
 
   const stripe = new Stripe(stripeWebhookKey!, {
     apiVersion: '2022-11-15',
@@ -38,6 +41,8 @@ export default defineEventHandler(async (event) => {
     console.error('⚠️  Webhook signature verification failed.', err.message);
     return { status: 400, body: `Webhook Error: ${err.message}` };
   }
+
+  console.log('eventData', eventData);
 
   if (eventData.type === 'checkout.session.completed') {
     const session = eventData.data.object as Stripe.Checkout.Session;
