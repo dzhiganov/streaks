@@ -73,10 +73,14 @@ const iconClass = computed(() =>
 );
 
 const purchase = async (id) => {
-  const { data, error } = await $fetch('/api/create-checkout-session', {
+  const data = await $fetch('/api/create-checkout-session', {
     method: 'POST',
     body: { packageId: id },
   });
+
+  if (data.url) {
+    window.location = data.url;
+  }
 };
 </script>
 
