@@ -50,13 +50,15 @@ export default defineEventHandler(async (event) => {
       return { status: 400, body: 'Missing user or package information in metadata' };
     }
 
-    await User.findByIdAndUpdate(session.metadata?.userId, {
+    const res = await User.findByIdAndUpdate(session.metadata?.userId, {
       plan: 'pro',
       lifetime: true,
       purchasedAt: new Date(),
       transaction_id: '',
       expiresAt: null, // null for lifetime
     });
+
+    console.log('RES', session.metadata?.userId, res);
 
     console.log('✅ Payment successful');
   }
