@@ -51,11 +51,13 @@ export default defineEventHandler(async (event) => {
     }
 
     const res = await User.findByIdAndUpdate(session.metadata?.userId, {
-      plan: 'pro',
-      lifetime: true,
-      purchasedAt: new Date(),
-      transaction_id: '',
-      expiresAt: null, // null for lifetime
+      subscription: {
+        plan: 'pro',
+        lifetime: true,
+        purchasedAt: new Date(),
+        transaction_id: '',
+        expiresAt: null, // null for lifetime
+      },
     });
 
     console.log('RES', session.metadata?.userId, res);
