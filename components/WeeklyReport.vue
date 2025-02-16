@@ -141,7 +141,6 @@ onMounted(() => {
   const dialog = document.getElementById('report_modal');
   if (dialog) {
     stopObserving.value = observeDialog(dialog, (v) => {
-      console.log('v', v);
       isOpen.value = v;
     });
   }

@@ -1,6 +1,6 @@
 <script setup>
 useHead({
-  title: 'FlowTrack',
+  title: 'FlowTracks',
   meta: [{ name: 'description', content: 'App description' }],
   htmlAttrs: {
     lang: 'en',

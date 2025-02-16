@@ -21,8 +21,8 @@ definePageMeta({
         <header>
           <nav class="flex items-center justify-between gap-20 py-4">
             <div class="flex items-center gap-2">
-              <NuxtImg src="/favicon.svg" alt="FlowTrack" class="w-8 h-8" />
-              <h1 class="text-2xl font-bold font-header">FlowTrack</h1>
+              <NuxtImg src="/favicon.svg" alt="FlowTracks" class="w-8 h-8" />
+              <h1 class="text-2xl font-bold font-header">FlowTracks</h1>
             </div>
             <ul class="flex gap-16 font-semibold">
               <li>
@@ -35,9 +35,7 @@ definePageMeta({
                 <NuxtLink href="#pricing">Pricing</NuxtLink>
               </li>
             </ul>
-            <button class="btn btn-neutral w-32">
-              <NuxtLink to="/sign-in">Log in</NuxtLink>
-            </button>
+            <NuxtLink to="/sign-in" class="btn btn-neutral w-32">Log in</NuxtLink>
           </nav>
 
           <div class="mt-24">
@@ -46,10 +44,14 @@ definePageMeta({
                 Record your work, analyze your <span class="text-purple-400">progress</span>
               </h1>
               <p class="text-xl text-center">Simple and <span>super powerful</span></p>
-              <button class="btn btn-neutral w-48 flex items-center gap-2 btn-lg hover:scale-105">
-                <span>Start for free</span>
+
+              <NuxtLink
+                to="/sign-in"
+                class="btn btn-neutral w-48 flex items-center gap-2 btn-lg hover:scale-105"
+              >
+                Start for free
                 <ArrowRight class="w-4 h-4" />
-              </button>
+              </NuxtLink>
             </div>
 
             <div class="mt-12 shadow-2xl">
@@ -120,8 +122,8 @@ definePageMeta({
       <div class="flex justify-between w-full gap-12">
         <div>
           <div class="flex items-center gap-2">
-            <NuxtImg src="/favicon.svg" alt="FlowTrack" class="w-8 h-8" />
-            <h1 class="text-2xl font-bold font-header">FlowTrack</h1>
+            <NuxtImg src="/favicon.svg" alt="FlowTracks" class="w-8 h-8" />
+            <h1 class="text-2xl font-bold font-header">FlowTracks</h1>
           </div>
         </div>
         <div class="flex justify-end w-full gap-16">

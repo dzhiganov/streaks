@@ -60,6 +60,7 @@ export const UserSchema = new Schema({
     plan: { type: String, enum: ['basic', 'pro'], default: 'basic' },
     lifetime: { type: Boolean, default: false },
     purchasedAt: { type: Date, default: null },
+    transaction_id: { type: String, default: null },
     expiresAt: { type: Date, default: null }, // null for lifetime
   },
 });

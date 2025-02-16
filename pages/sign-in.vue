@@ -19,7 +19,7 @@ const { signIn } = useAuth();
     <div class="w-fit mx-auto p-4 rounded-xl bg-base-300 shadow-lg -mt-32">
       <div class="flex flex-col items-center justify-center gap-2">
         <NuxtImg src="/favicon.svg" alt="Logo" class="w-16 h-16 mx-auto mt-16" />
-        <h1 class="text-2xl font-bold font-header">FlowTrack</h1>
+        <h1 class="text-2xl font-bold font-header">FlowTracks</h1>
       </div>
 
       <div class="mx-auto w-96 flex justify-center flex-col gap-4 mt-12 p-6">

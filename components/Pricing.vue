@@ -71,6 +71,13 @@ const iconClass = computed(() =>
     ? 'h-6 w-5 flex-none text-indigo-500'
     : 'h-6 w-5 flex-none text-indigo-400',
 );
+
+const purchase = async (id) => {
+  const { data, error } = await $fetch('/api/create-checkout-session', {
+    method: 'POST',
+    body: { packageId: id },
+  });
+};
 </script>
 
 <template>
@@ -106,20 +113,20 @@ const iconClass = computed(() =>
         </li>
       </ul>
       <div class="mt-auto">
-        <a
+        <button
           v-if="!isCurrentPlan"
-          href="#"
+          @click="purchase('lifetime')"
           aria-describedby="tier-enterprise"
           class="mt-8 block rounded-md py-2.5 px-3.5 text-center text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10 bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
         >
           {{ buttonText }}
-        </a>
-        <a
+        </button>
+        <button
           v-else
           class="mt-8 block rounded-md py-2.5 px-3.5 text-center text-sm font-semibold focus-visible:outline-2 sm:mt-10 bg-gray-500 text-white shadow-xs"
         >
           Current plan
-        </a>
+        </button>
       </div>
     </div>
   </div>

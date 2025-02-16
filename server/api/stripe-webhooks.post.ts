@@ -18,14 +18,14 @@ const buffer = (req: any) => {
 };
 
 export default defineEventHandler(async (event) => {
-  const runtimeConfig = useRuntimeConfig(event)
-  const stripeWebhookKey = runtimeConfig.stripeWebhookKey
+  const runtimeConfig = useRuntimeConfig(event);
+  const stripeWebhookKey = runtimeConfig.stripeWebhookKey;
 
   const stripe = new Stripe(stripeWebhookKey!, {
     apiVersion: '2022-11-15',
   });
   const sig = getHeader(event, 'stripe-signature');
-  const buf = await buffer(event.req)
+  const buf = await buffer(event.req);
 
   if (!sig || !buf) {
     return { status: 400, body: 'Missing signature or body' };
@@ -33,11 +33,7 @@ export default defineEventHandler(async (event) => {
 
   let eventData;
   try {
-    eventData = stripe.webhooks.constructEvent(
-      buf,
-      sig,
-      stripeWebhookKey!
-    );
+    eventData = stripe.webhooks.constructEvent(buf, sig, stripeWebhookKey!);
   } catch (err) {
     console.error('⚠️  Webhook signature verification failed.', err.message);
     return { status: 400, body: `Webhook Error: ${err.message}` };
@@ -52,7 +48,7 @@ export default defineEventHandler(async (event) => {
       return { status: 400, body: 'Missing user or package information in metadata' };
     }
 
-    // console.log('✅ Payment successful');
+    console.log('✅ Payment successful');
     // console.log('⚠️ Payment failed');
   }
 

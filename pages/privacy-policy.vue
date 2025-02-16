@@ -16,8 +16,8 @@ definePageMeta({
     <div class="text-gray-500 mb-4">Last updated: 1 February 2025</div>
 
     <p class="mb-4">
-      This Privacy Policy explains how FlowTrack ("we", "us", or "our") collects, uses, discloses,
-      and protects your information when you use the FlowTrack web application ("Service"). By
+      This Privacy Policy explains how FlowTracks ("we", "us", or "our") collects, uses, discloses,
+      and protects your information when you use the FlowTracks web application ("Service"). By
       accessing or using the Service, you consent to the practices described in this Privacy Policy.
     </p>
 
@@ -66,7 +66,7 @@ definePageMeta({
         Authentication and Account Management: To verify your identity and manage your account.
       </li>
       <li>
-        Service Delivery: To provide the FlowTrack service, manage your credits, and track
+        Service Delivery: To provide the FlowTracks service, manage your credits, and track
         transactions.
       </li>
       <li>

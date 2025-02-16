@@ -25,14 +25,21 @@ watch(
   },
   { immediate: true, deep: true },
 );
+
+const goToBeta = () => {
+  window.location.href = '/beta';
+};
 </script>
 <template>
   <header
     class="px-4 flex justify-between items-center text-base-content py-2 col-span-2 w-full border-b border-neutral-content"
   >
     <div class="flex items-center gap-2">
-      <NuxtImg src="/favicon.svg" alt="FlowTrack" class="w-8 h-8" />
-      <h1 class="text-2xl font-bold font-header">FlowTrack</h1>
+      <NuxtImg src="/favicon.svg" alt="FlowTracks" class="w-8 h-8" />
+      <h1 class="text-2xl font-bold font-header">FlowTracks</h1>
+      <div class="badge badge-primary badge-md cursor-pointer font-semibold" @click="goToBeta">
+        Beta
+      </div>
     </div>
 
     <slot />
