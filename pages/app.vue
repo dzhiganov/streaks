@@ -11,6 +11,7 @@ definePageMeta({
     unauthenticatedOnly: false,
     navigateUnauthenticatedTo: '/',
   },
+  middleware: 'check-trial',
 });
 
 const route = useRoute();

@@ -1,7 +1,13 @@
 import GoogleProvider from 'next-auth/providers/google';
 // import EmailProvider from "next-auth/providers/email"
 import { NuxtAuthHandler } from '#auth';
+import dayjs from 'dayjs';
 import { User } from '~~/server/models/user.model';
+
+const AUTH_ERRORS = {
+  trialExpired: 'TRIAL_EXPIRED',
+  loginFailed: 'LOGIN_FAILED',
+};
 
 export default NuxtAuthHandler({
   secret: process.env.AUTH_SECRET || 'my-auth-secret',
@@ -32,6 +38,10 @@ export default NuxtAuthHandler({
             image: session.user?.image,
             google_id: google_id,
             userId: res._id.toString(),
+            subscription: res.subscription,
+            trialExpired:
+              res.subscription?.plan === 'trial' &&
+              dayjs().isAfter(dayjs(res.subscription.trialExpiresAt)),
           },
         };
       } catch (err) {
@@ -53,7 +63,8 @@ export default NuxtAuthHandler({
             balance: 3,
             created_at: new Date(),
             subscription: {
-              plan: 'basic',
+              plan: 'trial',
+              trialExpiresAt: dayjs().add(7, 'day').toDate(),
               lifetime: false,
               purchasedAt: null,
               expiresAt: null,
@@ -65,11 +76,18 @@ export default NuxtAuthHandler({
           return true;
         }
 
+        if (
+          currentUser?.subscription?.plan === 'trial' &&
+          dayjs().isAfter(dayjs(currentUser?.subscription.trialExpiresAt))
+        ) {
+          return `/error?message=trial_expired&error_code=${AUTH_ERRORS.trialExpired}`;
+        }
+
         return true;
       } catch (err) {
         console.error('Error in signIn callback:', err);
 
-        return `/error?message=login_failed`;
+        return `/error?message=login_failed&error_code=${AUTH_ERRORS.loginFailed}`;
       }
     },
   },
