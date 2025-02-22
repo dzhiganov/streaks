@@ -1,9 +1,11 @@
 export { default as ActivityIcon } from './ActivityIcon.vue';
+export { default as AlertIcon } from './AlertIcon.vue';
 export { default as ArrowLeft } from './ArrowLeft.vue';
 export { default as ArrowRight } from './ArrowRight.vue';
 export { default as ArrowRightCircle } from './ArrowRightCircle.vue';
 export { default as ArrowRightUpIcon } from './ArrowRightUpIcon.vue';
 export { default as AwardIcon } from './AwardIcon.vue';
+export { default as BarIcon } from './BarIcon.vue';
 export { default as CheckCircleIcon } from './CheckCircleIcon.vue';
 export { default as CheckIcon } from './CheckIcon.vue';
 export { default as ClockIcon } from './ClockIcon.vue';
@@ -28,4 +30,5 @@ export { default as SettingsIcon } from './SettingsIcon.vue';
 export { default as SquareIcon } from './SquareIcon.vue';
 export { default as StarIcon } from './StarIcon.vue';
 export { default as StopTimerIcon } from './StopTimerIcon.vue';
+export { default as TableIcon } from './TableIcon.vue';
 export { default as TimerIcon } from './TimerIcon.vue';

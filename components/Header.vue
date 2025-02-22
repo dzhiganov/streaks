@@ -32,7 +32,7 @@ const goToBeta = () => {
 </script>
 <template>
   <header
-    class="px-4 flex justify-between items-center text-base-content py-2 col-span-2 w-full border-b border-neutral-content"
+    class="border-b border-neutral-content px-4 flex justify-between items-center text-base-content py-2 col-span-2 w-full"
   >
     <div class="flex items-center gap-2">
       <NuxtImg src="/favicon.svg" alt="FlowTracks" class="w-8 h-8" />
@@ -79,7 +79,7 @@ const goToBeta = () => {
           tabindex="0"
           class="menu menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow main-card bg-base-100"
         >
-          <li class="text-lg font-semibold">
+          <li class="font-semibold">
             <NuxtLink to="/upgrade">Upgrade to PRO</NuxtLink>
           </li>
           <li>

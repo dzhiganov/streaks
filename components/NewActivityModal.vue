@@ -22,12 +22,14 @@ const selectedActivity = ref(1);
 const selectedGoal = ref('day');
 
 const { data: activitiesData, refetch: refetchActivities } = useGetActivities({ onlyActive: true });
-const { mutate: addNewActivity } = useAddActivity(() => {
+const { mutate: addNewActivity, isPending: isAddingActivity } = useAddActivity(() => {
   refetchActivities();
 });
-const { mutate: updateActivity } = useUpdateActivity(() => {
+const { mutate: updateActivity, isPending: isUpdatingActivity } = useUpdateActivity(() => {
   refetchActivities();
 });
+
+const isLoading = computed(() => isAddingActivity.value || isUpdatingActivity.value);
 
 const editedActivity = inject('editedActivity');
 
@@ -142,6 +144,8 @@ const onSaveActivity = async () => {
   activityMonthTimeGoal.value = 0;
 
   showNotification.value = 'Activity saved';
+
+  document.getElementById('add_new_activity_modal').close();
 };
 
 const updateFields = (activity) => {
@@ -161,6 +165,19 @@ watch(selectedGoal, () => {
   activityWeekTimeGoal.value = 0;
   activityDayTimeGoal.value = 0;
   activityMonthTimeGoal.value = 0;
+});
+
+const isDisabled = computed(() => {
+  if (
+    !activityTitle.value ||
+    !activityType.value ||
+    (activityWeekTimeGoal.value === 0 &&
+      activityDayTimeGoal.value === 0 &&
+      activityMonthTimeGoal.value === 0)
+  ) {
+    return true;
+  }
+  return false;
 });
 </script>
 <template>
@@ -183,7 +200,7 @@ watch(selectedGoal, () => {
       <div class="p-8 pt-2">
         <div class="mt-4 space-y-2 flex flex-col gap-4">
           <div class="space-y-2">
-            <label for="activityType" class="block font-medium">Activity Type</label>
+            <label for="activityType" class="block font-medium">Activity Type*</label>
             <select
               class="select select-bordered w-full"
               v-model="activityType"
@@ -198,7 +215,7 @@ watch(selectedGoal, () => {
           </div>
 
           <div class="space-y-2">
-            <label class="block text-gray-600 font-medium">Title</label>
+            <label class="block font-medium">Title*</label>
             <input
               v-model="activityTitle"
               type="text"
@@ -209,7 +226,7 @@ watch(selectedGoal, () => {
           </div>
 
           <div class="space-y-2">
-            <label class="block text-gray-600 font-medium">Description</label>
+            <label class="block font-medium">Description</label>
             <textarea
               v-model="activityDescription"
               class="textarea textarea-bordered w-full rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -218,7 +235,7 @@ watch(selectedGoal, () => {
           </div>
 
           <div class="space-y-2">
-            <label class="block text-gray-600 font-medium">Color</label>
+            <label class="block font-medium">Color</label>
             <div class="p-3 rounded-md flex gap-2 items-center">
               <button
                 v-for="color in colors"
@@ -228,7 +245,7 @@ watch(selectedGoal, () => {
                   backgroundColor: color.value,
                 }"
                 :class="{
-                  'relative after:content-[\'\'] after:absolute after:inset-[-4px] after:rounded-full after:border-2 after:border-accent-content':
+                  'relative after:content-[\'\'] after:absolute after:inset-[-4px] after:rounded-full after:border-2 after:border-accent-content dark:after:border-white':
                     activityColor === color.value,
                 }"
                 class="w-8 h-8 rounded-full"
@@ -236,11 +253,10 @@ watch(selectedGoal, () => {
             </div>
           </div>
 
-          <h3 class="text-lg font-bold">Time Goals</h3>
+          <h3 class="text-lg font-bold">Time Goals*</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Day Goal -->
             <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">
+              <label class="block font-medium">
                 <input
                   type="radio"
                   name="timeGoal"
@@ -259,9 +275,8 @@ watch(selectedGoal, () => {
               />
             </div>
 
-            <!-- Week Goal -->
             <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">
+              <label class="block font-medium">
                 <input
                   type="radio"
                   name="timeGoal"
@@ -280,9 +295,8 @@ watch(selectedGoal, () => {
               />
             </div>
 
-            <!-- Month Goal -->
             <div class="space-y-2">
-              <label class="block text-gray-600 font-medium">
+              <label class="block font-medium">
                 <input
                   type="radio"
                   name="timeGoal"
@@ -304,10 +318,12 @@ watch(selectedGoal, () => {
           <div class="modal-action flex justify-end">
             <form method="dialog" class="flex gap-4 mt-4">
               <button
-                class="btn btn-primary px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
+                class="min-w-32 btn btn-primary px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
                 @click="onSaveActivity"
+                :disabled="isDisabled"
               >
-                Save
+                <span v-if="isLoading" class="loading loading-spinner"></span>
+                <span v-else>Save</span>
               </button>
             </form>
           </div>

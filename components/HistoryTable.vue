@@ -56,16 +56,7 @@ const { data } = useGetGroupedHistory({
 
 const groupedActivities = computed(() => data.value?.history ?? {});
 
-const getTimeColor = (time) => {
-  if (time <= 30) {
-    return 'text-base-content';
-  }
-  if (time <= 60) {
-    return 'text-accent';
-  }
-
-  return 'text-primary';
-};
+const noActivities = computed(() => Object.keys(groupedActivities.value).length === 0);
 </script>
 <template>
   <div class="overflow-x-auto rounded-box bg-base-100">
@@ -82,6 +73,15 @@ const getTimeColor = (time) => {
         </tr>
       </thead>
       <tbody>
+        <template v-if="noActivities">
+          <tr>
+            <td colspan="8" class="text-center">
+              <div class="flex flex-col items-center justify-center gap-2 py-8 text-gray-500">
+                No activities found
+              </div>
+            </td>
+          </tr>
+        </template>
         <template
           v-for="(activities, activityType, typeIndex) in groupedActivities"
           :key="activityType"
@@ -96,7 +96,7 @@ const getTimeColor = (time) => {
             v-for="(activity, activityName, activityIndex) in activities"
             :key="activityName"
           >
-            <tr class="bg-base-300">
+            <tr class="bg-base-300 dark:bg-base-200">
               <td>{{ typeIndex + 1 }}.{{ activityIndex + 1 }}</td>
               <td>{{ activityType }}</td>
               <td class="font-semibold">
@@ -104,7 +104,7 @@ const getTimeColor = (time) => {
                   :style="{ backgroundColor: activity.color }"
                   class="rounded-xl px-2 py-0.5 text-sm text-center w-fit"
                 >
-                  <span class="text-base-300">{{ activityName }}</span>
+                  <span class="text-base-200">{{ activityName }}</span>
                 </div>
               </td>
               <td class="font-semibold">{{ formatTime({ minutes: activity.sum }) }}</td>

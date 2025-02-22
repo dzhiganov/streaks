@@ -16,7 +16,6 @@ import {
 } from '~/services/activity.service';
 import { getIcon } from '~/utils/getIcon';
 
-
 const OWL_EMOJI_CODE_POINT = `1f989`;
 const DEFAULT_ACTIVITY_COLOR = `Forest Green`;
 
@@ -64,10 +63,12 @@ const { mutate: addNewActivity } = useAddActivity(() => {
   refetchActivities();
 });
 const { mutate: addNewType } = useAddActivityType();
-const { mutate: logActivity } = useLogActivity();
-const { mutate: updateActivity } = useUpdateActivity(() => {
+const { mutate: logActivity, isPending: isLoggingActivity } = useLogActivity();
+const { mutate: updateActivity, isPending: isUpdatingActivity } = useUpdateActivity(() => {
   refetchActivities();
 });
+
+const isLoading = computed(() => isLoggingActivity.value || isUpdatingActivity.value);
 
 const activityTypes = computed(() => activityTypesData?.value?.activity_types || []);
 const activities = computed(() => activitiesData?.value?.activities || []);
@@ -303,7 +304,8 @@ const onClickDeleteButton = (activity) => {
 
           <div class="mt-4 flex justify-center">
             <button class="btn btn-primary mt-2 w-full rounded-xl" @click="onLogActivity">
-              Log activity
+              <span v-if="isLoading" class="loading loading-spinner"></span>
+              <span v-else>Log activity</span>
             </button>
           </div>
         </div>

@@ -4,11 +4,20 @@ import { useAddActivityType } from '~/services/activity.service';
 const title = ref('');
 const description = ref('');
 
-const { mutate: addNewType } = useAddActivityType();
+const { mutate: addNewType, isPending: isAddingType } = useAddActivityType();
 
 const onSaveActivityType = async () => {
   addNewType({ title: title.value, description: description.value });
 };
+
+const isDisabled = computed(() => {
+  if (!title.value) {
+    return true;
+  }
+  return false;
+});
+
+const isLoading = computed(() => isAddingType.value);
 </script>
 <template>
   <dialog id="new_activity_type_modal" class="modal">
@@ -22,7 +31,7 @@ const onSaveActivityType = async () => {
       <div class="p-8 pt-2">
         <div class="mt-4 space-y-2 flex flex-col gap-4">
           <div class="space-y-2">
-            <label class="block text-gray-600 font-medium">Title</label>
+            <label class="block text-gray-600 font-medium">Title*</label>
             <input
               v-model="title"
               type="text"
@@ -45,8 +54,10 @@ const onSaveActivityType = async () => {
               <button
                 class="btn btn-primary px-6 py-2 rounded-xl shadow-md hover:bg-primary-dark transition duration-300"
                 @click="onSaveActivityType"
+                :disabled="isDisabled"
               >
-                Save
+                <span v-if="isLoading" class="loading loading-spinner"></span>
+                <span v-else>Save</span>
               </button>
             </form>
           </div>

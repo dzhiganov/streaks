@@ -1,11 +1,13 @@
 <script setup>
 import dayjs from 'dayjs';
+import { AlertIcon } from '~/assets/icons';
 import {
   useDeleteLogActivity,
   useGetActivities,
   useLogActivity,
   useUpdateLogActivity,
 } from '~/services/activity.service';
+import ModalWindowWarning from './ModalWindowWarning.vue';
 
 const props = defineProps({
   date: {
@@ -47,9 +49,11 @@ watch(
   { immediate: true },
 );
 
-const { mutate: logActivity } = useLogActivity();
-const { mutate: updateLogActivity } = useUpdateLogActivity();
+const { mutate: logActivity, isPending: isLoggingActivity } = useLogActivity();
+const { mutate: updateLogActivity, isPending: isUpdatingActivity } = useUpdateLogActivity();
 const { mutate: deleteLogActivity } = useDeleteLogActivity();
+
+const isLoading = computed(() => isLoggingActivity.value || isUpdatingActivity.value);
 
 const onLogActivity = async () => {
   if (editedActivity.value) {
@@ -96,6 +100,17 @@ const onClose = () => {
   editedActivity.value = null;
   predefinedActivity.value = null;
 };
+
+const showActivitiesWarning = computed(() => {
+  return activities.value.length === 0;
+});
+
+const isDisabled = computed(() => {
+  if (!selectedActivity.value || !duration.value) {
+    return true;
+  }
+  return false;
+});
 </script>
 
 <template>
@@ -108,8 +123,14 @@ const onClose = () => {
         </form>
       </header>
       <div class="p-8 pt-2">
+        <ModalWindowWarning :show="showActivitiesWarning" @close="() => {}">
+          <div class="flex items-center gap-2">
+            <AlertIcon class="w-4 h-4" />
+            <span class="text-sm">You need to add at least one activity to log activity</span>
+          </div>
+        </ModalWindowWarning>
         <div>
-          <label for="date" class="block font-medium">Date</label>
+          <label for="date" class="block font-medium">Date*</label>
           <input
             v-model="selectedDate"
             type="date"
@@ -129,7 +150,7 @@ const onClose = () => {
         </div>
 
         <div>
-          <label for="date" class="block font-medium">Activity</label>
+          <label for="date" class="block font-medium">Activity*</label>
           <select class="select select-bordered w-full" v-model="selectedActivity">
             <option disabled selected>Select Activity</option>
             <option v-for="{ _id, title } in activities" :key="_id" :value="_id">
@@ -139,7 +160,7 @@ const onClose = () => {
         </div>
 
         <div class="mt-4">
-          <label for="date" class="block font-medium">Duration (minutes)</label>
+          <label for="date" class="block font-medium">Duration* (minutes)</label>
           <input
             v-model="duration"
             type="number"
@@ -168,11 +189,17 @@ const onClose = () => {
         </div>
 
         <div v-else class="mt-8 flex justify-center">
-          <button class="btn btn-primary mt-2 w-full rounded-xl" @click="onLogActivity">
-            Log activity
+          <button
+            class="btn btn-primary mt-2 w-full rounded-xl"
+            @click="onLogActivity"
+            :disabled="isDisabled"
+          >
+            <span v-if="isLoading" class="loading loading-spinner"></span>
+            <span v-else>Log activity</span>
           </button>
         </div>
       </div>
     </div>
   </dialog>
+  <Toast message="Activity logged" type="success" />
 </template>

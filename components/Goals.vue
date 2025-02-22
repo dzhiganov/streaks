@@ -27,10 +27,12 @@ const onDeleteActivity = () => {
 };
 </script>
 <template>
-  <div class="main-card p-4 rounded-lg shadow">
+  <div class="p-4 rounded-lg shadow bg-base-100">
     <h2 class="text-lg font-bold mb-4">Week goals</h2>
     <div v-if="activities.length === 0">
-      <p class="text-gray-500">No activities</p>
+      <p class="text-gray-500 text-sm">
+        No activities. Goals will be shown here after you add some activities.
+      </p>
     </div>
     <div v-else>
       <ul class="space-y-2">
