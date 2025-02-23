@@ -23,7 +23,6 @@ jobs:
       - name: Build
         run: |
           npm run build
-          echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" > /home/ubuntu/habit-tracker-app/.env
 
       - name: Transfers Build Folder to EC2 Instance
         uses: easingthemes/ssh-deploy@v3
@@ -34,3 +33,12 @@ jobs:
           REMOTE_PORT: ${{ secrets.AWS_EC2_DEPLOY_PORT }}
           SOURCE: .output/
           TARGET: /home/ubuntu/habit-tracker-app/.output
+        script: |
+          if [ ! -f /home/ubuntu/habit-tracker-app/.env ]; then
+            echo "Creating .env file..."
+            touch /home/ubuntu/habit-tracker-app/.env
+          fi
+
+          if ! grep -q "AUTH_ORIGIN=" /home/ubuntu/habit-tracker-app/.env; then
+            echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" >> /home/ubuntu/habit-tracker-app/.env
+          fi
