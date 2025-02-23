@@ -8,6 +8,11 @@ const { mutate: addNewType, isPending: isAddingType } = useAddActivityType();
 
 const onSaveActivityType = async () => {
   addNewType({ title: title.value, description: description.value });
+  showToast.value = true;
+
+  setTimeout(() => {
+    showToast.value = false;
+  }, 3000);
 };
 
 const isDisabled = computed(() => {
@@ -16,6 +21,8 @@ const isDisabled = computed(() => {
   }
   return false;
 });
+
+const showToast = ref(false);
 
 const isLoading = computed(() => isAddingType.value);
 </script>
@@ -65,4 +72,5 @@ const isLoading = computed(() => isAddingType.value);
       </div>
     </div>
   </dialog>
+  <Toast message="Activity type saved" type="success" :show="showToast" />
 </template>

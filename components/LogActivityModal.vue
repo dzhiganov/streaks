@@ -33,8 +33,12 @@ const predefinedActivity = defineModel('predefinedActivity', {
 const selectedDate = ref(dayjs(props.date).format('YYYY-MM-DD'));
 const selectedActivity = ref(null);
 const duration = ref(0);
-const { data: activitiesData } = useGetActivities({ onlyActive: true });
+const { data: activitiesData, isPending: isLoadingActivities } = useGetActivities({
+  onlyActive: true,
+});
 const activities = computed(() => activitiesData?.value?.activities || []);
+
+const showToast = ref(false);
 
 const predefinedTimeOptions = computed(() => [25, 30, 50, 60, 90]);
 
@@ -69,9 +73,14 @@ const onLogActivity = async () => {
       date: selectedDate.value,
     });
 
-    // showNotification.value = 'Activity logged';
     duration.value = '';
   }
+  showToast.value = true;
+
+  setTimeout(() => {
+    showToast.value = false;
+  }, 3000);
+
   document.getElementById('log_activity_modal').close();
 };
 
@@ -102,7 +111,7 @@ const onClose = () => {
 };
 
 const showActivitiesWarning = computed(() => {
-  return activities.value.length === 0;
+  return activities.value.length === 0 && !isLoadingActivities.value;
 });
 
 const isDisabled = computed(() => {
@@ -201,5 +210,5 @@ const isDisabled = computed(() => {
       </div>
     </div>
   </dialog>
-  <Toast message="Activity logged" type="success" />
+  <Toast message="Activity logged" type="success" :show="showToast" />
 </template>

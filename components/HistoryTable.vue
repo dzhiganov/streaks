@@ -96,7 +96,7 @@ const noActivities = computed(() => Object.keys(groupedActivities.value).length 
             v-for="(activity, activityName, activityIndex) in activities"
             :key="activityName"
           >
-            <tr class="bg-base-300 dark:bg-base-200">
+            <tr class="bg-base-300 dark:bg-gray-800">
               <td>{{ typeIndex + 1 }}.{{ activityIndex + 1 }}</td>
               <td>{{ activityType }}</td>
               <td class="font-semibold">

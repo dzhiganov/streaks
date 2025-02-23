@@ -31,6 +31,8 @@ const { mutate: updateActivity, isPending: isUpdatingActivity } = useUpdateActiv
 
 const isLoading = computed(() => isAddingActivity.value || isUpdatingActivity.value);
 
+const showToast = ref(false);
+
 const editedActivity = inject('editedActivity');
 
 watch(editedActivity, () => {
@@ -143,8 +145,11 @@ const onSaveActivity = async () => {
   activityDayTimeGoal.value = 0;
   activityMonthTimeGoal.value = 0;
 
-  showNotification.value = 'Activity saved';
+  showToast.value = true;
 
+  setTimeout(() => {
+    showToast.value = false;
+  }, 3000);
   document.getElementById('add_new_activity_modal').close();
 };
 
@@ -331,4 +336,5 @@ const isDisabled = computed(() => {
       </div>
     </div>
   </dialog>
+  <Toast message="Activity saved" type="success" :show="showToast" />
 </template>
