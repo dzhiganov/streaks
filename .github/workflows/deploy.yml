@@ -49,9 +49,6 @@ jobs:
 
             source /home/ubuntu/habit-tracker-app/.env
 
-            echo "Installing PM2 if not installed..."
-            npm install -g pm2
-
             echo "Restarting the app with PM2..."
             cd /home/ubuntu/habit-tracker-app/
 
