@@ -43,11 +43,11 @@ jobs:
           key: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
           script: |
             echo "Setting environment variables..."
-            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > /home/ubuntu/habit-tracker-app/.env
-            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> /home/ubuntu/habit-tracker-app/.env
-            echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" >> /home/ubuntu/habit-tracker-app/.env
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > /home/ubuntu/habit-tracker-app/.output/server/.env
+            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> /home/ubuntu/habit-tracker-app/.output/server/.env
+            echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" >> /home/ubuntu/habit-tracker-app/.output/server/.env
 
-            source /home/ubuntu/habit-tracker-app/.env
+            source /home/ubuntu/habit-tracker-app/.output/server/.env
 
             echo "Restarting the app with PM2..."
             cd /home/ubuntu/habit-tracker-app/
