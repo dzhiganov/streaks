@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: |
           npm run build
-          export AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}
+          echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" > /home/ubuntu/habit-tracker-app/.env
 
       - name: Transfers Build Folder to EC2 Instance
         uses: easingthemes/ssh-deploy@v3
