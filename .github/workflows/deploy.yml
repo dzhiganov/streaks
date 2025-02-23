@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -34,26 +35,27 @@ jobs:
           SOURCE: .output/
           TARGET: /home/ubuntu/habit-tracker-app/.output
 
-      - name: Set AUTH_ORIGIN and Restart Server
+      - name: Start Node.js server on EC2 with PM2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_EC2_DEPLOY_IP_ADDRESS_HOST }}
           username: ${{ secrets.AWS_EC2_DEPLOY_USER }}
           key: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
-          port: ${{ secrets.AWS_EC2_DEPLOY_PORT }}
           script: |
-            cd /home/ubuntu/habit-tracker-app
+            echo "Setting environment variables..."
+            echo "GOOGLE_CLIENT_ID=${{ env.GOOGLE_CLIENT_ID }}" > /home/ubuntu/habit-tracker-app/.env
+            echo "GOOGLE_CLIENT_SECRET=${{ env.GOOGLE_CLIENT_SECRET }}" >> /home/ubuntu/habit-tracker-app/.env
+            echo "AUTH_ORIGIN=${{ env.AUTH_ORIGIN }}" >> /home/ubuntu/habit-tracker-app/.env
 
-            # Ensure .env file exists
-            if [ ! -f .env ]; then
-              echo "Creating .env file..."
-              touch .env
-            fi
+            source /home/ubuntu/habit-tracker-app/.env
 
-            # Set AUTH_ORIGIN if not already present
-            if ! grep -q "AUTH_ORIGIN=" .env; then
-              echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" >> .env
-            fi
+            echo "Installing PM2 if not installed..."
+            npm install -g pm2
 
-            # Load environment variables
-            source .env
+            echo "Restarting the app with PM2..."
+            cd /home/ubuntu/habit-tracker-app/
+
+            pm2 delete habit-tracker || true  # Delete previous process if exists
+            pm2 start .output/server/index.mjs --name habit-tracker --env production
+            pm2 save
+            pm2 list
