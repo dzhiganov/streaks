@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     stripeSecretKey: '',
     stripeWebhookKey: '',
+    public: {
+      AUTH_ORIGIN: process.env.AUTH_ORIGIN || 'http://localhost:3000',
+    },
   },
   vue: {
     compilerOptions: {
@@ -43,8 +46,10 @@ export default defineNuxtConfig({
   },
   auth: {
     isEnabled: true,
-    originEnvKey: process.env.AUTH_ORIGIN,
-    baseURL: process.env.AUTH_ORIGIN + '/api/auth',
+    originEnvKey: process.env.AUTH_ORIGIN || 'http://localhost:3000',
+    baseURL: process.env.AUTH_ORIGIN
+      ? `${process.env.AUTH_ORIGIN}/api/auth`
+      : 'http://localhost:3000/api/auth',
     globalAppMiddleware: true,
     sessionRefresh: {
       enablePeriodically: 1000 * 60,
