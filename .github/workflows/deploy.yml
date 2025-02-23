@@ -10,10 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18
           cache: 'npm'
 
       - name: Install dependencies
@@ -33,12 +33,27 @@ jobs:
           REMOTE_PORT: ${{ secrets.AWS_EC2_DEPLOY_PORT }}
           SOURCE: .output/
           TARGET: /home/ubuntu/habit-tracker-app/.output
-        script: |
-          if [ ! -f /home/ubuntu/habit-tracker-app/.env ]; then
-            echo "Creating .env file..."
-            touch /home/ubuntu/habit-tracker-app/.env
-          fi
 
-          if ! grep -q "AUTH_ORIGIN=" /home/ubuntu/habit-tracker-app/.env; then
-            echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" >> /home/ubuntu/habit-tracker-app/.env
-          fi
+      - name: Set AUTH_ORIGIN and Restart Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_DEPLOY_IP_ADDRESS_HOST }}
+          username: ${{ secrets.AWS_EC2_DEPLOY_USER }}
+          key: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
+          port: ${{ secrets.AWS_EC2_DEPLOY_PORT }}
+          script: |
+            cd /home/ubuntu/habit-tracker-app
+
+            # Ensure .env file exists
+            if [ ! -f .env ]; then
+              echo "Creating .env file..."
+              touch .env
+            fi
+
+            # Set AUTH_ORIGIN if not already present
+            if ! grep -q "AUTH_ORIGIN=" .env; then
+              echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" >> .env
+            fi
+
+            # Load environment variables
+            source .env
