@@ -3,7 +3,7 @@ import Plans from '~/components/Plans.vue';
 </script>
 
 <template>
-  <div class="px-6 h-auto md:min-h-screen">
+  <div class="px-6 h-auto md:min-h-screen" data-testid="login-page">
     <div class="mx-auto max-w-screen-lg pb-16">
       <header>
         <nav class="flex items-center justify-between gap-20 py-4">

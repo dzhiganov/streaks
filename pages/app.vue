@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 
-const { signOut, data, getSession } = useAuth();
+const { getSession } = useAuth();
 const userSession = ref({});
 
 const router = useRouter();
@@ -24,6 +24,13 @@ onMounted(async () => {
 onMounted(() => {
   if (route.path === '/app') {
     router.push('/app/dashboard');
+  }
+});
+
+onMounted(() => {
+  const homePage = document.querySelector('[data-testid="home-page"]');
+  if (homePage) {
+    window.location.reload();
   }
 });
 </script>
