@@ -107,9 +107,9 @@ const trialExpiresAt = computed(() => {
 <template>
   <div class="grid min-h-screen grid-rows-[auto_1fr] grid-cols-[300px_minmax(0,1fr)]">
     <Header>
-      <div class="flex items-center gap-4 w-full px-8">
+      <div class="flex items-center gap-4 w-full px-2">
         <div class="flex items-center gap-4 justify-end w-full">
-          <select class="select select-bordered" v-model="selectedRange">
+          <select class="select select-bordered select-sm" v-model="selectedRange">
             <option value="day">Day</option>
             <option value="week">Week</option>
             <option value="month">Month</option>
@@ -117,7 +117,7 @@ const trialExpiresAt = computed(() => {
           </select>
 
           <div class="dropdown dropdown-bottom dropdown-end">
-            <button class="btn btn-primary" onclick="log_activity_modal.showModal()">
+            <button class="btn btn-primary btn-sm" onclick="log_activity_modal.showModal()">
               <PlusIcon class="w-5 h-5" />
               <span>Add Activity</span>
             </button>
@@ -140,7 +140,7 @@ const trialExpiresAt = computed(() => {
       </div>
       <div class="flex flex-col gap-10 mt-8">
         <div class="dropdown">
-          <div tabindex="0" role="button" class="btn btn-neutral">
+          <div tabindex="0" role="button" class="btn btn-neutral btn-sm">
             <PlusIcon class="w-5 h-5" />
             <span>Create</span>
             <span>⏷</span>
@@ -150,12 +150,12 @@ const trialExpiresAt = computed(() => {
             class="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 shadow border border-neutral-content"
           >
             <li>
-              <button class="btn btn-ghost" onclick="add_new_activity_modal.showModal()">
+              <button class="btn btn-ghost btn-sm" onclick="add_new_activity_modal.showModal()">
                 Activity
               </button>
             </li>
             <li>
-              <button class="btn btn-ghost" onclick="new_activity_type_modal.showModal()">
+              <button class="btn btn-ghost btn-sm" onclick="new_activity_type_modal.showModal()">
                 Activity Type
               </button>
             </li>
@@ -188,7 +188,7 @@ const trialExpiresAt = computed(() => {
         </button>
       </div>
     </aside>
-    <main class="px-12 py-4 flex flex-col bg-base-200">
+    <main class="px-12 py-4 flex flex-col bg-base-300">
       <div v-if="route.query?.view === 'table' || route.query?.view === 'graph'" class="mb-6">
         <div class="flex mb-2 gap-4 items-center">
           <div class="text-lg font-semibold">Activity for {{ rangeTitle }}</div>

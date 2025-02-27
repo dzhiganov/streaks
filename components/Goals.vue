@@ -1,5 +1,5 @@
 <script setup>
-import { CrossIcon, EditIcon } from '~/assets/icons';
+import { CrossIcon, EditIcon, GoalIcon } from '~/assets/icons';
 import { useGetActivities } from '~/services/activity.service';
 
 const { data: activitiesData } = useGetActivities({ onlyActive: true });
@@ -27,8 +27,11 @@ const onDeleteActivity = () => {
 };
 </script>
 <template>
-  <div class="p-4 rounded-lg shadow bg-base-100">
-    <h2 class="text-lg font-bold mb-4">Week goals</h2>
+  <div class="px-2 py-4 rounded-lg shadow bg-base-100">
+    <h2 class="text-lg font-bold mb-4 flex items-center gap-2 px-2">
+      <GoalIcon class="w-5 h-5" />
+      Goals
+    </h2>
     <div v-if="activities.length === 0">
       <p class="text-gray-500 text-sm">
         No activities. Goals will be shown here after you add some activities.

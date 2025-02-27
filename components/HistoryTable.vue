@@ -48,7 +48,7 @@ watch(
 
 const limit = computed(() => (range.value === 'year' ? 100 : 10000));
 
-const { data } = useGetGroupedHistory({
+const { data, isFetching } = useGetGroupedHistory({
   date,
   range: computedRange,
   limit,
@@ -59,8 +59,12 @@ const groupedActivities = computed(() => data.value?.history ?? {});
 const noActivities = computed(() => Object.keys(groupedActivities.value).length === 0);
 </script>
 <template>
-  <div class="overflow-x-auto rounded-box bg-base-100">
-    <table class="table">
+  <div class="overflow-x-auto rounded-box bg-base-100 min-h-[200px]">
+    <div v-if="isFetching" class="flex justify-center items-center h-full">
+      <span class="loading loading-spinner loading-md"></span>
+    </div>
+
+    <table v-else class="table">
       <thead>
         <tr class="border-b border-neutral-content">
           <th>#</th>
@@ -86,7 +90,7 @@ const noActivities = computed(() => Object.keys(groupedActivities.value).length 
           v-for="(activities, activityType, typeIndex) in groupedActivities"
           :key="activityType"
         >
-          <tr class="bg-base-400">
+          <tr class="bg-base-100">
             <td colspan="8" class="font-bold text-lg">
               {{ activityType }}
             </td>
@@ -96,7 +100,7 @@ const noActivities = computed(() => Object.keys(groupedActivities.value).length 
             v-for="(activity, activityName, activityIndex) in activities"
             :key="activityName"
           >
-            <tr class="bg-base-300 dark:bg-gray-800">
+            <tr class="bg-base-100 dark:bg-gray-800">
               <td>{{ typeIndex + 1 }}.{{ activityIndex + 1 }}</td>
               <td>{{ activityType }}</td>
               <td class="font-semibold">
