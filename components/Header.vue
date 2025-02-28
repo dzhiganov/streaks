@@ -34,16 +34,8 @@ const goToBeta = () => {
 </script>
 <template>
   <header
-    class="border-b border-neutral-content px-4 flex justify-between items-center text-base-content py-2 col-span-2 w-full"
+    class="ml-auto rounded-xl w-fit flex justify-between items-center text-base-content py-2 col-span-2"
   >
-    <div class="flex items-center gap-2">
-      <NuxtImg src="/favicon.svg" alt="FlowTracks" class="w-7 h-7" />
-      <h1 class="text-lg font-bold font-header">FlowTracks</h1>
-      <div class="badge badge-primary badge-sm cursor-pointer font-semibold" @click="goToBeta">
-        Beta
-      </div>
-    </div>
-
     <slot />
     <div class="flex items-center gap-2">
       <label class="swap swap-rotate">

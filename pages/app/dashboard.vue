@@ -13,7 +13,6 @@ import {
   TableIcon,
 } from '~/assets/icons';
 import Goals from '~/components/Goals.vue';
-import Header from '~/components/Header.vue';
 import HistoryTable from '~/components/HistoryTable.vue';
 import LineChart from '~/components/LineChart.vue';
 import Messages from '~/components/Messages.vue';
@@ -58,6 +57,16 @@ const rangeTitle = computed(() => {
 
 const setTodayDate = () => {
   selectedDate.value = dayjs().format('YYYY-MM-DD');
+};
+
+const setPreviousDate = () => {
+  selectedDate.value = dayjs(selectedDate.value)
+    .subtract(1, selectedRange.value)
+    .format('YYYY-MM-DD');
+};
+
+const setNextDate = () => {
+  selectedDate.value = dayjs(selectedDate.value).add(1, selectedRange.value).format('YYYY-MM-DD');
 };
 
 const onEditLogActivity = (val) => {
@@ -105,27 +114,16 @@ const trialExpiresAt = computed(() => {
 });
 </script>
 <template>
-  <div class="grid min-h-screen grid-rows-[auto_1fr] grid-cols-[300px_minmax(0,1fr)]">
-    <Header>
-      <div class="flex items-center gap-4 w-full px-2">
-        <div class="flex items-center gap-4 justify-end w-full">
-          <select class="select select-bordered select-sm" v-model="selectedRange">
-            <option value="day">Day</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
-            <option value="year">Year</option>
-          </select>
-
-          <div class="dropdown dropdown-bottom dropdown-end">
-            <button class="btn btn-primary btn-sm" onclick="log_activity_modal.showModal()">
-              <PlusIcon class="w-5 h-5" />
-              <span>Add Activity</span>
-            </button>
-          </div>
+  <div class="min-h-screen flex w-full">
+    <aside class="px-4 py-4 border-r border-neutral-content h-screen">
+      <div class="flex items-center gap-2">
+        <NuxtImg src="/favicon.svg" alt="FlowTracks" class="w-7 h-7" />
+        <h1 class="text-lg font-bold font-header">FlowTracks</h1>
+        <div class="badge badge-primary badge-sm cursor-pointer font-semibold" @click="goToBeta">
+          Beta
         </div>
       </div>
-    </Header>
-    <aside class="px-4 border-r border-neutral-content">
+
       <div
         v-if="showTrialWarning"
         class="mt-4 bg-orange-200 text-orange-900 p-4 p-2 rounded-xl flex flex-col justify-center items-center shadow-md gap-2 border border-neutral-content"
@@ -139,28 +137,6 @@ const trialExpiresAt = computed(() => {
         <NuxtLink to="/upgrade" class="btn btn-sm btn-ghost w-full">Upgrade to PRO</NuxtLink>
       </div>
       <div class="flex flex-col gap-10 mt-8">
-        <div class="dropdown">
-          <div tabindex="0" role="button" class="btn btn-neutral btn-sm">
-            <PlusIcon class="w-5 h-5" />
-            <span>Create</span>
-            <span>⏷</span>
-          </div>
-          <ul
-            tabindex="0"
-            class="dropdown-content menu bg-base-200 rounded-box z-[1] w-52 p-2 shadow border border-neutral-content"
-          >
-            <li>
-              <button class="btn btn-ghost btn-sm" onclick="add_new_activity_modal.showModal()">
-                Activity
-              </button>
-            </li>
-            <li>
-              <button class="btn btn-ghost btn-sm" onclick="new_activity_type_modal.showModal()">
-                Activity Type
-              </button>
-            </li>
-          </ul>
-        </div>
         <div
           class="bg-base-100 dark:bg-base-300 rounded-lg shadow flex justify-center items-start min-h-[330px]"
         >
@@ -183,22 +159,79 @@ const trialExpiresAt = computed(() => {
         </div>
         <Goals @edit-activity="onEditActivity" />
         <button class="btn btn-neutral" onclick="report_modal.showModal()">
-          <FileTextIcon class="w-5 h-5" />
+          <FileTextIcon class="w-4 h-4" />
           <span>Generate Report</span>
         </button>
       </div>
     </aside>
-    <main class="px-12 py-4 flex flex-col bg-base-300">
-      <div v-if="route.query?.view === 'table' || route.query?.view === 'graph'" class="mb-6">
+    <main class="px-2 flex flex-col bg-base-200 w-full">
+      <div class="mb-12">
+        <Header>
+          <div class="flex items-center gap-4 w-full px-2">
+            <div class="flex items-center gap-4 justify-end w-full">
+              <select class="select select-bordered select-sm" v-model="selectedRange">
+                <option value="day">Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+              </select>
+
+              <div class="dropdown">
+                <div tabindex="0" role="button" class="btn btn-neutral btn-sm">
+                  <PlusIcon class="w-5 h-5" />
+                  <span>Create</span>
+                  <span>⏷</span>
+                </div>
+                <ul
+                  tabindex="0"
+                  class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-neutral-content"
+                >
+                  <li>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      onclick="add_new_activity_modal.showModal()"
+                    >
+                      Activity
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      onclick="new_activity_type_modal.showModal()"
+                    >
+                      Activity Type
+                    </button>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="dropdown dropdown-bottom dropdown-end">
+                <button class="btn btn-primary btn-sm" onclick="log_activity_modal.showModal()">
+                  <PlusIcon class="w-5 h-5" />
+                  <span>Activity</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </Header>
+      </div>
+
+      <div v-if="route.query?.view === 'table' || route.query?.view === 'graph'" class="mb-2 px-12">
         <div class="flex mb-2 gap-4 items-center">
-          <div class="text-lg font-semibold">Activity for {{ rangeTitle }}</div>
-          <div>
+          <div class="text-lg font-semibold w-64">Activity for {{ rangeTitle }}</div>
+          <div class="flex items-center gap-1">
+            <button class="btn btn-ghost btn-sm font-semibold text-lg" @click="setPreviousDate">
+              <
+            </button>
             <button
               class="btn btn-ghost btn-sm text-blue-500"
               @click="setTodayDate"
               :disabled="dayjs(selectedDate).isToday()"
             >
               Today
+            </button>
+            <button class="btn btn-ghost btn-sm font-semibold text-lg" @click="setNextDate">
+              >
             </button>
           </div>
           <div class="flex items-center gap-2 ml-auto">
