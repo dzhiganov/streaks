@@ -1,5 +1,9 @@
 <script setup>
 import Plans from '~/components/Plans.vue';
+
+definePageMeta({
+  auth: false,
+});
 </script>
 
 <template>
@@ -22,12 +26,6 @@ import Plans from '~/components/Plans.vue';
       </header>
 
       <Plans />
-
-      <div class="text-center mt-12 text-sm">
-        By proceeding, you agree to the
-        <NuxtLink class="link-primary" href="/tos">Terms of Service</NuxtLink> and
-        <NuxtLink class="link-primary" href="/privacy-policy">Privacy Notice</NuxtLink>.
-      </div>
     </div>
   </div>
 </template>

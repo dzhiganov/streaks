@@ -115,9 +115,8 @@ const trialExpiresAt = computed(() => {
 </script>
 <template>
   <div class="min-h-screen flex w-full">
-    <aside class="px-4 py-4 border-r border-neutral-content h-screen">
+    <aside class="px-6 py-4 border-r border-neutral-content h-screen">
       <div class="flex items-center gap-2">
-        <NuxtImg src="/favicon.svg" alt="FlowTracks" class="w-7 h-7" />
         <h1 class="text-lg font-bold font-header">FlowTracks</h1>
         <div class="badge badge-primary badge-sm cursor-pointer font-semibold" @click="goToBeta">
           Beta
@@ -137,9 +136,7 @@ const trialExpiresAt = computed(() => {
         <NuxtLink to="/upgrade" class="btn btn-sm btn-ghost w-full">Upgrade to PRO</NuxtLink>
       </div>
       <div class="flex flex-col gap-10 mt-8">
-        <div
-          class="bg-base-100 dark:bg-base-300 rounded-lg shadow flex justify-center items-start min-h-[330px]"
-        >
+        <div class="bg-base-300 rounded-lg flex justify-center items-start min-h-[330px]">
           <calendar-date
             :value="selectedDate"
             @change="
@@ -164,7 +161,7 @@ const trialExpiresAt = computed(() => {
         </button>
       </div>
     </aside>
-    <main class="px-2 flex flex-col bg-base-200 w-full">
+    <main class="px-2 flex flex-col bg-base-300 w-full">
       <div class="mb-12">
         <Header>
           <div class="flex items-center gap-4 w-full px-2">

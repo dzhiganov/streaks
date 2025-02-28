@@ -60,9 +60,11 @@ const noActivities = computed(() => Object.keys(groupedActivities.value).length 
 </script>
 <template>
   <div class="px-12">
-    <div class="overflow-x-auto rounded-box bg-base-100 min-h-[200px]">
-      <div v-if="isFetching" class="flex justify-center items-center h-full">
-        <span class="loading loading-spinner loading-md"></span>
+    <div
+      class="overflow-x-auto rounded-box bg-base-100 min-h-[200px] border border-neutral-content"
+    >
+      <div v-if="isFetching" class="flex justify-center items-center h-full min-h-[200px]">
+        <span class="block loading loading-spinner loading-md"></span>
       </div>
 
       <table v-else class="table">
@@ -101,7 +103,7 @@ const noActivities = computed(() => Object.keys(groupedActivities.value).length 
               v-for="(activity, activityName, activityIndex) in activities"
               :key="activityName"
             >
-              <tr class="bg-base-100 dark:bg-gray-800">
+              <tr class="bg-zinc-200 dark:bg-gray-800">
                 <td>{{ typeIndex + 1 }}.{{ activityIndex + 1 }}</td>
                 <td>{{ activityType }}</td>
                 <td class="font-semibold">

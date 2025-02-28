@@ -39,19 +39,9 @@ const options = computed(() => {
 
 <template>
   <div class="flex flex-col gap-8 mt-24">
-    <h2 class="text-4xl mb-4 font-semibold text-center">Upgrade to Pro to get more features</h2>
+    <h2 class="text-4xl mb-4 font-semibold text-center text-white">Pay Once, Access Forever</h2>
     <div class="flex justify-center gap-8 items-center">
-      <Pricing
-        v-for="option in options"
-        :key="option.title"
-        :title="option.title"
-        :price="option.price"
-        :description="option.description"
-        :features="option.features"
-        buttonText="Get started today"
-        :theme="option.theme"
-        :isCurrentPlan="option.id === 'basic'"
-      />
+      <Pricing />
     </div>
   </div>
 </template>

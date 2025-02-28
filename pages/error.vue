@@ -5,8 +5,15 @@ definePageMeta({
   auth: false,
 });
 
+const router = useRouter();
 const { query } = useRoute();
 const { message } = query;
+
+onMounted(() => {
+  if (message === 'trial_expired') {
+    router.replace('/upgrade');
+  }
+});
 </script>
 <template>
   <div

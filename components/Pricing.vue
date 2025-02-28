@@ -1,6 +1,4 @@
 <script setup>
-import { computed } from 'vue';
-
 const props = defineProps({
   theme: {
     type: String,
@@ -12,7 +10,7 @@ const props = defineProps({
     required: true,
   },
   price: {
-    type: Array,
+    type: Number,
     required: true,
   },
   description: {
@@ -34,103 +32,63 @@ const props = defineProps({
   },
 });
 
-const containerClass = computed(() =>
-  props.theme === 'light'
-    ? 'rounded-3xl p-8 ring-1 ring-gray-300 sm:p-10 relative bg-white shadow-2xl'
-    : 'rounded-3xl p-8 ring-1 ring-gray-900/10 sm:p-10 relative bg-gray-900 shadow-2xl',
-);
-
-const headerClass = computed(() =>
-  props.theme === 'light'
-    ? 'text-base font-semibold text-indigo-500'
-    : 'text-base/7 font-semibold text-indigo-400',
-);
-
-const priceMainClass = computed(() =>
-  props.theme === 'light'
-    ? 'text-5xl font-semibold tracking-tight text-gray-900'
-    : 'text-5xl font-semibold tracking-tight text-white',
-);
-
-const priceSubClass = computed(() =>
-  props.theme === 'light' ? 'text-xl text-gray-600' : 'text-xl text-gray-400',
-);
-
-const descriptionClass = computed(() =>
-  props.theme === 'light' ? 'mt-6 text-base text-gray-700' : 'mt-6 text-base/7 text-gray-300',
-);
-
-const featuresClass = computed(() =>
-  props.theme === 'light'
-    ? 'mt-8 space-y-3 text-sm text-gray-700 sm:mt-10'
-    : 'mt-8 space-y-3 text-sm/6 sm:mt-10 text-gray-300',
-);
-
-const iconClass = computed(() =>
-  props.theme === 'light'
-    ? 'h-6 w-5 flex-none text-indigo-500'
-    : 'h-6 w-5 flex-none text-indigo-400',
-);
-
-const purchase = async (id) => {
+const purchase = async () => {
   const data = await $fetch('/api/create-checkout-session', {
     method: 'POST',
-    body: { packageId: id },
+    body: { packageId: 'lifetime' },
   });
 
   if (data.url) {
     window.location = data.url;
   }
 };
+
+const agree = ref(false);
 </script>
 
 <template>
   <div class="w-1/2 max-w-96">
-    <div :class="containerClass" class="flex flex-col">
-      <h3 :class="headerClass">{{ title }}</h3>
-      <p class="mt-4 flex items-baseline gap-x-2">
-        <template v-if="price[1]">
-          <span :class="priceMainClass">€ {{ price[0] }}</span>
-          <span :class="priceSubClass">.{{ price[1] }}</span>
-        </template>
-        <template v-else>
-          <span :class="priceMainClass">Free</span>
-        </template>
+    <div
+      class="flex flex-col rounded-3xl p-8 ring-1 ring-gray-900/10 sm:p-10 relative bg-gray-900 shadow-2xl"
+    >
+      <h3 class="text-base/7 font-semibold text-indigo-400">{{ title }}</h3>
+      <p class="mt-4">
+        <span class="text-5xl font-semibold tracking-tight">€ 19.99</span>
       </p>
-      <p :class="descriptionClass">{{ description }}</p>
-      <ul role="list" :class="featuresClass">
-        <li v-for="(feature, index) in features" :key="index" class="flex gap-x-3">
-          <svg
-            :class="iconClass"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-            data-slot="icon"
+      <p class="mt-6 text-base/7 text-gray-300">
+        Get
+        <span
+          class="tooltip"
+          data-tip="This is a one-time purchase for lifetime access, meaning you can use the app as long as
+            it remains available. However, we cannot guarantee that the service will be maintained
+            indefinitely, and we reserve the right to modify or discontinue it at any time. All
+            purchases are final, and refunds are not possible."
+        >
+          <span class="font-semibold underline decoration-dashed text-white">lifetime access</span>
+        </span>
+        with a one-time payment. No subscriptions, no recurring fees—just unlimited access forever.
+      </p>
+
+      <div class="mt-20">
+        <div class="flex items-center gap-2">
+          <input type="checkbox" class="checkbox checkbox-sm" v-model="agree" />
+          <div class="text-sm">
+            I agree to the
+            <NuxtLink class="link-primary" href="/tos">Terms of Service</NuxtLink> and
+            <NuxtLink class="link-primary" href="/privacy-policy">Privacy Notice</NuxtLink>.
+          </div>
+        </div>
+
+        <div>
+          <button
+            :disabled="!agree"
+            @click="purchase"
+            class="btn mt-4 block w-full rounded-md py-2.5 px-3.5 text-center text-sm focus-visible:outline-2 focus-visible:outline-offset-2 bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
           >
-            <path
-              fill-rule="evenodd"
-              d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-          {{ feature }}
-        </li>
-      </ul>
-      <div class="mt-auto">
-        <button
-          v-if="!isCurrentPlan"
-          @click="purchase('lifetime')"
-          aria-describedby="tier-enterprise"
-          class="mt-8 block rounded-md py-2.5 px-3.5 text-center text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10 bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
-        >
-          {{ buttonText }}
-        </button>
-        <button
-          v-else
-          class="mt-8 block rounded-md py-2.5 px-3.5 text-center text-sm font-semibold focus-visible:outline-2 sm:mt-10 bg-gray-500 text-white shadow-xs"
-        >
-          Current plan
-        </button>
+            Continue to payment
+          </button>
+          <p class="pt-2 text-[11px]">Applicable taxes will be calculated at checkout.</p>
+        </div>
       </div>
     </div>
   </div>
