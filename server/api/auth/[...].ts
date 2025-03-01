@@ -64,7 +64,7 @@ export default NuxtAuthHandler({
             created_at: new Date(),
             subscription: {
               plan: 'trial',
-              trialExpiresAt: dayjs().add(7, 'day').toDate(),
+              trialExpiresAt: dayjs().add(14, 'day').toDate(),
               lifetime: false,
               purchasedAt: null,
               expiresAt: null,

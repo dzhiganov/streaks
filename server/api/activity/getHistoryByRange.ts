@@ -2,10 +2,18 @@ import { getServerSession } from '#auth';
 import { defineEventHandler, getQuery } from 'h3';
 import * as Models from '~~/server/models/user.model';
 import { groupHistoryByActivityType } from './utils';
+
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
     const session = await getServerSession(event);
+
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
 
     const fromDate = query.from ? new Date(String(query.from)) : null;
     const toDate = query.to ? new Date(String(query.to)) : null;

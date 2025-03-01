@@ -7,6 +7,13 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const session = await getServerSession(event);
 
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     const { date, from, to, limit = '5' } = query;
     const limitNumber = Math.max(1, parseInt(limit, 10));
 

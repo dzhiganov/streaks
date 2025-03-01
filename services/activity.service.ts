@@ -243,6 +243,7 @@ const useUpdateActivity = (onSuccessFn: () => void) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
+      queryClient.invalidateQueries({ queryKey: ['history'] });
 
       if (onSuccessFn) {
         onSuccessFn();

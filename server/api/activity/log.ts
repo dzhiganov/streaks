@@ -12,6 +12,13 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const sessionData = await getServerSession(event);
 
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     const logEntry = await Log.create(
       [
         {

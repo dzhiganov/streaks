@@ -12,6 +12,13 @@ export default defineEventHandler(async (event) => {
     const { activityId } = getQuery(event);
     const sessionData = await getServerSession(event);
 
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     if (!activityId) {
       throw new Error('"activityId" is required');
     }

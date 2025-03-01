@@ -8,6 +8,13 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const session = await getServerSession(event);
 
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     const startOfDay = new Date(String(query.date));
     startOfDay.setHours(0, 0, 0, 0);
 

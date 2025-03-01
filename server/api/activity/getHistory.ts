@@ -7,6 +7,13 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const session = await getServerSession(event);
 
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     const { date, from, to, page = '1', pageSize = '10' } = query;
     const pageNumber = Math.max(1, parseInt(page, 10));
     const pageSizeNumber = Math.max(1, parseInt(pageSize, 10));

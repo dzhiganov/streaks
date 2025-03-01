@@ -6,6 +6,14 @@ export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
     const session = await getServerSession(event);
+
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     const { from, to, range } = query;
     if (!from || !to) {
       throw new Error('Range requires "from" and "to" parameters');

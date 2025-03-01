@@ -8,6 +8,13 @@ export default defineEventHandler(async (event) => {
     const { id, ...body } = await readBody(event);
     const session = await getServerSession(event);
 
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     const activity = await Activity.findByIdAndUpdate(id, body);
 
     await User.findByIdAndUpdate(session.user.userId, {

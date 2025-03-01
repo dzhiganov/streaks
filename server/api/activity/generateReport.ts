@@ -13,6 +13,14 @@ dayjs.extend(isBetween);
 export default defineEventHandler(async (event) => {
   try {
     const session = await getServerSession(event);
+
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     const now = dayjs();
     const query = getQuery(event);
 

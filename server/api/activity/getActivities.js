@@ -11,6 +11,14 @@ dayjs.extend(isBetween);
 export default defineEventHandler(async (event) => {
   try {
     const session = await getServerSession(event);
+
+    if (!session) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     const now = dayjs();
 
     const startOfWeek = now.startOf('isoWeek');
@@ -61,13 +69,13 @@ export default defineEventHandler(async (event) => {
       return {
         ...activity.toObject(),
         week_rest_time_min: activity.week_time_goal_min
-          ? Math.max(0, activity.week_time_goal_min - activityLogs.week)
+          ? activity.week_time_goal_min - activityLogs.week
           : 0,
         day_rest_time_min: activity.day_time_goal_min
-          ? Math.max(0, activity.day_time_goal_min - activityLogs.day)
+          ? activity.day_time_goal_min - activityLogs.day
           : 0,
         month_rest_time_min: activity.month_time_goal_min
-          ? Math.max(0, activity.month_time_goal_min - activityLogs.month)
+          ? activity.month_time_goal_min - activityLogs.month
           : 0,
       };
     });

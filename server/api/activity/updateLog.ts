@@ -1,3 +1,4 @@
+import { getServerSession } from '#auth';
 import { defineEventHandler, readBody } from 'h3';
 import mongoose from 'mongoose';
 import { Log } from '~~/server/models/user.model';
@@ -6,6 +7,15 @@ export default defineEventHandler(async (event) => {
   const session = await mongoose.startSession();
 
   try {
+    const userSession = await getServerSession(event);
+
+    if (!userSession) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'You must be logged in.',
+      });
+    }
+
     session.startTransaction();
 
     const body = await readBody(event);

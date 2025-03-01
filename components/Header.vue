@@ -27,10 +27,6 @@ watch(
   },
   { immediate: true, deep: true },
 );
-
-const goToBeta = () => {
-  window.location.href = '/beta';
-};
 </script>
 <template>
   <header

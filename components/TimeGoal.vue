@@ -1,4 +1,5 @@
 <script setup>
+import { CheckIcon } from '~/assets/icons';
 import { useTheme } from '~/composables/useTheme';
 import { formatTime } from '~/utils/time/formatTime';
 
@@ -40,7 +41,7 @@ const progress = computed(() => {
 
 const progressColor = computed(() => {
   if (progress.value > 100) {
-    return 'text-orange-400 progress-very-high';
+    return 'text-orange-300 progress-very-high';
   } else if (progress.value === 100) {
     return 'text-green-600 progress-high';
   } else if (progress.value >= 50) {
@@ -66,9 +67,15 @@ const progressColor = computed(() => {
         {{ activityTitle }}
       </p>
 
-      <div class="flex items-center gap-2 text-sm text-gray-500">
+      <div v-if="restMinutes > 0" class="flex items-center gap-2 text-sm text-gray-500">
         <span>{{ title }}</span>
         <span class="font-bold">{{ formatTime({ minutes: restMinutes }, { short: true }) }}</span>
+      </div>
+      <div v-else>
+        <span class="font-bold text-gray-500 flex items-center gap-1">
+          <CheckIcon class="w-4 h-4 text-green-600" />
+          Done
+        </span>
       </div>
     </div>
   </div>

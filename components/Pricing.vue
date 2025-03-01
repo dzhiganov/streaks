@@ -71,7 +71,7 @@ const agree = ref(false);
 
       <div class="mt-20">
         <div class="flex items-center gap-2">
-          <input type="checkbox" class="checkbox checkbox-sm" v-model="agree" />
+          <input type="checkbox" class="checkbox checkbox-sm checkbox-primary" v-model="agree" />
           <div class="text-sm">
             I agree to the
             <NuxtLink class="link-primary" href="/tos">Terms of Service</NuxtLink> and
@@ -83,7 +83,7 @@ const agree = ref(false);
           <button
             :disabled="!agree"
             @click="purchase"
-            class="btn mt-4 block w-full rounded-md py-2.5 px-3.5 text-center text-sm focus-visible:outline-2 focus-visible:outline-offset-2 bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
+            class="disabled:bg-gray-700 btn mt-4 block w-full rounded-md py-2.5 px-3.5 text-center text-sm focus-visible:outline-2 focus-visible:outline-offset-2 bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
           >
             Continue to payment
           </button>

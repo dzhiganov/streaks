@@ -8,7 +8,9 @@ import {
   ArrowLeft,
   ArrowRight,
   BarIcon,
+  ChatIcon,
   FileTextIcon,
+  LogoutIcon,
   PlusIcon,
   TableIcon,
 } from '~/assets/icons';
@@ -27,7 +29,7 @@ const selectedDate = ref(dayjs().format('YYYY-MM-DD'));
 const editedActivityId = ref(null);
 const predefinedActivity = ref(null);
 
-const { getSession } = useAuth();
+const { getSession, signOut } = useAuth();
 
 const user = ref({});
 
@@ -136,7 +138,7 @@ const trialExpiresAt = computed(() => {
         <NuxtLink to="/upgrade" class="btn btn-sm btn-ghost w-full">Upgrade to PRO</NuxtLink>
       </div>
       <div class="flex flex-col gap-10 mt-8">
-        <div class="bg-base-300 rounded-lg flex justify-center items-start min-h-[330px]">
+        <div class="dark:bg-base-300 rounded-lg flex justify-center items-start min-h-[330px]">
           <calendar-date
             :value="selectedDate"
             @change="
@@ -155,13 +157,39 @@ const trialExpiresAt = computed(() => {
           </calendar-date>
         </div>
         <Goals @edit-activity="onEditActivity" />
-        <button class="btn btn-neutral" onclick="report_modal.showModal()">
-          <FileTextIcon class="w-4 h-4" />
-          <span>Generate Report</span>
-        </button>
+
+        <div class="border-t border-neutral-content pt-8">
+          <ul class="flex flex-col gap-2">
+            <li>
+              <button
+                class="btn btn-ghost btn-sm w-full flex justify-start items-center gap-2"
+                onclick="report_modal.showModal()"
+              >
+                <FileTextIcon class="w-4 h-4" />
+                <span>Create Report</span>
+              </button>
+            </li>
+
+            <li>
+              <NuxtLink
+                to="/support"
+                class="btn btn-ghost btn-sm w-full flex justify-start items-center gap-2"
+              >
+                <ChatIcon class="h-4 w-4" />
+                Support
+              </NuxtLink>
+            </li>
+            <li @click="signOut">
+              <span class="btn btn-ghost btn-sm w-full flex justify-start items-center gap-2">
+                <LogoutIcon class="h-4 w-4" />
+                Logout
+              </span>
+            </li>
+          </ul>
+        </div>
       </div>
     </aside>
-    <main class="px-2 flex flex-col bg-base-300 w-full">
+    <main class="px-2 flex flex-col dark:bg-base-300 w-full">
       <div class="mb-12">
         <Header>
           <div class="flex items-center gap-4 w-full px-2">
@@ -213,68 +241,74 @@ const trialExpiresAt = computed(() => {
         </Header>
       </div>
 
-      <div v-if="route.query?.view === 'table' || route.query?.view === 'graph'" class="mb-2 px-12">
-        <div class="flex mb-2 gap-4 items-center">
-          <div class="text-lg font-semibold w-64">Activity for {{ rangeTitle }}</div>
-          <div class="flex items-center gap-1">
-            <button class="btn btn-ghost btn-sm font-semibold text-lg" @click="setPreviousDate">
-              <
-            </button>
-            <button
-              class="btn btn-ghost btn-sm text-blue-500"
-              @click="setTodayDate"
-              :disabled="dayjs(selectedDate).isToday()"
-            >
-              Today
-            </button>
-            <button class="btn btn-ghost btn-sm font-semibold text-lg" @click="setNextDate">
+      <div class="max-w-[1280px]">
+        <div
+          v-if="route.query?.view === 'table' || route.query?.view === 'graph'"
+          class="mb-2 px-12"
+        >
+          <div class="flex mb-2 gap-4 items-center">
+            <div class="text-lg font-semibold w-64">Activity for {{ rangeTitle }}</div>
+            <div class="flex items-center gap-1">
+              <button class="btn btn-ghost btn-sm font-semibold text-lg" @click="setPreviousDate">
+                <
+              </button>
+              <button
+                class="btn btn-ghost btn-sm text-blue-500"
+                @click="setTodayDate"
+                :disabled="dayjs(selectedDate).isToday()"
               >
-            </button>
-          </div>
-          <div class="flex items-center gap-2 ml-auto">
-            <button
-              class="btn btn-sm ml-auto"
-              :class="{
-                'btn-neutral': route.query?.view === 'table',
-                'btn-ghost': route.query?.view !== 'table',
-              }"
-              @click="() => toggleView('table')"
-            >
-              <TableIcon class="w-5 h-5" />
-              <span>Table View</span>
-            </button>
-            <span class="text-gray-500">/</span>
-            <button
-              class="btn btn-sm ml-auto"
-              :class="{
-                'btn-neutral': route.query?.view === 'graph',
-                'btn-ghost': route.query?.view !== 'graph',
-              }"
-              @click="() => toggleView('graph')"
-            >
-              <BarIcon class="w-5 h-5" />
-              <span>Graph View</span>
-            </button>
+                Today
+              </button>
+              <button class="btn btn-ghost btn-sm font-semibold text-lg" @click="setNextDate">
+                >
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2 ml-auto">
+              <button
+                class="btn btn-sm ml-auto"
+                :class="{
+                  'btn-neutral': route.query?.view === 'table',
+                  'btn-ghost': route.query?.view !== 'table',
+                }"
+                @click="() => toggleView('table')"
+              >
+                <TableIcon class="w-5 h-5" />
+                <span>Table View</span>
+              </button>
+              <span class="text-gray-500">/</span>
+              <button
+                class="btn btn-sm ml-auto"
+                :class="{
+                  'btn-neutral': route.query?.view === 'graph',
+                  'btn-ghost': route.query?.view !== 'graph',
+                }"
+                @click="() => toggleView('graph')"
+              >
+                <BarIcon class="w-5 h-5" />
+                <span>Graph View</span>
+              </button>
+            </div>
           </div>
         </div>
+        <LineChart
+          v-if="route.query?.view === 'graph'"
+          :date="selectedDate"
+          :range-type="selectedRange"
+        />
+        <Messages
+          v-else-if="route.query?.view === 'messages'"
+          :date="selectedDate"
+          :range="selectedRange"
+        />
+        <HistoryTable
+          v-else
+          :date="selectedDate"
+          :range="selectedRange"
+          @edit-log-activity="onEditLogActivity"
+          @repeat-log-activity="onRepeatLogActivity"
+        />
       </div>
-      <LineChart
-        v-if="route.query?.view === 'graph'"
-        :date="selectedDate"
-        :range-type="selectedRange"
-      />
-      <Messages
-        v-else-if="route.query?.view === 'messages'"
-        :date="selectedDate"
-        :range="selectedRange"
-      />
-      <HistoryTable
-        v-else
-        :date="selectedDate"
-        :range="selectedRange"
-        @edit-log-activity="onEditLogActivity"
-        @repeat-log-activity="onRepeatLogActivity"
-      />
     </main>
   </div>
   <NewActivityModal />
