@@ -2,7 +2,9 @@
 import { CrossIcon, EditIcon, GoalIcon } from '~/assets/icons';
 import { useGetActivities, useUpdateActivity } from '~/services/activity.service';
 
-const { data: activitiesData } = useGetActivities({ onlyActive: true });
+const { data: activitiesData, isFetching: isFetchingActivities } = useGetActivities({
+  onlyActive: true,
+});
 const { mutate: updateActivity } = useUpdateActivity();
 
 const activities = computed(() => activitiesData?.value?.activities || []);
@@ -33,10 +35,15 @@ const onDeleteActivity = () => {
       <GoalIcon class="w-5 h-5" />
       Goals
     </h2>
-    <div v-if="activities.length === 0">
-      <p class="text-gray-500 text-sm">
-        No activities. Goals will be shown here after you add some activities.
+    <div v-if="!isFetchingActivities && activities.length === 0">
+      <p class="text-gray-500 text-sm max-w-36 w-full">
+        Goals will be shown here after you add some activities.
       </p>
+    </div>
+    <div v-else-if="isFetchingActivities">
+      <div class="flex flex-col gap-2">
+        <div class="skeleton h-24 w-full"></div>
+      </div>
     </div>
     <div v-else>
       <ul class="space-y-2">
