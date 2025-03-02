@@ -40,7 +40,11 @@ definePageMeta({
           <div class="mt-24">
             <div class="flex flex-col gap-4 items-center">
               <h1 class="text-6xl font-semibold text-center text-gray-800 max-w-2xl">
-                Record your work, analyze your <span class="text-purple-400">progress</span>
+                Record your work, analyze your
+                <span
+                  class="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent"
+                  >progress</span
+                >
               </h1>
               <p class="text-xl text-center">Simple and <span>super powerful</span></p>
 
@@ -110,36 +114,36 @@ definePageMeta({
 
     <section class="py-16 text-center">
       <div>
-        <h2 class="text-3xl font-bold mb-10">3 Simple Steps to Achieve Your Goals</h2>
-        <div class="bg-gray-700 w-full py-12">
+        <h2 class="text-3xl font-bold mb-10">3 Steps to Achieve Your Goals</h2>
+        <div class="w-full py-12">
           <div class="max-w-5xl mx-auto flex gap-8">
-            <div class="card bg-base-100 shadow-sm w-96 mx-auto">
+            <div class="card bg-base-100 w-96 mx-auto rounded-xl shadow-lg">
               <figure>
                 <img src="/step-1.png" alt="Set Goals" />
               </figure>
-              <div class="card-body flex items-center">
+              <div class="card-body flex items-center rounded-xl shadow-lg">
                 <h2 class="card-title">🎯 Set Your Goals</h2>
                 <p class="text-lg">Define what you want to accomplish.</p>
               </div>
             </div>
 
             <!-- Step 2 -->
-            <div class="card bg-base-100 shadow-sm w-96 mx-auto">
+            <div class="card bg-base-100 w-96 mx-auto rounded-xl shadow-lg">
               <figure>
                 <img src="/step-2.png" alt="Track Progress" />
               </figure>
-              <div class="card-body flex items-center">
+              <div class="card-body flex items-center rounded-xl shadow-lg">
                 <h2 class="card-title">⏳ Track Your Progress</h2>
                 <p class="text-lg">Log your activities and stay on track.</p>
               </div>
             </div>
 
             <!-- Step 3 -->
-            <div class="card bg-base-100 shadow-sm w-96 mx-auto">
+            <div class="card bg-base-100 w-96 mx-auto rounded-xl shadow-lg">
               <figure>
                 <img src="/step-3.png" alt="Reach Goals" />
               </figure>
-              <div class="card-body flex items-center">
+              <div class="card-body flex items-center rounded-xl shadow-lg">
                 <h2 class="card-title">🏆 Reach Your Goals</h2>
                 <p class="text-lg">See your progress and celebrate success!</p>
               </div>
