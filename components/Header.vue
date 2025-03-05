@@ -5,6 +5,18 @@ const { signOut, getSession } = useAuth();
 const userSession = ref({});
 const theme = ref('light');
 
+const user = ref({});
+
+onMounted(async () => {
+  const session = await getSession();
+  user.value = session?.user ?? {};
+});
+
+const showUpgradeOption = computed(() => {
+  if (!user.value) return false;
+  return user.value?.subscription?.plan !== 'pro';
+});
+
 onBeforeMount(() => {
   theme.value = localStorage.getItem('theme');
 });
@@ -47,7 +59,10 @@ watch(
           tabindex="0"
           class="menu menu-sm dropdown-content rounded-box z-[1] mt-3 w-52 p-2 shadow main-card bg-base-100 gap-3"
         >
-          <li class="font-semibold bg-accent rounded-lg text-accent-content">
+          <li
+            v-if="showUpgradeOption"
+            class="font-semibold bg-accent rounded-lg text-accent-content"
+          >
             <NuxtLink to="/upgrade">
               <StarIcon class="h-4 w-4" />
               Upgrade to PRO

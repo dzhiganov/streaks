@@ -1,16 +1,8 @@
 <script setup>
 import { CrossIcon } from '../assets/icons';
-
-definePageMeta({
-  middleware: ['success-payment-validation'],
-});
-
-const { query } = useRoute();
-const { message } = query;
 </script>
 <template>
   <div
-    v-if="numericAmount.data"
     class="text-center card mx-auto w-96 shadow-md flex justify-center flex-col gap-4 mt-16 bg-base-200 p-6 items-center"
   >
     <div class="flex flex-col gap-10">

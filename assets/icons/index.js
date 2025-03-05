@@ -34,3 +34,5 @@ export { default as StarIcon } from './StarIcon.vue';
 export { default as StopTimerIcon } from './StopTimerIcon.vue';
 export { default as TableIcon } from './TableIcon.vue';
 export { default as TimerIcon } from './TimerIcon.vue';
+export { default as TrendingDownIcon } from './TrendingDown.vue';
+export { default as TrendingUpIcon } from './TrendingUp.vue';

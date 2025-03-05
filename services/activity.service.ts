@@ -302,10 +302,34 @@ const useGenerateReport = (params: {
   });
 };
 
+const useGenerateMonthReport = (params: {
+  month: Ref<string>;
+  year: Ref<string>;
+  enabled: Ref<boolean>;
+}) => {
+  return useQuery({
+    queryKey: ['report'],
+    queryFn: () => {
+      console.log(params.month.value);
+      const month = params.month.value;
+      const year = params.year.value;
+      const urlParams = new URLSearchParams({ year });
+
+      if (month) {
+        urlParams.set('month', month);
+      }
+
+      return apiFetch(`/api/activity/generateMonthReport?${urlParams.toString()}`);
+    },
+    enabled: computed(() => params.enabled.value),
+  });
+};
+
 export {
   useAddActivity,
   useAddActivityType,
   useDeleteLogActivity,
+  useGenerateMonthReport,
   useGenerateReport,
   useGetActivities,
   useGetActivity,

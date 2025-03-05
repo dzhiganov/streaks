@@ -83,6 +83,6 @@ const progressColor = computed(() => {
 
 <style scoped>
 .progress-custom {
-  --thickness: 0.2rem;
+  --thickness: 0.1rem;
 }
 </style>

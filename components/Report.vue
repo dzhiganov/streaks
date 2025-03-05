@@ -60,10 +60,6 @@
   <div v-else class="max-w-md mx-auto p-6 text-center text-sm italic">
     <p>Choose a date range and click apply to generate a report</p>
   </div>
-
-  <div class="mt-6 flex justify-center">
-    <button class="btn btn-neutral w-32" @click="onClose">Close</button>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -99,8 +95,4 @@ const goalProgress = computed(() => {
   if (!goal.value) return null;
   return ((totalMinutes.value / (goal.value * 60)) * 100).toFixed(1);
 });
-
-const onClose = () => {
-  document.getElementById('report_modal')?.close();
-};
 </script>

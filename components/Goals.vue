@@ -30,7 +30,7 @@ const onDeleteActivity = () => {
 };
 </script>
 <template>
-  <div class="px-2 py-2 rounded-lg bg-base-300">
+  <div class="px-2 py-2 rounded-lg dark:bg-base-300">
     <h2 class="text-lg font-bold mb-4 flex items-center gap-2 px-2">
       <GoalIcon class="w-5 h-5" />
       Goals

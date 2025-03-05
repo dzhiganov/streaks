@@ -76,13 +76,6 @@ export default NuxtAuthHandler({
           return true;
         }
 
-        if (
-          currentUser?.subscription?.plan === 'trial' &&
-          dayjs().isAfter(dayjs(currentUser?.subscription.trialExpiresAt))
-        ) {
-          return `/error?message=trial_expired&error_code=${AUTH_ERRORS.trialExpired}`;
-        }
-
         return true;
       } catch (err) {
         console.error('Error in signIn callback:', err);

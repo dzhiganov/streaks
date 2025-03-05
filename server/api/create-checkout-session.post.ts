@@ -41,8 +41,8 @@ export default defineEventHandler(async (event) => {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.WEB_URL}/success-payment?amount=${product?.amount}`,
-      cancel_url: `${process.env.WEB_URL}/failed-payment`,
+      success_url: `${process.env.WEB_URL}/app`,
+      cancel_url: `${process.env.WEB_URL}/error?message=payment_failed`,
       metadata: {
         userId: currentUser._id.toString(),
         packageId: packageId,

@@ -4,12 +4,12 @@ import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import { ref } from 'vue';
 import {
+  ActivityIcon,
   AlertIcon,
   ArrowLeft,
   ArrowRight,
   BarIcon,
   ChatIcon,
-  FileTextIcon,
   LogoutIcon,
   PlusIcon,
   TableIcon,
@@ -138,7 +138,7 @@ const trialExpiresAt = computed(() => {
         <NuxtLink to="/upgrade" class="btn btn-sm btn-ghost w-full">Upgrade to PRO</NuxtLink>
       </div>
       <div class="flex flex-col gap-10 mt-8">
-        <div class="dark:bg-base-300 rounded-lg flex justify-center items-start min-h-[330px]">
+        <div class="dark:bg-base-300 rounded-lg flex justify-center items-start min-h-[330px] px-2">
           <calendar-date
             :value="selectedDate"
             @change="
@@ -165,8 +165,8 @@ const trialExpiresAt = computed(() => {
                 class="btn btn-ghost btn-sm w-full flex justify-start items-center gap-2"
                 onclick="report_modal.showModal()"
               >
-                <FileTextIcon class="w-4 h-4" />
-                <span>Create Report</span>
+                <ActivityIcon class="w-4 h-4" />
+                <span>Statistics</span>
               </button>
             </li>
 
