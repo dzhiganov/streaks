@@ -25,7 +25,7 @@ jobs:
         run: |
           npm run build
 
-      - name: Transfers Build Folder to EC2 Instance
+      - name: Transfer Files to EC2 Instance
         uses: easingthemes/ssh-deploy@v3
         env:
           SSH_PRIVATE_KEY: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
@@ -35,6 +35,16 @@ jobs:
           SOURCE: .output/
           TARGET: /home/ubuntu/habit-tracker-app/.output
 
+      - name: Transfer `ecosystem.config.js` to EC2 Instance
+        uses: easingthemes/ssh-deploy@v3
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
+          REMOTE_HOST: ${{ secrets.AWS_EC2_DEPLOY_IP_ADDRESS_HOST }}
+          REMOTE_USER: ${{ secrets.AWS_EC2_DEPLOY_USER }}
+          REMOTE_PORT: ${{ secrets.AWS_EC2_DEPLOY_PORT }}
+          SOURCE: ecosystem.config.js
+          TARGET: /home/ubuntu/habit-tracker-app/
+
       - name: Start Node.js server on EC2 with PM2
         uses: appleboy/ssh-action@master
         with:
@@ -43,17 +53,23 @@ jobs:
           key: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
           script: |
             echo "Setting environment variables..."
-            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > /home/ubuntu/habit-tracker-app/.output/server/.env
-            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> /home/ubuntu/habit-tracker-app/.output/server/.env
-            echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" >> /home/ubuntu/habit-tracker-app/.output/server/.env
-            echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> /home/ubuntu/habit-tracker-app/.output/server/.env
+            cat <<EOF > /home/ubuntu/habit-tracker-app/.env
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            EOF
 
-            source /home/ubuntu/habit-tracker-app/.output/server/.env
+            echo "Ensuring PM2 is installed..."
+            if ! command -v pm2 &> /dev/null
+            then
+                sudo npm install -g pm2
+            fi
 
             echo "Restarting the app with PM2..."
             cd /home/ubuntu/habit-tracker-app/
 
-            pm2 delete habit-tracker || true  # Delete previous process if exists
-            pm2 start ecosystem.config.js
+            pm2 delete habit-tracker || true  # Remove if running
+            pm2 start ecosystem.config.js --env production
             pm2 save
             pm2 list
