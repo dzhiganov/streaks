@@ -47,15 +47,13 @@ const agree = ref(false);
 </script>
 
 <template>
-  <div class="w-1/2 max-w-96">
-    <div
-      class="flex flex-col rounded-3xl p-8 ring-1 ring-gray-900/10 sm:p-10 relative bg-gray-900 shadow-2xl"
-    >
+  <div class="w-full max-w-96">
+    <div class="flex flex-col rounded-3xl p-8 ring-1 ring-gray-900/10 sm:p-10 relative">
       <h3 class="text-base/7 font-semibold text-indigo-400">{{ title }}</h3>
       <p class="mt-4">
         <span class="text-5xl font-semibold tracking-tight">€ 19.99</span>
       </p>
-      <p class="mt-6 text-base/7 text-gray-300">
+      <p class="mt-6 text-base/7">
         Get
         <span
           class="tooltip"
@@ -64,7 +62,7 @@ const agree = ref(false);
             indefinitely, and we reserve the right to modify or discontinue it at any time. All
             purchases are final, and refunds are not possible."
         >
-          <span class="font-semibold underline decoration-dashed text-white">lifetime access</span>
+          <span class="font-semibold underline decoration-dashed">lifetime access</span>
         </span>
         with a one-time payment. No subscriptions, no recurring fees—just unlimited access forever.
       </p>
@@ -83,7 +81,7 @@ const agree = ref(false);
           <button
             :disabled="!agree"
             @click="purchase"
-            class="disabled:bg-gray-700 btn mt-4 block w-full rounded-md py-2.5 px-3.5 text-center text-sm focus-visible:outline-2 focus-visible:outline-offset-2 bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
+            class="btn mt-4 block w-full rounded-md py-2.5 px-3.5 text-center text-sm focus-visible:outline-2 focus-visible:outline-offset-2 bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
           >
             Continue to payment
           </button>

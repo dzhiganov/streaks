@@ -15,7 +15,11 @@ definePageMeta({
 const { signIn } = useAuth();
 </script>
 <template>
-  <div data-theme="light" class="w-full h-screen bg-zinc-200 flex justify-center items-center">
+  <div
+    data-theme="light"
+    data-testid="sign-in-page"
+    class="w-full h-screen bg-zinc-200 flex justify-center items-center"
+  >
     <div class="w-fit mx-auto p-4 rounded-xl bg-base-300 shadow-lg -mt-32">
       <div class="flex flex-col items-center justify-center gap-2">
         <NuxtImg src="/favicon.svg" alt="Logo" class="w-16 h-16 mx-auto mt-16" />

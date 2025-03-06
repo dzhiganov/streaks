@@ -29,7 +29,9 @@ onMounted(() => {
 
 onMounted(() => {
   const homePage = document.querySelector('[data-testid="home-page"]');
-  if (homePage) {
+  const signInPage = document.querySelector('[data-testid="sign-in-page"]');
+
+  if (homePage || signInPage) {
     window.location.reload();
   }
 });

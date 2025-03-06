@@ -32,7 +32,7 @@ const isLoading = computed(() => isAddingType.value);
       <header class="w-full px-8 py-4 flex justify-between items-center">
         <h3 class="text-lg font-bold">Add New Activity Type</h3>
         <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
+          <button class="btn btn-sm btn-circle btn-ghost">✕</button>
         </form>
       </header>
       <div class="p-8 pt-2">

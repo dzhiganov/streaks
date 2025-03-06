@@ -63,10 +63,10 @@ watch(
             v-if="showUpgradeOption"
             class="font-semibold bg-accent rounded-lg text-accent-content"
           >
-            <NuxtLink to="/upgrade">
+            <span onclick="upgrade_modal.showModal()">
               <StarIcon class="h-4 w-4" />
               Upgrade to PRO
-            </NuxtLink>
+            </span>
           </li>
           <li>
             <span @click="changeTheme">
