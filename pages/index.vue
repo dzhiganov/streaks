@@ -23,18 +23,8 @@ definePageMeta({
               <NuxtImg src="/favicon.svg" alt="FlowTracks" class="w-8 h-8" />
               <h1 class="text-2xl font-bold font-header">FlowTracks</h1>
             </div>
-            <ul class="flex gap-16 font-semibold">
-              <li>
-                <NuxtLink href="#faq">FAQ</NuxtLink>
-              </li>
-              <li>
-                <NuxtLink to="/support">Support</NuxtLink>
-              </li>
-              <li>
-                <NuxtLink href="#pricing">Pricing</NuxtLink>
-              </li>
-            </ul>
-            <NuxtLink to="/sign-in" class="btn btn-neutral w-32">Log in</NuxtLink>
+            <ul class="flex gap-16 font-semibold"></ul>
+            <NuxtLink to="/sign-in" class="btn btn-neutral w-32 btn-sm">Log in</NuxtLink>
           </nav>
 
           <div class="mt-24">
@@ -184,13 +174,7 @@ definePageMeta({
                 <NuxtLink to="/sign-in">Login</NuxtLink>
               </li>
               <li>
-                <a href="#faq">FAQ</a>
-              </li>
-              <li>
                 <NuxtLink to="/support">Support</NuxtLink>
-              </li>
-              <li>
-                <a href="#pricing">Pricing</a>
               </li>
             </ul>
           </div>
