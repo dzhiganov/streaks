@@ -145,7 +145,9 @@ const trialExpiresAt = computed(() => {
           <span class="font-bold text">{{ trialExpiresAt }}</span> days</span
         >
 
-        <span class="btn btn-sm btn-ghost w-full" onclick="upgrade_modal.showModal()">Upgrade to PRO</span>
+        <span class="btn btn-sm btn-ghost w-full" onclick="upgrade_modal.showModal()"
+          >Upgrade to PRO</span
+        >
       </div>
       <div class="flex flex-col gap-10 mt-8">
         <div class="dark:bg-base-300 rounded-lg flex justify-center items-start min-h-[330px] px-2">
@@ -251,45 +253,64 @@ const trialExpiresAt = computed(() => {
         </Header>
       </div>
 
-      <div v-if="showAddFirstActivity" class=" flex flex-col pl-12">
+      <div v-if="showAddFirstActivity" class="flex flex-col pl-12">
         <h2 class="text-3xl font-bold font-header">Welcome to FlowTracks 👋</h2>
-        <span class="my-2" >Hey there! It looks like you're running the app for the first time. Follow these steps to get started.</span>
-        <p class="mt-2 w-fit mt-2 p-4 rounded-lg border border-neutral-content ">
+        <span class="my-2"
+          >Hey there! It looks like you're running the app for the first time. Follow these steps to
+          get started.</span
+        >
+        <div class="mt-2 w-fit mt-2 p-4 rounded-lg border border-neutral-content">
           <ul class="list flex flex-col gap-4">
             <li class="flex items-center gap-6 justify-between">
               <span class="flex items-center gap-2 max-w-[600px]">
                 <ArrowRight class="w-4 h-4 shrink-0 text-gray-500" />
-                <span>Add your first <span class="font-semibold">Activity</span> (e.g. "Coding Practice," "Language Learning" etc.)</span>
-                
+                <span
+                  >Add your first <span class="font-semibold">Activity</span> (e.g. "Coding
+                  Practice," "Language Learning" etc.)</span
+                >
               </span>
-              <a class="btn btn-sm btn-ghost text-gray-500" onclick="add_new_activity_modal.showModal()">
-                <PlusIcon class="w-4 h-4 shrink-0 " />
-                Add</a>
+              <a
+                class="btn btn-sm btn-ghost text-gray-500"
+                onclick="add_new_activity_modal.showModal()"
+              >
+                <PlusIcon class="w-4 h-4 shrink-0" />
+                Add</a
+              >
             </li>
             <li class="flex items-center gap-8 justify-between">
               <span class="flex items-center gap-2 max-w-[600px]">
                 <ArrowRight class="w-4 h-4 shrink-0 text-gray-500" />
                 <span>
-                  Use default <span class="font-semibold">Activity types</span> or create your own (e.g. "Workout", "Reading" etc.)
+                  Use default <span class="font-semibold">Activity types</span> or create your own
+                  (e.g. "Workout", "Reading" etc.)
                 </span>
-               
               </span>
-              <a class="btn btn-sm btn-ghost text-gray-500" onclick="new_activity_type_modal.showModal()">
+              <a
+                class="btn btn-sm btn-ghost text-gray-500"
+                onclick="new_activity_type_modal.showModal()"
+              >
                 <PlusIcon class="w-4 h-4 shrink-0" />
-                Add</a>
+                Add</a
+              >
             </li>
             <li class="flex items-center gap-8 justify-between">
               <span class="flex items-center gap-2 max-w-[600px]">
                 <ArrowRight class="w-4 h-4 shrink-0 text-gray-500" />
-                <span>Once that's set up, you're ready to log your <span class="font-semibold">First activity!</span></span>
+                <span
+                  >Once that's set up, you're ready to log your
+                  <span class="font-semibold">First activity!</span></span
+                >
               </span>
-              <a class="btn btn-sm btn-ghost text-gray-500" onclick="log_activity_modal.showModal()">
+              <a
+                class="btn btn-sm btn-ghost text-gray-500"
+                onclick="log_activity_modal.showModal()"
+              >
                 <PlusIcon class="w-4 h-4 shrink-0" />
-                Add</a>
+                Add</a
+              >
             </li>
           </ul>
-
-        </p>
+        </div>
       </div>
 
       <div v-else class="max-w-[1280px]">
