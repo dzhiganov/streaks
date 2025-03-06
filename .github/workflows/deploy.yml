@@ -46,6 +46,7 @@ jobs:
             echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > /home/ubuntu/habit-tracker-app/.output/server/.env
             echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> /home/ubuntu/habit-tracker-app/.output/server/.env
             echo "AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}" >> /home/ubuntu/habit-tracker-app/.output/server/.env
+            echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> /home/ubuntu/habit-tracker-app/.output/server/.env
 
             source /home/ubuntu/habit-tracker-app/.output/server/.env
 
