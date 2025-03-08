@@ -138,7 +138,10 @@ onBeforeMount(() => {
               </p>
             </div>
 
-            <div class="p-4 rounded-md flex justify-center items-center mt-4">
+            <div
+              v-if="subscriptionPlan.type === 'trial'"
+              class="p-4 rounded-md flex justify-center items-center mt-4"
+            >
               <button class="btn btn-accent btn-sm dark:btn-outline">
                 <StarIcon class="h-4 w-4" />
                 Upgrade Now
