@@ -1,5 +1,6 @@
 <script setup>
-import { ControlsIcon, CreditCardIcon, StarIcon } from '@/assets/icons';
+import { ArrowLeft, ControlsIcon, CreditCardIcon, StarIcon } from '@/assets/icons';
+import Pricing from '@/components/Pricing.vue';
 import dayjs from 'dayjs';
 import { onBeforeMount, ref, watch } from 'vue';
 
@@ -21,6 +22,8 @@ onMounted(async () => {
     };
   }
 });
+
+const showUpgradeOptions = ref(false);
 
 const themes = ['system', 'light', 'dark'];
 const categories = [
@@ -67,12 +70,16 @@ const updateSystemTheme = () => {
 onBeforeMount(() => {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateSystemTheme);
 });
+
+const upgradeToLifetime = () => {
+  showUpgradeOptions.value = true;
+};
 </script>
 
 <template>
   <dialog id="settings_modal" class="modal">
     <div
-      class="modal-box w-full max-w-lg p-6 rounded-lg shadow-lg bg-white dark:bg-gray-900 min-h-[400px]"
+      class="modal-box w-full max-w-lg p-6 rounded-lg shadow-lg bg-white dark:bg-gray-900 min-h-[400px] min-w-[600px]"
     >
       <header
         class="flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-4 mb-4"
@@ -120,32 +127,48 @@ onBeforeMount(() => {
           </div>
 
           <div v-if="selectedCategory === 'Subscription'">
-            <h4 class="text-lg font-medium mb-2 text-gray-800 dark:text-white">
-              Subscription Plan
-            </h4>
-            <div class="p-4 rounded-md border bg-gray-50 dark:bg-gray-800">
-              <p class="text-gray-700 dark:text-gray-300">
-                <span class="font-semibold">Plan: </span>
-                <span class="capitalize">{{ subscriptionPlan.type }}</span>
-              </p>
-              <p v-if="subscriptionPlan.type === 'trial'" class="text-gray-700 dark:text-gray-300">
-                <span class="font-semibold">Expires on:</span>
-                {{ dayjs(subscriptionPlan.trialExpiresAt).format('MMM D, YYYY') }}
-                <span class="text-xs text-gray-500 dark:text-gray-400"
-                  >({{ dayjs(subscriptionPlan.trialExpiresAt).diff(dayjs(), 'days') }} days
-                  left)</span
-                >
-              </p>
+            <div v-if="showUpgradeOptions">
+              <button @click="showUpgradeOptions = false" class="btn btn-sm btn-ghost">
+                <ArrowLeft class="h-4 w-4" />
+                Back
+              </button>
+              <div class="mt-4">
+                <Pricing />
+              </div>
             </div>
 
-            <div
-              v-if="subscriptionPlan.type === 'trial'"
-              class="p-4 rounded-md flex justify-center items-center mt-4"
-            >
-              <button class="btn btn-accent btn-sm dark:btn-outline">
-                <StarIcon class="h-4 w-4" />
-                Upgrade Now
-              </button>
+            <div v-else>
+              <h4 class="text-lg font-medium mb-2 text-gray-800 dark:text-white">
+                Subscription Plan
+              </h4>
+
+              <div class="p-4 rounded-md border bg-gray-50 dark:bg-gray-800">
+                <p class="text-gray-700 dark:text-gray-300">
+                  <span class="font-semibold">Plan: </span>
+                  <span class="capitalize">{{ subscriptionPlan.type }}</span>
+                </p>
+
+                <p
+                  v-if="subscriptionPlan.type === 'trial'"
+                  class="text-gray-700 dark:text-gray-300 mt-1"
+                >
+                  <span class="font-semibold">Expires on:</span>
+                  {{ dayjs(subscriptionPlan.trialExpiresAt).format('MMM D, YYYY') }}
+                  <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                    ({{ dayjs(subscriptionPlan.trialExpiresAt).diff(dayjs(), 'days') }} days left)
+                  </span>
+                </p>
+              </div>
+
+              <div
+                v-if="subscriptionPlan.type === 'trial'"
+                class="p-4 rounded-md flex justify-center items-center mt-4"
+              >
+                <button @click="upgradeToLifetime" class="btn btn-primary btn-sm">
+                  <StarIcon class="h-4 w-4" />
+                  Upgrade to Lifetime — Limited Offer
+                </button>
+              </div>
             </div>
           </div>
         </main>

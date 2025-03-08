@@ -153,6 +153,99 @@ definePageMeta({
       </div>
     </section>
 
+    <section class="max-w-3xl mx-auto py-12 px-4">
+      <h2 class="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+        Frequently Asked Questions
+      </h2>
+
+      <div class="space-y-6">
+        <!-- Question 1 -->
+        <details
+          class="group p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
+        >
+          <summary
+            class="text-lg font-medium cursor-pointer text-gray-900 dark:text-white flex justify-between items-center"
+          >
+            What can I do with this app?
+            <span class="transition-transform group-open:rotate-180">▾</span>
+          </summary>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            Our app helps you <span class="font-semibold">log your activities</span>, track how much
+            time you spend on different tasks, and
+            <span class="font-semibold">analyze your productivity</span> over time.
+          </p>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            Whether you're working, studying, or tracking personal projects, you can use the app to
+            monitor your time investment and make better decisions on how to allocate your efforts.
+          </p>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            Additionally, you can generate detailed reports that give you insights into how you
+            spend your time, helping you optimize productivity and focus on what truly matters.
+          </p>
+        </details>
+
+        <!-- Question 2 -->
+        <details
+          class="group p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
+        >
+          <summary
+            class="text-lg font-medium cursor-pointer text-gray-900 dark:text-white flex justify-between items-center"
+          >
+            Why is tracking time more effective than goals or to-do lists?
+            <span class="transition-transform group-open:rotate-180">▾</span>
+          </summary>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            Setting goals and making to-do lists are helpful, but they don’t always translate into
+            actual results. That’s because you don’t always have full control over achieving a
+            goal—unexpected obstacles, external dependencies, and changing priorities can all affect
+            whether you succeed.
+          </p>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            However, what you can control is the amount of time you invest.
+            <a
+              class="link"
+              href="https://online.lincoln.ac.uk/the-power-of-effective-time-management/"
+              >Tracking your time gives you a realistic, data-driven view of your progress.</a
+            >
+            Instead of just hoping to complete a task, you can ensure you’re putting in the
+            necessary effort to move forward.
+          </p>
+        </details>
+
+        <!-- Question 3 -->
+        <details
+          class="group p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
+        >
+          <summary
+            class="text-lg font-medium cursor-pointer text-gray-900 dark:text-white flex justify-between items-center"
+          >
+            Payments & Refund Policy
+            <span class="transition-transform group-open:rotate-180">▾</span>
+          </summary>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            We offer a 14-day free trial, allowing you to explore the app and decide whether it fits
+            your needs. During this trial, you get full access to all features without any
+            limitations.
+          </p>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            Once the trial period ends, your access will be restricted unless you purchase a
+            lifetime plan. This lifetime offer is temporary—in the future, we will transition to a
+            monthly subscription model.
+          </p>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            Since we provide a 14-day free trial, we do not offer refunds. The trial period serves
+            as your opportunity to evaluate the product before making a purchase decision.
+          </p>
+          <p class="mt-2 text-gray-700 dark:text-gray-300">
+            If you have any further questions, please refer to our
+            <a href="/terms" class="text-blue-600 dark:text-blue-400 underline font-medium">
+              Terms of Service </a
+            >.
+          </p>
+        </details>
+      </div>
+    </section>
+
     <footer
       class="mt-20 p-10 text-base-content flex flex-col justify-center items-center gap-8 w-full border-t border-gray-300 mt-24 max-w-5xl mx-auto"
     >
