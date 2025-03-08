@@ -20,6 +20,7 @@ import LineChart from '~/components/LineChart.vue';
 import Messages from '~/components/Messages.vue';
 import NewActivityTypeModal from '~/components/NewActivityTypeModal.vue';
 import ReportForm from '~/components/ReportForm.vue';
+import SettingsModalWindow from '~/components/SettingsModalWindow.vue';
 import UpgradeModalWindow from '~/components/UpgradeModalWindow.vue';
 import YearViewWarning from '~/components/YearViewWarning.vue';
 import { useGetActivities } from '~/services/activity.service';
@@ -146,7 +147,7 @@ const trialExpiresAt = computed(() => {
         >
 
         <span class="btn btn-sm btn-ghost w-full" onclick="upgrade_modal.showModal()"
-          >Upgrade to PRO</span
+          >Upgrade Now</span
         >
       </div>
       <div class="flex flex-col gap-10 mt-8">
@@ -394,6 +395,7 @@ const trialExpiresAt = computed(() => {
   <ReportForm />
   <YearViewWarning v-if="selectedRange === 'year' && route.query?.view === 'table'" />
   <UpgradeModalWindow />
+  <SettingsModalWindow />
 </template>
 
 <style>
