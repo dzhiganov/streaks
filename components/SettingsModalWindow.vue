@@ -82,7 +82,7 @@ const upgradeToLifetime = () => {
       class="modal-box w-full max-w-lg p-6 rounded-lg shadow-lg bg-white dark:bg-gray-900 min-h-[400px] min-w-[600px]"
     >
       <header
-        class="flex justify-between items-center border-b border-gray-200 dark:border-gray-800 pb-4 mb-4"
+        class="flex justify-between items-center border-b border-gray-400 dark:border-gray-800 pb-4 mb-4"
       >
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Settings</h3>
         <form method="dialog">
@@ -90,8 +90,8 @@ const upgradeToLifetime = () => {
         </form>
       </header>
 
-      <div class="flex">
-        <aside class="w-1/3 border-r border-gray-200 dark:border-gray-800 pr-4">
+      <div class="flex items-stretch">
+        <aside class="w-1/3 border-r border-gray-400 dark:border-gray-800 pr-4">
           <ul class="space-y-2">
             <li
               v-for="{ title: category, Icon } in categories"
@@ -100,7 +100,7 @@ const upgradeToLifetime = () => {
               class="cursor-pointer px-4 py-2 rounded-md transition-colors duration-200 flex items-center gap-2"
               :class="
                 selectedCategory === category
-                  ? 'bg-gray-200 dark:bg-gray-800 font-medium'
+                  ? 'bg-gray-300 dark:bg-gray-800 font-medium'
                   : 'hover:bg-gray-100 dark:hover:bg-gray-700'
               "
             >
@@ -115,7 +115,7 @@ const upgradeToLifetime = () => {
             <h4 class="text-lg font-medium mb-2 text-gray-800 dark:text-white">Theme</h4>
             <div class="relative">
               <select
-                class="w-full p-2 border border-gray-200 dark:border-gray-800 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
+                class="w-full p-2 border border-gray-400 dark:border-gray-800 rounded-md bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white"
                 :value="theme"
                 @change="changeTheme"
               >
@@ -142,7 +142,9 @@ const upgradeToLifetime = () => {
                 Subscription Plan
               </h4>
 
-              <div class="p-4 rounded-md border bg-gray-50 dark:bg-gray-800">
+              <div
+                class="p-4 rounded-md border border-gray-400 dark:border-gray-800 dark:bg-gray-800"
+              >
                 <p class="text-gray-700 dark:text-gray-300">
                   <span class="font-semibold">Plan: </span>
                   <span class="capitalize">{{ subscriptionPlan.type }}</span>
