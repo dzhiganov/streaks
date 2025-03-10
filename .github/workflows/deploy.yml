@@ -47,11 +47,15 @@ jobs:
 
       - name: Start Node.js server on EC2 with PM2
         uses: appleboy/ssh-action@master
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         with:
           host: ${{ secrets.AWS_EC2_DEPLOY_IP_ADDRESS_HOST }}
           username: ${{ secrets.AWS_EC2_DEPLOY_USER }}
           key: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
           script: |
+            export MONGODB_URI=${{ secrets.MONGODB_URI }}
+            echo "MONGODB_URI: $MONGODB_URI"
             echo "Setting environment variables..."
             cat <<EOF > /home/ubuntu/habit-tracker-app/.env
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
