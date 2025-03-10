@@ -52,13 +52,16 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
         with:
           host: ${{ secrets.AWS_EC2_DEPLOY_IP_ADDRESS_HOST }}
           username: ${{ secrets.AWS_EC2_DEPLOY_USER }}
           key: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
           script: |
+            export GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID"
             export MONGODB_URI="$MONGODB_URI"
             echo "TEST MONGODB_URI: $MONGODB_URI"
+            echo "TEST GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID"
             echo "Setting environment variables..."
             cat <<EOF > /home/ubuntu/habit-tracker-app/.env
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
