@@ -51,10 +51,10 @@ jobs:
       - name: Start Node.js server on EC2 with PM2
         uses: appleboy/ssh-action@master
         env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          AUTH_ORIGIN: ${{ secrets.AUTH_ORIGIN }}
+          MONGODB_URI: ${{ vars.MONGODB_URI }}
+          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ vars.GOOGLE_CLIENT_SECRET }}
+          AUTH_ORIGIN: ${{ vars.AUTH_ORIGIN }}
         with:
           host: ${{ secrets.AWS_EC2_DEPLOY_IP_ADDRESS_HOST }}
           username: ${{ secrets.AWS_EC2_DEPLOY_USER }}
@@ -65,6 +65,7 @@ jobs:
             export AUTH_ORIGIN="$AUTH_ORIGIN"
             export MONGODB_URI="$MONGODB_URI"
 
+            echo "TEST MONGODB_URI: $vars.GOOGLE_CLIENT_ID"
             echo "TEST MONGODB_URI: $MONGODB_URI"
             echo "TEST GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID"
 
