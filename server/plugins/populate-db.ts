@@ -1,8 +1,6 @@
-import seedActivityTypes from '~/server/db/seed';
-
 export default defineNitroPlugin(async () => {
   try {
-    await seedActivityTypes();
+    // await seedActivityTypes();
   } catch (error) {
     console.error('Error populating database:', error);
   }
