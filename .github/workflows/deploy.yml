@@ -53,22 +53,20 @@ jobs:
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          AUTH_ORIGIN: ${{ secrets.AUTH_ORIGIN }}
         with:
           host: ${{ secrets.AWS_EC2_DEPLOY_IP_ADDRESS_HOST }}
           username: ${{ secrets.AWS_EC2_DEPLOY_USER }}
           key: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
           script: |
             export GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID"
+            export GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET"
+            export AUTH_ORIGIN="$AUTH_ORIGIN"
             export MONGODB_URI="$MONGODB_URI"
+
             echo "TEST MONGODB_URI: $MONGODB_URI"
             echo "TEST GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID"
-            echo "Setting environment variables..."
-            cat <<EOF > /home/ubuntu/habit-tracker-app/.env
-            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-            AUTH_ORIGIN=${{ secrets.AUTH_ORIGIN }}
-            MONGODB_URI=${{ secrets.MONGODB_URI }}
-            EOF
 
             echo "Ensuring PM2 is installed..."
             if ! command -v pm2 &> /dev/null
@@ -80,6 +78,9 @@ jobs:
             cd /home/ubuntu/habit-tracker-app/
 
             pm2 delete habit-tracker || true  # Remove if running
-            pm2 start ecosystem.config.js --env production
+
+            # ✅ Correct way to pass environment variables to PM2
+            pm2 start ecosystem.config.js --env production --update-env
+
             pm2 save
             pm2 list
