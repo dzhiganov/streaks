@@ -22,7 +22,10 @@ jobs:
           npm ci
 
       - name: Build
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
+          echo "MONGODB_URI=${MONGODB_URI}" # Debugging: Ensure it's set
           npm run build
 
       - name: Transfer Files to EC2 Instance
