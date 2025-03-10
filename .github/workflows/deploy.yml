@@ -54,8 +54,8 @@ jobs:
           username: ${{ secrets.AWS_EC2_DEPLOY_USER }}
           key: ${{ secrets.AWS_EC2_DEPLOY_PEM_KEY }}
           script: |
-            export MONGODB_URI=${{ secrets.MONGODB_URI }}
-            echo "MONGODB_URI: $MONGODB_URI"
+            export MONGODB_URI="$MONGODB_URI"
+            echo "TEST MONGODB_URI: $MONGODB_URI"
             echo "Setting environment variables..."
             cat <<EOF > /home/ubuntu/habit-tracker-app/.env
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
