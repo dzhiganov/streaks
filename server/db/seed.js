@@ -19,6 +19,5 @@ export default async function seedActivityTypes() {
     }
   } catch (error) {
     console.error('❌ Error seeding default activity types:', error.message);
-    throw error;
   }
 }
